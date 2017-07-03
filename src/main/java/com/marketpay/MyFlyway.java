@@ -12,8 +12,10 @@ import java.io.IOException;
  */
 public class MyFlyway {
 
-    public static final String FILE_SRC_MAIN_RESOURCES = "file:src/main/resources/";
+    private static final String FILE_SRC_MAIN_RESOURCES = "file:src/main/resources/";
+
     private final ApplicationContext context;
+
     @Autowired
     private DBConfig dbConfig;
 
