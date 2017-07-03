@@ -1,5 +1,5 @@
 database:
-  driver: com.mysql.jdbc.Driver
+  driver: com.mysql.cj.jdbc.Driver
   url: jdbc:mysql://localhost:3306/db_marketpay
   user: anto
   password: anto
