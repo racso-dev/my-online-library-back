@@ -3,3 +3,11 @@ server:
 
 management:
   port: 9000
+
+database:
+  driver:
+  url:
+  user:
+  password:
+  packageName:
+  flyway: true
