@@ -2,7 +2,6 @@ package com.marketpay;
 
 import com.marketpay.conf.DBConfig;
 import org.flywaydb.core.Flyway;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
@@ -16,7 +15,6 @@ public class MyFlyway {
 
     private final ApplicationContext context;
 
-    @Autowired
     private DBConfig dbConfig;
 
     public static void init(ApplicationContext applicationContext) {
@@ -31,6 +29,7 @@ public class MyFlyway {
      */
     private MyFlyway(ApplicationContext applicationContext) {
         this.context = applicationContext;
+        this.dbConfig = this.context.getBean(DBConfig.class);
 
         if(dbConfig.isFlyway()){
             try {
