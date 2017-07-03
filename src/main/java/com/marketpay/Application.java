@@ -19,7 +19,7 @@ public class Application {
     }
 
     private static void initFlyway(ApplicationContext applicationContext) {
-        Flyway.init(applicationContext);
+        MyFlyway.init(applicationContext);
     }
 
 }
