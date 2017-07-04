@@ -24,6 +24,7 @@ public class ParsingCODAJob extends ParsingJob {
     private final String GROSS_AMOUNT_REGEX = "(:.[^0-9])([^a-zA-Z ]+)(.*:)"; // groupe 1 : gross amount
     private final String DATE_REGEX = "\\w{3} (\\d+)"; // groupe 1 : date
     private final String CREDIT_LINE_REGEX = "^\\d{29}  \\d{38}-\\d{3} \\w{2,3} +\\d{6}"; // Regex pour repérer les lignes de crédit
+    private final String TOTAL_AMOUNT_REGEX = "\\d{15} ";
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
@@ -99,11 +100,21 @@ public class ParsingCODAJob extends ParsingJob {
     }
 
     /**
+     * Récupére le total des transactions
+     * @param lastLine
+     * @return total des transactions
+     */
+    public int getTotalAmount(String lastLine) {
+        String totalAmountString = matchFromRegex(lastLine, TOTAL_AMOUNT_REGEX, 0);
+         return Integer.parseInt(totalAmountString.trim());
+    }
+
+    /**
      * Récupération du type de carte
      * @param line
      * @return le type de carte
      */
-    private String getCardType(String line) {
+    public String getCardType(String line) {
         return matchFromRegex(line, CARDTYPE_REGEX, 0);
     }
 
@@ -112,7 +123,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return le type de transaction
      */
-    private String getSens(String line) {
+    public String getSens(String line) {
         return matchFromRegex(line, AMOUNT_REGEX, 1);
     }
 
@@ -121,8 +132,9 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return valeur du net amount
      */
-    private String getNetAmount(String line) {
-        return matchFromRegex(line, AMOUNT_REGEX, 2);
+    public int getNetAmount(String line) {
+        String netAmountString = matchFromRegex(line, AMOUNT_REGEX, 2);
+        return Integer.parseInt(netAmountString.trim());
     }
 
     /**
@@ -130,7 +142,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return contract number
      */
-    private String getContractNumber(String line) {
+    public String getContractNumber(String line) {
         return matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
     }
 
@@ -139,8 +151,9 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return valeur du gross amount
      */
-    private String getGrossAmount(String line) {
-        return matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
+    public int getGrossAmount(String line) {
+        String grossAmountString = matchFromRegex(line, GROSS_AMOUNT_REGEX, 2);
+        return Integer.parseInt(grossAmountString.trim());
     }
 
     /**
@@ -148,7 +161,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return date de transaction
      */
-    private String getTransactionDate(String line) {
+    public String getTransactionDate(String line) {
         return matchFromRegex(line, DATE_REGEX, 1);
     }
 
