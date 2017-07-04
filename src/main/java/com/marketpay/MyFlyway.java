@@ -73,7 +73,7 @@ public class MyFlyway {
      * @throws IOException
      */
     private void migrate(String folder) throws IOException {
-        System.out.println("Installation MyFlyway - répertoire " + folder + " - url " + dbConfig.getUrl());
+        System.out.println("Installation MyFlyway - url: " + dbConfig.getUrl() + " - répertoire: " + folder);
 
         String fullUrl = dbConfig.getUrl();
         String url = fullUrl.substring(0, fullUrl.lastIndexOf("/") + 1);
