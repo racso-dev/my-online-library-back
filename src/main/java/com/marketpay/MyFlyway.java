@@ -12,6 +12,8 @@ import java.io.IOException;
 public class MyFlyway {
 
     private static final String FILE_SRC_MAIN_RESOURCES = "file:src/main/resources/";
+    public static final String DB_INIT = "db/init";
+    public static final String DB_DELTA = "db/delta";
 
     private final ApplicationContext context;
 
@@ -33,8 +35,8 @@ public class MyFlyway {
 
         if(dbConfig.isFlyway()){
             try {
-                safeMigrate("db/init");
-                safeMigrate("db/delta");
+                safeMigrate(DB_INIT);
+                safeMigrate(DB_DELTA);
             } catch (IOException e) {
                 e.printStackTrace();
             }
