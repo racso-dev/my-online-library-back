@@ -11,13 +11,3 @@ database:
   password:
   packageName:
   flyway: true
-
-
-logging:
- level:
-  root: INFO
-  org:
-    springframework:
-      web: ERROR
-  com:
-    concretepage: INFO
