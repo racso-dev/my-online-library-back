@@ -31,7 +31,7 @@ public class ParsingCODAJob extends ParsingJob {
      * Permet de découper le fichier en block de n relevés
      * @param filepath : path du fichier à parser
      */
-    public void getBlocksFromCodaFile(String filepath) {
+    public void parsingCodaFile(String filepath) {
         try {
             FileReader input = new FileReader(filepath);
             BufferedReader buffer = new BufferedReader(input);
@@ -42,7 +42,7 @@ public class ParsingCODAJob extends ParsingJob {
                 block.add(line);
                 Matcher matcher = endBlockPattern.matcher(line);
                 if (matcher.find()) {
-                    traitementDuBlock(block);
+                    saveBlockInformation(block);
                     // Ecrasement de la liste
                     block.clear();
                 }
@@ -62,7 +62,7 @@ public class ParsingCODAJob extends ParsingJob {
      * Récupère les informations du blocks et les enregistres en bases
      * @param list
      */
-    private void traitementDuBlock(ArrayList<String> list) {
+    private void saveBlockInformation(ArrayList<String> list) {
         if (list.isEmpty()) {
             logger.info("Le block est vide");
             return;
@@ -174,7 +174,6 @@ public class ParsingCODAJob extends ParsingJob {
         if(matcher.find() && matcher.groupCount() >= indexGroup) {
             return matcher.group(indexGroup);
         }
-        logger.info("Rien n'est matché sur la line : " + line);
         return "";
     }
 }

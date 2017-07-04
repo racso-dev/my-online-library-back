@@ -16,10 +16,18 @@ public class ParsingJob {
     @Autowired
     private ParsingCODAJob parsingCoda;
 
+    /**
+     * Permet de parser les fichiers en entrée
+     * @param filepath path du fichier
+     */
     private void parsingFile(String filepath) {
+        if (filepath == null) {
+            logger.warn("Le filepath ne peut pas être null");
+            return;
+        }
         if(filepath.contains(CODA_EXTENSION)) {
             logger.info("Parsing d'un fichier CODA");
-            parsingCoda.getBlocksFromCodaFile(filepath);
+            parsingCoda.parsingCodaFile(filepath);
         } else {
             logger.info("Parsing d'un fichier N43");
             // TODO: ajout du parsing du fichier N43
