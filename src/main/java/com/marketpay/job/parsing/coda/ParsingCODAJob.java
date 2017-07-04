@@ -35,23 +35,18 @@ public class ParsingCODAJob extends ParsingJob {
         try {
             FileReader input = new FileReader(filepath);
             BufferedReader buffer = new BufferedReader(input);
-            ArrayList<String> myList = new ArrayList<>();
+            ArrayList<String> block = new ArrayList<>();
             String line;
             Pattern endBlockPattern = Pattern.compile(ENDBLOCK_REGEX);
             while ((line = buffer.readLine()) != null) {
-                myList.add(line);
+                block.add(line);
                 Matcher matcher = endBlockPattern.matcher(line);
                 if (matcher.find()) {
-                    traitementDuBlock(myList);
+                    traitementDuBlock(block);
                     // Ecrasement de la liste
-                    myList.clear();
+                    block.clear();
                 }
             }
-
-            // Fermeture du fichier
-            buffer.close();
-            input.close();
-
 
         } catch (FileNotFoundException e) {
             logger.warn("Error parsing file " + filepath + "file not found");
