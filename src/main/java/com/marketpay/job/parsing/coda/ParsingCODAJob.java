@@ -81,11 +81,9 @@ public class ParsingCODAJob extends ParsingJob {
                 getContractNumber(line);
                 getTransactionDate(line);
 
-                if(i + 1 >= list.size()) {
-                    logger.warn("la ligne de crédit ne dispose pas d'une ligne de débit");
-                    return;
+                if(i + 1 <= list.size()) {
+                    getGrossAmount(list.get(i+1));
                 }
-                getGrossAmount(list.get(i+1));
             }
         }
     }
@@ -96,8 +94,8 @@ public class ParsingCODAJob extends ParsingJob {
      * @return le store name associé au block
      */
     private String getStoreName(String firstLine) {
-        String storeName = matchFromRegex(firstLine, STORENAME_REGEX, 0);
-        return storeName;
+        return matchFromRegex(firstLine, STORENAME_REGEX, 0);
+
     }
 
     /**
@@ -106,8 +104,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return le type de carte
      */
     private String getCardType(String line) {
-        String cardType = matchFromRegex(line, CARDTYPE_REGEX, 0);
-        return cardType;
+        return matchFromRegex(line, CARDTYPE_REGEX, 0);
     }
 
     /**
@@ -116,8 +113,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return le type de transaction
      */
     private String getSens(String line) {
-        String sens = matchFromRegex(line, AMOUNT_REGEX, 1);
-        return sens;
+        return matchFromRegex(line, AMOUNT_REGEX, 1);
     }
 
     /**
@@ -126,8 +122,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return valeur du net amount
      */
     private String getNetAmount(String line) {
-        String netAmount = matchFromRegex(line, AMOUNT_REGEX, 2);
-        return netAmount;
+        return matchFromRegex(line, AMOUNT_REGEX, 2);
     }
 
     /**
@@ -136,8 +131,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return contract number
      */
     private String getContractNumber(String line) {
-        String contactNumber = matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
-        return contactNumber;
+        return matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
     }
 
     /**
@@ -146,8 +140,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return valeur du gross amount
      */
     private String getGrossAmount(String line) {
-        String grossAmount = matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
-        return grossAmount;
+        return matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
     }
 
     /**
@@ -156,8 +149,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return date de transaction
      */
     private String getTransactionDate(String line) {
-        String date = matchFromRegex(line, DATE_REGEX, 1);
-        return date;
+        return matchFromRegex(line, DATE_REGEX, 1);
     }
 
     /**
