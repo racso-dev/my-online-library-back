@@ -1,6 +1,9 @@
 package com.marketpay.job.parsing.coda;
 
+import com.marketpay.Application;
 import com.marketpay.job.parsing.ParsingJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -21,6 +24,8 @@ public class ParsingCODAJob extends ParsingJob {
     private final String GROSS_AMOUNT_REGEX = "(:.[^0-9])([^a-zA-Z ]+)(.*:)"; // groupe 1 : gross amount
     private final String DATE_REGEX = "\\w{3} (\\d+)"; // groupe 1 : date
     private final String CREDIT_LINE_REGEX = "^\\d{29}  \\d{38}-\\d{3} \\w{2,3} +\\d{6}"; // Regex pour repérer les lignes de crédit
+
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     /**
      * Permet de découper le fichier en block de n relevés
@@ -49,11 +54,11 @@ public class ParsingCODAJob extends ParsingJob {
 
 
         } catch (FileNotFoundException e) {
-            // TODO: Log file not found
+            logger.warn("Error parsing file " + filepath + "file not found");
             e.printStackTrace();
 
         } catch (IOException e) {
-            // TODO: Log can't close file
+            logger.warn("Error closing file " + filepath);
             e.printStackTrace();
         }
     }
@@ -64,25 +69,30 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private void traitementDuBlock(ArrayList<String> list) {
         if (list.isEmpty()) {
+            logger.info("Le block est vide");
             return;
         }
 
         getStoreName(list.get(0));
         for(int i = 0; i < list.size(); i++) {
-            String test = matchFromRegex(list.get(i), CREDIT_LINE_REGEX, 0);
+            // On parse uniquement les lignes de crédit et on prend les n + 1 pour le debit
             if(!matchFromRegex(list.get(i), CREDIT_LINE_REGEX, 0).isEmpty()) {
+
                 String line = list.get(i);
                 // Lancement du parsing de la ligne et récupération de la ligne n + 1
                 getCardType(line);
                 getSens(line);
                 getNetAmount(line);
-                getGrossAmount(list.get(i+1));
                 getContractNumber(line);
                 getTransactionDate(line);
+
+                if(i + 1 >= list.size()) {
+                    logger.warn("la ligne de crédit ne dispose pas d'une ligne de débit");
+                    return;
+                }
+                getGrossAmount(list.get(i+1));
             }
         }
-
-        System.out.println(list.size());
     }
 
     /**
@@ -92,7 +102,6 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getStoreName(String firstLine) {
         String storeName = matchFromRegex(firstLine, STORENAME_REGEX, 0);
-        System.out.println("Store Name : " + storeName);
         return storeName;
     }
 
@@ -103,7 +112,6 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getCardType(String line) {
         String cardType = matchFromRegex(line, CARDTYPE_REGEX, 0);
-        System.out.println("cardType : " + cardType);
         return cardType;
     }
 
@@ -114,7 +122,6 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getSens(String line) {
         String sens = matchFromRegex(line, AMOUNT_REGEX, 1);
-        System.out.println("Sens : " + sens);
         return sens;
     }
 
@@ -125,7 +132,6 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getNetAmount(String line) {
         String netAmount = matchFromRegex(line, AMOUNT_REGEX, 2);
-        System.out.println("netAmount = " + netAmount);
         return netAmount;
     }
 
@@ -136,7 +142,6 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getContractNumber(String line) {
         String contactNumber = matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
-        System.out.println("contactNumber = " + contactNumber);
         return contactNumber;
     }
 
@@ -147,7 +152,6 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getGrossAmount(String line) {
         String grossAmount = matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
-        System.out.println("grossAmount = " + grossAmount);
         return grossAmount;
     }
 
@@ -158,7 +162,6 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getTransactionDate(String line) {
         String date = matchFromRegex(line, DATE_REGEX, 1);
-        System.out.println("date = " + date);
         return date;
     }
 
@@ -176,7 +179,7 @@ public class ParsingCODAJob extends ParsingJob {
         if(matcher.find() && matcher.groupCount() >= indexGroup) {
             return matcher.group(indexGroup);
         }
-        // Rien n'est matcher
+        logger.info("Rien n'est matché sur la line : " + line);
         return "";
     }
 }
