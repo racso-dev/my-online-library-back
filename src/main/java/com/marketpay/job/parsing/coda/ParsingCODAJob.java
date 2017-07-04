@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.*;
 
-/**
- * Created by etienne on 03/07/17.
- */
 @Component
 public class ParsingCODAJob extends ParsingJob {
 
@@ -20,9 +17,10 @@ public class ParsingCODAJob extends ParsingJob {
     private final String STORENAME_REGEX = "([a-zA-Z]+ +)+";
     private final String CARDTYPE_REGEX = "[a-zA-Z]+";
     private final String AMOUNT_REGEX = " ([0-1])(\\d{15})"; // groupe 1 : Debit/Crédit, groupe 2 : Montant du Debit/ Credit
-    private final String CONTACT_NUMBER_REGEX = "(\\d{7})-";
+    private final String CONTRACT_NUMBER_REGEX = "(\\d{7})-"; // groupe 1 : Contract number
     private final String GROSS_AMOUNT_REGEX = "(:.[^0-9])([^a-zA-Z ]+)(.*:)"; // groupe 1 : gross amount
     private final String DATE_REGEX = "\\w{3} (\\d+)"; // groupe 1 : date
+    private final String CREDIT_LINE_REGEX = "^\\d{29}  \\d{38}-\\d{3} \\w{2,3} +\\d{6}"; // Regex pour repérer les lignes de crédit
 
     /**
      * Permet de découper le fichier en block de n relevés
@@ -68,8 +66,21 @@ public class ParsingCODAJob extends ParsingJob {
         if (list.isEmpty()) {
             return;
         }
+
         getStoreName(list.get(0));
-        getCardType(list.get(4) + list.get(5));
+        for(int i = 0; i < list.size(); i++) {
+            String test = matchFromRegex(list.get(i), CREDIT_LINE_REGEX, 0);
+            if(!matchFromRegex(list.get(i), CREDIT_LINE_REGEX, 0).isEmpty()) {
+                String line = list.get(i);
+                // Lancement du parsing de la ligne et récupération de la ligne n + 1
+                getCardType(line);
+                getSens(line);
+                getNetAmount(line);
+                getGrossAmount(list.get(i+1));
+                getContractNumber(line);
+                getTransactionDate(line);
+            }
+        }
 
         System.out.println(list.size());
     }
@@ -92,7 +103,7 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getCardType(String line) {
         String cardType = matchFromRegex(line, CARDTYPE_REGEX, 0);
-        System.out.printf("cardType : " + cardType);
+        System.out.println("cardType : " + cardType);
         return cardType;
     }
 
@@ -103,8 +114,52 @@ public class ParsingCODAJob extends ParsingJob {
      */
     private String getSens(String line) {
         String sens = matchFromRegex(line, AMOUNT_REGEX, 1);
-        System.out.printf("Sens : " + sens);
+        System.out.println("Sens : " + sens);
         return sens;
+    }
+
+    /**
+     * Récupération du net amount
+     * @param line
+     * @return valeur du net amount
+     */
+    private String getNetAmount(String line) {
+        String netAmount = matchFromRegex(line, AMOUNT_REGEX, 2);
+        System.out.println("netAmount = " + netAmount);
+        return netAmount;
+    }
+
+    /**
+     * Récupération du contract number
+     * @param line
+     * @return contract number
+     */
+    private String getContractNumber(String line) {
+        String contactNumber = matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
+        System.out.println("contactNumber = " + contactNumber);
+        return contactNumber;
+    }
+
+    /**
+     * Récupération du gross amount
+     * @param line
+     * @return valeur du gross amount
+     */
+    private String getGrossAmount(String line) {
+        String grossAmount = matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
+        System.out.println("grossAmount = " + grossAmount);
+        return grossAmount;
+    }
+
+    /**
+     * Récupération de la date de transaction
+     * @param line
+     * @return date de transaction
+     */
+    private String getTransactionDate(String line) {
+        String date = matchFromRegex(line, DATE_REGEX, 1);
+        System.out.println("date = " + date);
+        return date;
     }
 
     /**
@@ -118,7 +173,7 @@ public class ParsingCODAJob extends ParsingJob {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(line);
 
-        if(matcher.find() && matcher.groupCount() > indexGroup) {
+        if(matcher.find() && matcher.groupCount() >= indexGroup) {
             return matcher.group(indexGroup);
         }
         // Rien n'est matcher
