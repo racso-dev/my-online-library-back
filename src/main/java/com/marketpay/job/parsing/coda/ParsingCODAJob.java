@@ -106,7 +106,10 @@ public class ParsingCODAJob extends ParsingJob {
      */
     public int getTotalAmount(String lastLine) {
         String totalAmountString = matchFromRegex(lastLine, TOTAL_AMOUNT_REGEX, 0);
-         return Integer.parseInt(totalAmountString.trim());
+        if (totalAmountString == null) {
+            return -1;
+        }
+        return Integer.parseInt(totalAmountString.trim());
     }
 
     /**
@@ -134,6 +137,9 @@ public class ParsingCODAJob extends ParsingJob {
      */
     public int getNetAmount(String line) {
         String netAmountString = matchFromRegex(line, AMOUNT_REGEX, 2);
+        if (netAmountString == null) {
+            return -1;
+        }
         return Integer.parseInt(netAmountString.trim());
     }
 
@@ -153,6 +159,9 @@ public class ParsingCODAJob extends ParsingJob {
      */
     public int getGrossAmount(String line) {
         String grossAmountString = matchFromRegex(line, GROSS_AMOUNT_REGEX, 2);
+        if (grossAmountString == null) {
+            return -1;
+        }
         return Integer.parseInt(grossAmountString.trim());
     }
 
@@ -179,6 +188,6 @@ public class ParsingCODAJob extends ParsingJob {
         if(matcher.find() && matcher.groupCount() >= indexGroup) {
             return matcher.group(indexGroup);
         }
-        return "";
+        return null;
     }
 }
