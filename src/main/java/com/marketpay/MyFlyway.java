@@ -54,11 +54,11 @@ public class MyFlyway {
      */
     private void safeMigrate(String folder) throws IOException {
         if (!context.getResource(FILE_SRC_MAIN_RESOURCES + folder).exists() || context.getResource(FILE_SRC_MAIN_RESOURCES + folder).contentLength() == 0) {
-            logger.info("Le dossier renseigné pour Flyway n'existe pas / est vide");
+            logger.warn("Le dossier renseigné pour Flyway n'existe pas / est vide");
             return;
         }
         if (dbConfig.getUser() == null) {
-            logger.info("Aucun user configuré pour la migration Flyway");
+            logger.warn("Aucun user configuré pour la migration Flyway");
             return;
         }
 
@@ -66,7 +66,7 @@ public class MyFlyway {
             migrate(folder);
         } catch (Exception f) {
             f.printStackTrace();
-            logger.info("Erreur lors de l'installation du dump par Flyway");
+            logger.warn("Erreur lors de l'installation du dump par Flyway");
         }
     }
 
