@@ -81,7 +81,7 @@ public class ParsingCODAJob extends ParsingJob {
                 getContractNumber(line);
                 getTransactionDate(line);
 
-                if(i + 1 <= list.size()) {
+                if(i + 1 < list.size()) {
                     getGrossAmount(list.get(i+1));
                 }
             }
