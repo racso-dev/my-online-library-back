@@ -2,6 +2,8 @@ package com.marketpay;
 
 import com.marketpay.conf.DBConfig;
 import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
@@ -11,12 +13,13 @@ import java.io.IOException;
  */
 public class MyFlyway {
 
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
+
     private static final String FILE_SRC_MAIN_RESOURCES = "file:src/main/resources/";
     public static final String DB_INIT = "db/init";
     public static final String DB_DELTA = "db/delta";
 
     private final ApplicationContext context;
-
     private DBConfig dbConfig;
 
     public static void init(ApplicationContext applicationContext) {
@@ -51,11 +54,11 @@ public class MyFlyway {
      */
     private void safeMigrate(String folder) throws IOException {
         if (!context.getResource(FILE_SRC_MAIN_RESOURCES + folder).exists() || context.getResource(FILE_SRC_MAIN_RESOURCES + folder).contentLength() == 0) {
-            System.out.println("Le dossier renseigné pour Flyway n'existe pas / est vide");
+            logger.info("Le dossier renseigné pour Flyway n'existe pas / est vide");
             return;
         }
         if (dbConfig.getUser() == null) {
-            System.out.println("Aucun user configuré pour la migration Flyway");
+            logger.info("Aucun user configuré pour la migration Flyway");
             return;
         }
 
@@ -63,7 +66,7 @@ public class MyFlyway {
             migrate(folder);
         } catch (Exception f) {
             f.printStackTrace();
-            System.out.println("Erreur lors de l'installation du dump par Flyway");
+            logger.info("Erreur lors de l'installation du dump par Flyway");
         }
     }
 
@@ -75,7 +78,7 @@ public class MyFlyway {
      * @throws IOException
      */
     private void migrate(String folder) throws IOException {
-        System.out.println("Installation MyFlyway - url: " + dbConfig.getUrl() + " - répertoire: " + folder);
+        logger.info("Installation MyFlyway - url: " + dbConfig.getUrl() + " - répertoire: " + folder);
 
         String fullUrl = dbConfig.getUrl();
         String url = fullUrl.substring(0, fullUrl.lastIndexOf("/") + 1);
@@ -94,7 +97,7 @@ public class MyFlyway {
         if (flyway.info().pending().length > 0) {
             flyway.migrate();
         } else {
-            System.out.println("Le dump installé est à jour");
+            logger.info("Le dump installé est à jour");
         }
     }
 }
