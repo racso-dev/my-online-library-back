@@ -16,8 +16,8 @@ public class MyFlyway {
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     private static final String FILE_SRC_MAIN_RESOURCES = "file:src/main/resources/";
-    public static final String DB_INIT = "db/init";
-    public static final String DB_DELTA = "db/delta";
+    private static final String DB_INIT = "db/init";
+    private static final String DB_DELTA = "db/delta";
 
     private final ApplicationContext context;
     private DBConfig dbConfig;
