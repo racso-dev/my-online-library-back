@@ -1,6 +1,6 @@
 package com.marketpay.job.parsing.coda;
 
-import org.junit.Before;
+import com.marketpay.references.TransactionSens;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
@@ -20,6 +20,7 @@ public class ParsingCODAJobTests {
     private String TRANSACTION_LINE_MOCK = "21000200003080461201705310001  00000000015189203105170015000003080461-003 MAE 310517                               01061700901 0\n";
     private String GROSS_AMOUNT_MOCK = "2200020000BRUT:  000000000152151  COM:  000000000000259                                                                      0 0\n";
     private String FINAL_LINE_MOCK = "9               000010000000001573190000000001573190                                                                           2\n";
+    private String ACCOUNT_LINE_MOCK = "10009735047736314 EUR BE   0030000        0000000000000000310517JAGI  concept BVBA                                           009\n";
 
     @Test
     public void parsingCardTypeTest() {
@@ -28,9 +29,15 @@ public class ParsingCODAJobTests {
     }
 
     @Test
+    public void parsingCompteNumberTest() {
+        String compteNumber = parsingCODAJob.getCompteNumber(ACCOUNT_LINE_MOCK);
+        assertTrue(compteNumber.equals("735047736314"));
+    }
+
+    @Test
     public void parsingSensTest() {
-        String sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
-        assertTrue(sens.equals("0"));
+        TransactionSens sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
+        assertTrue(sens == TransactionSens.CREDIT);
     }
 
     @Test
