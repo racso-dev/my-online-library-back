@@ -1,6 +1,5 @@
 package com.marketpay.job.parsing.coda;
 
-import com.marketpay.Application;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.references.TransactionSens;
 import org.slf4j.Logger;
@@ -14,36 +13,59 @@ import java.nio.file.Paths;
 @Component
 public class ParsingCODAJob extends ParsingJob {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(ParsingCODAJob.class);
+
     /**
      * Permet de découper le fichier en block de n relevés
-     * @param filepath : path du fichier à parser
+     * @param filePath : path du fichier à parser
      */
-    public void parsingCodaFile(String filepath) {
+    @Override
+    public void parsing(String filePath, Object jobHistory) throws IOException {
+        String dailyCoda = new String(Files.readAllBytes(Paths.get(filePath)));
+        String[] codas = dailyCoda.split("(?<=\\r\\n9.{127})\\r\\n");
+        for (String coda : codas) {
+            String[] block = coda.split("\\r\\n");
+            parsingCodaBlock(block, jobHistory);
+        }
+    }
+
+    @Override
+    protected void errorBlock(Exception e, String[] block, Object jobHistory) {
+        //On sauvegarde le block en erreur dans la table block avec un status d'erreur
+        //TODO ETI
+
+        //On sauvegarde l'erreur au niveau du JobHistory
+        //TODO ETI
+    }
+
+    /**
+     * TODO CHEKROUN
+     * @param block
+     * @param jobHistory
+     */
+    public void parsingCodaBlock(String[] block, Object jobHistory) {
         try {
-            String dailyCoda = new String(Files.readAllBytes(Paths.get(filepath)));
-            String[] codas = dailyCoda.split("(?<=\\r\\n9.{127})\\r\\n");
-            for (String coda : codas) {
-                String[] block = coda.split("\\r\\n");
-                parsingCodaBlock(block);
+            String headerRecipientLine = block[0];
+            String headerAccountLine = block[1];
+            String footerTotal = block[block.length - 1];
+
+            getBuTitle(headerRecipientLine);
+            getCompteNumber(headerAccountLine);
+            getTotalAmount(footerTotal);
+            for (int i = 4; i < (block.length - 2); i = i + 2) {
+                parsingDetailLines(block[i], block[i + 2]);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.error("Une erreur s'est produit pendant le parsing du block CODA", e);
+            errorBlock(e, block, jobHistory);
         }
     }
 
-    public void parsingCodaBlock(String[] block) {
-        String headerRecipientLine = block[0];
-        String headerAccountLine = block[1];
-        String footerTotal = block[block.length - 1];
-
-        getBuTitle(headerRecipientLine);
-        getCompteNumber(headerAccountLine);
-        getTotalAmount(footerTotal);
-        for (int i = 4; i < (block.length - 2); i = i + 2) {
-            parsingDetailLines(block[i], block[i + 2]);
-        }
-    }
-
+    /**
+     * TODO CHEKROUN
+     * @param detailLine1
+     * @param detailLine2
+     */
     public void parsingDetailLines(String detailLine1, String detailLine2) {
         getSens(detailLine1);
         getNetAmount(detailLine1);
