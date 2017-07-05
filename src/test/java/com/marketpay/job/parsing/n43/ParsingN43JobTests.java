@@ -1,5 +1,6 @@
 package com.marketpay.job.parsing.n43;
 
+import com.marketpay.references.TransactionSens;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
@@ -57,8 +58,8 @@ public class ParsingN43JobTests {
 
     @Test
     public void getSensTest() {
-        int sens = parsingN43Job.getSens(TRANSACTION_LINE);
-        assertTrue(sens == 2);
+        TransactionSens sens = parsingN43Job.getSens(TRANSACTION_LINE);
+        assertTrue(sens == TransactionSens.DEBIT);
     }
 
     @Test
