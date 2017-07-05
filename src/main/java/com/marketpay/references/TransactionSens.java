@@ -1,5 +1,12 @@
 package com.marketpay.references;
 
 public enum TransactionSens {
-    CREDIT, DEBIT
+    CREDIT("Crédit"),
+    DEBIT("Débit");
+
+    private String value;
+
+    TransactionSens(String value) {
+        this.value = value;
+    }
 }

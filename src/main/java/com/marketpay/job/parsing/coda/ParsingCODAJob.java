@@ -14,8 +14,6 @@ import java.nio.file.Paths;
 @Component
 public class ParsingCODAJob extends ParsingJob {
 
-    private final Logger logger = LoggerFactory.getLogger(Application.class);
-
     /**
      * Permet de découper le fichier en block de n relevés
      * @param filepath : path du fichier à parser
