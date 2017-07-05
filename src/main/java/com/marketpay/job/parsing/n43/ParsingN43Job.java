@@ -1,6 +1,7 @@
 package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
+import com.marketpay.references.TransactionSens;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -82,22 +83,26 @@ public class ParsingN43Job extends ParsingJob {
         return matchFromRegex(line, OPERATION_SENS_REGEX, 1);
     }
 
-    public int getSens(String line) {
-        String sens = matchFromRegex(line, OPERATION_SENS_REGEX, 2);
-        return convertStringToInt(sens);
+    public TransactionSens getSens(String line) {
+        Integer sens = convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2));
+        if(sens == 1) {
+            return TransactionSens.CREDIT;
+        } else {
+            return TransactionSens.DEBIT;
+        }
     }
 
-    public int getGrossAmount(String line) {
+    public Integer getGrossAmount(String line) {
         String amount = matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
         return convertStringToInt(amount);
     }
 
-    public int getCommission(String line) {
+    public Integer getCommission(String line) {
         String amount = matchFromRegex(line, COMMISION_REGEX, 1);
         return convertStringToInt(amount);
     }
 
-    public int getTotalAmount(String line) {
+    public Integer getTotalAmount(String line) {
         String totalAmount = matchFromRegex(line, TOTAL_AMOUNT_REGEX, 1);
         return convertStringToInt(totalAmount);
     }

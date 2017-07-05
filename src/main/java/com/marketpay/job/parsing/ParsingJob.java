@@ -29,7 +29,7 @@ public class ParsingJob {
      * Convertie un string en integer
      * @param amount integer
      */
-    protected int convertStringToInt(String amount) {
+    protected Integer convertStringToInt(String amount) {
         if (amount == null) {
             return -1;
         }
