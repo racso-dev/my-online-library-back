@@ -1,6 +1,5 @@
 package com.marketpay.job.parsing.coda;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
@@ -15,7 +14,6 @@ public class ParsingCODAJobTests {
 
     @Autowired
     private ParsingCODAJob parsingCODAJob;
-    private String filepath = "src/tests/resources/data/parsingFiles/coda/codaMockFile.txt";
 
     private String TRANSACTION_LINE_MOCK = "21000200003080461201705310001  00000000015189203105170015000003080461-003 MAE 310517                               01061700901 0\n";
     private String GROSS_AMOUNT_MOCK = "2200020000BRUT:  000000000152151  COM:  000000000000259                                                                      0 0\n";
@@ -29,8 +27,8 @@ public class ParsingCODAJobTests {
 
     @Test
     public void parsingSensTest() {
-        String sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
-        assertTrue(sens.equals("0"));
+        int sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
+        assertTrue(sens == 0);
     }
 
     @Test

@@ -3,23 +3,64 @@ package com.marketpay.job.parsing.n43;
 import com.marketpay.job.parsing.ParsingJob;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 @Component
 public class ParsingN43Job extends ParsingJob {
 
     // Identifié sur les lignes commençant par 11
+    private final String BU_LINE_INFORMATION = "11";
     private final String CLIEN_NAME_REGEX = ".{51}(.*)"; // Groupe 1
     private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format AA/MM/JJ
 
     // Identifié sur les lignes commençant par 22
+    private final String TRANSACTION_LINE_INFORMATION = "22";
     private final String CONTRACT_NUMBER_REGEX = "^.{42}(\\d{10})"; // Groupe 1
     private final String TRANSACTION_DATE_REGEX = "^.{16}(\\d{6})"; // Groupe 1
-    private final String COMMON_CONCEPT_REGEX = "^.{22}(\\d{2})"; // Groupe 1
     private final String OPERATION_SENS_REGEX = "^.{22}12(\\d{3})(\\d{1})"; // Groupe 1 : opération Groupe 2 : Sens
     private final String GROSS_AMOUNT_REGEX = "^.{22}12\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISION_REGEX = "^.{22}17\\d{3}\\d{1}(\\d{14})"; // Groupe 1
 
     // Identifié sur les lignes commençant par 33
+    private final String END_FILE_INFORMATION = "33";
     private final String TOTAL_AMOUNT_REGEX = ".{59}(\\d{14})"; // Groupe 1
+
+    public void parsingN43File(String filepath) {
+        try {
+            FileReader file = new FileReader(filepath);
+            BufferedReader buffer = new BufferedReader(file);
+            String line;
+
+            while ((line = buffer.readLine()) != null) {
+                if (line.startsWith(BU_LINE_INFORMATION)) {
+                    getClientName(line);
+                    getFinaningDate(line);
+                } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
+                    getContractNumber(line);
+                    getOperationType(line);
+
+                    getCommission(line);
+                    getGrossAmount(line);
+                    getSens(line);
+                } else if (line.startsWith(END_FILE_INFORMATION)) {
+                    getTotalAmount(line);
+                }
+
+                // TODO : Save result
+            }
+
+            buffer.close();
+            file.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public String getClientName(String firstLine) {
         return matchFromRegex(firstLine, CLIEN_NAME_REGEX, 1);
@@ -37,16 +78,13 @@ public class ParsingN43Job extends ParsingJob {
         return matchFromRegex(line, TRANSACTION_DATE_REGEX, 1);
     }
 
-    public String getCommonConcept(String line) {
-        return matchFromRegex(line, COMMON_CONCEPT_REGEX, 1);
-    }
-
     public String getOperationType(String line) {
         return matchFromRegex(line, OPERATION_SENS_REGEX, 1);
     }
 
-    public String getSens(String line) {
-        return matchFromRegex(line, OPERATION_SENS_REGEX, 2);
+    public int getSens(String line) {
+        String sens = matchFromRegex(line, OPERATION_SENS_REGEX, 2);
+        return convertStringToInt(sens);
     }
 
     public int getGrossAmount(String line) {

@@ -123,8 +123,9 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return le type de transaction
      */
-    public String getSens(String line) {
-        return matchFromRegex(line, AMOUNT_REGEX, 1);
+    public int getSens(String line) {
+        String sens = matchFromRegex(line, AMOUNT_REGEX, 1);
+        return convertStringToInt(sens);
     }
 
     /**
