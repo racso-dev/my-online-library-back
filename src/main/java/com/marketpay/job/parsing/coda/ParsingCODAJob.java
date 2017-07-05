@@ -110,17 +110,6 @@ public class ParsingCODAJob extends ParsingJob {
     }
 
     /**
-     * Convertie un string en integer
-     * @param amount integer
-     */
-    public int convertStringToInt(String amount) {
-        if (amount == null) {
-            return -1;
-        }
-        return Integer.parseInt(amount.trim());
-    }
-
-    /**
      * Récupération du type de carte
      * @param line
      * @return le type de carte
@@ -176,20 +165,4 @@ public class ParsingCODAJob extends ParsingJob {
         return matchFromRegex(line, DATE_REGEX, 1);
     }
 
-    /**
-     * Fonction générique qui permet de retourner la chaine de caractère matcher par la regex
-     * @param line
-     * @param regex string a matcher
-     * @param indexGroup groupe a récupérer
-     * @return l'élément matcher
-     */
-    private String matchFromRegex(String line, String regex, int indexGroup) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(line);
-
-        if(matcher.find() && matcher.groupCount() >= indexGroup) {
-            return matcher.group(indexGroup);
-        }
-        return null;
-    }
 }

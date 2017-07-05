@@ -1,37 +1,39 @@
 package com.marketpay.job.parsing;
 
-import com.marketpay.Application;
-import com.marketpay.job.parsing.coda.ParsingCODAJob;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class ParsingJob {
 
-    private final String CODA_EXTENSION = "BEOC4C.txt";
+    /**
+     * Fonction générique qui permet de retourner la chaine de caractère matcher par la regex
+     * @param line
+     * @param regex string a matcher
+     * @param indexGroup groupe a récupérer
+     * @return l'élément matcher
+     */
+    protected String matchFromRegex(String line, String regex, int indexGroup) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(line);
 
-    private final Logger logger = LoggerFactory.getLogger(Application.class);
-    @Autowired
-    private ParsingCODAJob parsingCoda;
+        if(matcher.find() && matcher.groupCount() >= indexGroup) {
+            return matcher.group(indexGroup);
+        }
+        return null;
+    }
 
     /**
-     * Permet de parser les fichiers en entrée
-     * @param filepath path du fichier
+     * Convertie un string en integer
+     * @param amount integer
      */
-    private void parsingFile(String filepath) {
-        if (filepath == null) {
-            logger.warn("Le filepath ne peut pas être null");
-            return;
+    protected int convertStringToInt(String amount) {
+        if (amount == null) {
+            return -1;
         }
-        if(filepath.contains(CODA_EXTENSION)) {
-            logger.info("Parsing d'un fichier CODA");
-            parsingCoda.parsingCodaFile(filepath);
-        } else {
-            logger.info("Parsing d'un fichier N43");
-            // TODO: ajout du parsing du fichier N43
-        }
+        return Integer.parseInt(amount.trim());
     }
 
 }
