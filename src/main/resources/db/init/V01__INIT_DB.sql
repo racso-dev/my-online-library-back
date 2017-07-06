@@ -50,9 +50,13 @@ CREATE TABLE `marketpay`.`transactions` (
   `net_amount` BIGINT(20) NOT NULL,
   `contract_number` VARCHAR(45) NOT NULL,
   `name_store` VARCHAR(45) NOT NULL,
+  `id_store` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `funding_date_idx` (`funding_date` ASC),
-  INDEX `contract_number_idx` (`contract_number` ASC))
+  INDEX `contract_number_idx` (`contract_number` ASC),
+  CONSTRAINT `id_store_transactions`
+    FOREIGN KEY (`id_store`)
+    REFERENCES `marketpay`.`store` (`id`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`block` (
