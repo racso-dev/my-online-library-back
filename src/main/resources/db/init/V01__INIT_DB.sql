@@ -22,7 +22,7 @@ CREATE TABLE `marketpay`.`store` (
 
 CREATE TABLE `marketpay`.`user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `profile` SMALLINT(5) NOT NULL,
+  `profile` INT NOT NULL,
   `email` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
   `id_bu` BIGINT(20) NULL,
