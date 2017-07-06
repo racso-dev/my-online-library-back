@@ -51,8 +51,7 @@ CREATE TABLE `marketpay`.`transaction` (
   `name_store` VARCHAR(45) NOT NULL,
   `id_store` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `funding_date_idx` (`funding_date` ASC),
-  INDEX `contract_number_idx` (`contract_number` ASC),
+  INDEX `funding_date_contract_number_idx` (`funding_date` ASC, `contract_number` ASC),
   CONSTRAINT `id_store_transactions`
     FOREIGN KEY (`id_store`)
     REFERENCES `marketpay`.`store` (`id`))
