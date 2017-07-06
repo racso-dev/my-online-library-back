@@ -5,7 +5,6 @@ import com.marketpay.references.TransactionSens;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -29,38 +28,32 @@ public class ParsingN43Job extends ParsingJob {
     private final String END_FILE_INFORMATION = "33";
     private final String TOTAL_AMOUNT_REGEX = ".{59}(\\d{14})"; // Groupe 1
 
-    public void parsingN43File(String filepath) {
-        try {
-            FileReader file = new FileReader(filepath);
-            BufferedReader buffer = new BufferedReader(file);
-            String line;
+    @Override
+    public void parsing(String filePath, Object jobHistory) throws IOException {
+        FileReader file = new FileReader(filePath);
+        BufferedReader buffer = new BufferedReader(file);
+        String line;
 
-            while ((line = buffer.readLine()) != null) {
-                if (line.startsWith(BU_LINE_INFORMATION)) {
-                    getClientName(line);
-                    getFinaningDate(line);
-                } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
-                    getContractNumber(line);
-                    getOperationType(line);
+        while ((line = buffer.readLine()) != null) {
+            if (line.startsWith(BU_LINE_INFORMATION)) {
+                getClientName(line);
+                getFinaningDate(line);
+            } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
+                getContractNumber(line);
+                getOperationType(line);
 
-                    getCommission(line);
-                    getGrossAmount(line);
-                    getSens(line);
-                } else if (line.startsWith(END_FILE_INFORMATION)) {
-                    getTotalAmount(line);
-                }
-
-                // TODO : Save result
+                getCommission(line);
+                getGrossAmount(line);
+                getSens(line);
+            } else if (line.startsWith(END_FILE_INFORMATION)) {
+                getTotalAmount(line);
             }
 
-            buffer.close();
-            file.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            // TODO : Save result
         }
+
+        buffer.close();
+        file.close();
     }
 
     public String getClientName(String firstLine) {
@@ -107,4 +100,8 @@ public class ParsingN43Job extends ParsingJob {
         return convertStringToInt(totalAmount);
     }
 
+    @Override
+    protected void errorBlock(Exception e, String[] block, Object jobHistory) {
+
+    }
 }

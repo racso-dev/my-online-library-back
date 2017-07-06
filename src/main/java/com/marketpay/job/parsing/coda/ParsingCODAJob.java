@@ -2,6 +2,8 @@ package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.references.TransactionSens;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
