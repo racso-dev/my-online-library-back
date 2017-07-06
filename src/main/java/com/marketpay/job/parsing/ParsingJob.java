@@ -37,7 +37,7 @@ public abstract class ParsingJob {
 
         if (filePath == null) {
             LOGGER.warn("Le filepath ne peut pas être null");
-            // TODO : ETI
+            saveJobHistory(jobHistory, new Exception("Le filepath ne peut pas être null"));
             return;
         }
 
