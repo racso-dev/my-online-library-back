@@ -104,17 +104,6 @@ public class ParsingCODAJob extends ParsingJob {
     }
 
     /**
-     * Convertie un string en integer
-     * @param amount integer
-     */
-    public Integer convertStringToInt(String amount) {
-        if (amount == null) {
-            return -1;
-        }
-        return Integer.parseInt(amount.trim());
-    }
-
-    /**
      * Récupération du type de carte
      * @param line
      * @return le type de carte

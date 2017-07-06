@@ -1,20 +1,20 @@
 package com.marketpay.job.parsing;
 
-import com.marketpay.Application;
 import com.marketpay.job.parsing.coda.ParsingCODAJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.IOException;
 
 @Component
 public abstract class ParsingJob {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(ParsingJob.class);
     private final String CODA_EXTENSION = "BEOC4C.txt";
-
-    private final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     @Autowired
     private ParsingCODAJob parsingCoda;
@@ -50,6 +50,35 @@ public abstract class ParsingJob {
 
         //Tout c'est bien passé on met à jour JobHistory et on le sauvegarde
         saveJobHistory(jobHistory, null);
+    }
+
+    /**
+     * Fonction générique qui permet de retourner la chaine de caractère matcher par la regex
+     * @param line
+     * @param regex string a matcher
+     * @param indexGroup groupe a récupérer
+     * @return l'élément matcher
+     */
+    protected String matchFromRegex(String line, String regex, int indexGroup) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(line);
+
+        if(matcher.find() && matcher.groupCount() >= indexGroup) {
+            return matcher.group(indexGroup);
+        }
+        return null;
+    }
+
+    /**
+     * Convertie un string en integer
+     * @param amount integer
+     */
+    protected Integer convertStringToInt(String amount) {
+        if (amount == null) {
+            return -1;
+        }
+
+        return Integer.parseInt(amount.trim());
     }
 
     /**
