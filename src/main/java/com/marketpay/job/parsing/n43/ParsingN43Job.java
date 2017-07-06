@@ -36,39 +36,49 @@ public class ParsingN43Job extends ParsingJob {
     public void parsing(String filePath, Object jobHistory) throws IOException {
         FileReader file = new FileReader(filePath);
         BufferedReader buffer = new BufferedReader(file);
-        String line;
-        ArrayList<TransactionN43> transactionN43s = new ArrayList<>();
 
-        while ((line = buffer.readLine()) != null) {
-            TransactionN43 newTransaction = new TransactionN43();
-            if (line.startsWith(BU_LINE_INFORMATION)) {
-                getClientName(line);
-                getFinaningDate(line);
-            } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
+        try {
+            String line;
+            ArrayList<TransactionN43> transactionN43s = new ArrayList<>();
 
-                newTransaction.setOperation_type(getOperationType(line));
-                newTransaction.setContract_number(getContractNumber(line));
-                newTransaction.setGross_amount(getGrossAmount(line));
-                newTransaction.setSens(getSens(line));
+            while ((line = buffer.readLine()) != null) {
+                TransactionN43 newTransaction = new TransactionN43();
+                if (line.startsWith(BU_LINE_INFORMATION)) {
+                    getClientName(line);
+                    getFinaningDate(line);
+                } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
 
-                if (!transactionN43s.isEmpty()) {
-                    TransactionN43 lastOrder = transactionN43s.get(transactionN43s.size() - 1);
-                    if (shouldAgrega(lastOrder, newTransaction)) {
-                        // On agrége les transactions puis on remplace la dernière transaction par la transaction agrégée
-                        newTransaction = combineTransaction(lastOrder, newTransaction);
-                        transactionN43s.remove(lastOrder);
+                    newTransaction.setOperation_type(getOperationType(line));
+                    newTransaction.setContract_number(getContractNumber(line));
+                    newTransaction.setGross_amount(getGrossAmount(line));
+                    newTransaction.setSens(getSens(line));
+
+                    if (!transactionN43s.isEmpty()) {
+                        TransactionN43 lastOrder = transactionN43s.get(transactionN43s.size() - 1);
+                        if (shouldAgrega(lastOrder, newTransaction)) {
+                            // On agrége les transactions puis on remplace la dernière transaction par la transaction agrégée
+                            newTransaction = combineTransaction(lastOrder, newTransaction);
+                            transactionN43s.remove(lastOrder);
+                        }
                     }
+                    transactionN43s.add(newTransaction);
+                } else if (line.startsWith(END_FILE_INFORMATION)) {
+                    getTotalAmount(line);
                 }
-                transactionN43s.add(newTransaction);
-            } else if (line.startsWith(END_FILE_INFORMATION)) {
-                getTotalAmount(line);
+
+                // TODO : Save result
             }
 
-            // TODO : Save result
+        } catch (Exception e) {
+            if(e instanceof IOException) {
+                throw e;
+            } else {
+                errorBlock(e, null, jobHistory);
+            }
+        } finally {
+            buffer.close();
+            file.close();
         }
-
-        buffer.close();
-        file.close();
     }
 
     public String getClientName(String firstLine) {
