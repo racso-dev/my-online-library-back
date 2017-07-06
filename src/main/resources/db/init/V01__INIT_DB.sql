@@ -44,7 +44,7 @@ CREATE TABLE `marketpay`.`transaction` (
   `funding_date` DATETIME NOT NULL,
   `trade_date` DATETIME NOT NULL,
   `card_type` VARCHAR(45) NOT NULL,
-  `sens` VARCHAR(45) NOT NULL,
+  `sens` INT NOT NULL,
   `gross_amount` BIGINT(20) NOT NULL,
   `net_amount` BIGINT(20) NOT NULL,
   `contract_number` VARCHAR(45) NOT NULL,
