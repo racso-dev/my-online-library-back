@@ -24,11 +24,11 @@ CREATE TABLE `marketpay`.`user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `profile` INT NOT NULL,
   `email` VARCHAR(45) NOT NULL,
+  `login` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
   `id_bu` BIGINT(20) NULL,
   `id_store` VARCHAR(45) NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC),
   INDEX `id_bu_idx` (`id_bu` ASC),
   INDEX `id_store_idx` (`id_store` ASC),
   CONSTRAINT `id_bu_user`
