@@ -91,6 +91,7 @@ public class MyFlyway {
             dbConfig.getPassword()));
         flyway.setSchemas(schema);
         flyway.setBaselineOnMigrate(false);
+        flyway.setValidateOnMigrate(false);
         flyway.setOutOfOrder(true);
         flyway.setLocations("filesystem:" + context.getResource(FILE_SRC_MAIN_RESOURCES + folder).getFile());
         //si on a des migration donc des installation de dump à faire
