@@ -5,3 +5,10 @@ database:
   password: root
   packageName:
   flyway: true
+
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost/marketpay
+    username: root
+    password: root
