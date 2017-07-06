@@ -12,8 +12,8 @@ public class Transaction {
     private LocalDate tradeDate;
     private String cardType;
     private int sens;
-    private long gross_amount;
-    private long net_amount;
+    private long grossAmount;
+    private long netAmount;
     private String contractNumber;
     private String nameStore;
     private long idStore;
@@ -50,20 +50,20 @@ public class Transaction {
         this.sens = sens;
     }
 
-    public long getGross_amount() {
-        return gross_amount;
+    public long getGrossAmount() {
+        return grossAmount;
     }
 
-    public void setGross_amount(long gross_amount) {
-        this.gross_amount = gross_amount;
+    public void setGrossAmount(long grossAmount) {
+        this.grossAmount = grossAmount;
     }
 
-    public long getNet_amount() {
-        return net_amount;
+    public long getNetAmount() {
+        return netAmount;
     }
 
-    public void setNet_amount(long net_amount) {
-        this.net_amount = net_amount;
+    public void setNetAmount(long netAmount) {
+        this.netAmount = netAmount;
     }
 
     public String getContractNumber() {
