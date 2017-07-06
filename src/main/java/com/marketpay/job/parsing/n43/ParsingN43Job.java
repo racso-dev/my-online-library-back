@@ -2,6 +2,7 @@ package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.TransactionN43;
+import com.marketpay.job.parsing.resources.JobHistory;
 import com.marketpay.references.TransactionSens;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,7 @@ public class ParsingN43Job extends ParsingJob {
     private final int UNPAID_OPERATION = 127;
 
     @Override
-    public void parsing(String filePath, Object jobHistory) throws IOException {
+    public void parsing(String filePath, JobHistory jobHistory) throws IOException {
         FileReader file = new FileReader(filePath);
         BufferedReader buffer = new BufferedReader(file);
 
@@ -181,7 +182,7 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     @Override
-    protected void errorBlock(Exception e, String[] block, Object jobHistory) {
+    protected void errorBlock(Exception e, String[] block, JobHistory jobHistory) {
 
     }
 }
