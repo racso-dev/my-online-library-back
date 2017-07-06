@@ -62,6 +62,7 @@ CREATE TABLE `marketpay`.`block` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME(2) NOT NULL,
   `content` VARCHAR(45) NOT NULL,
+  `status` INT NOT NULL,
   `id_bu` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `id_bu_idx` (`id_bu` ASC),
