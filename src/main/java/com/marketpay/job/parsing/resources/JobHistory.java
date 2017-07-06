@@ -32,4 +32,13 @@ public class JobHistory {
     public void setError(String error) {
         this.error = error;
     }
+
+    public void addError(String error) {
+        if (this.error != null) {
+            this.error.concat("\\n");
+            this.error.concat(error);
+        } else {
+            this.error = error;
+        }
+    }
 }

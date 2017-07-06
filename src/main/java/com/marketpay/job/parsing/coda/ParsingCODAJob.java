@@ -39,12 +39,7 @@ public class ParsingCODAJob extends ParsingJob {
         // On met à jour le status du job et la liste d'erreur
         jobHistory.setStatus(JobStatus.BLOCK_FAIL);
         String error = jobHistory.getError();
-        if (error != null) {
-            error.concat(e.getMessage());
-        } else {
-            error = e.getMessage();
-        }
-        jobHistory.setError(error);
+        jobHistory.addError(error);
     }
 
     /**

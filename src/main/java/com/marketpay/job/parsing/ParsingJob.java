@@ -30,13 +30,13 @@ public abstract class ParsingJob {
      * @param filePath
      */
     private void parsingFile(String filePath) {
-        //On créé le jobHistory
 
+        //On créé le jobHistory
         JobHistory jobHistory = new JobHistory();
         jobHistory.setStatus(JobStatus.IN_PROGRESS);
 
         if (filePath == null) {
-            LOGGER.warn("Le filepath ne peut pas être null");
+            LOGGER.error("Le filepath ne peut pas être null");
             saveJobHistory(jobHistory, new Exception("Le filepath ne peut pas être null"));
             return;
         }
@@ -115,7 +115,7 @@ public abstract class ParsingJob {
         } else {
             //Il y a eu une erreur
             jobHistory.setStatus(JobStatus.FAIL);
-            jobHistory.setError(e.getMessage());
+            jobHistory.addError(e.getMessage());
         }
 
         //TODO ETI : Save le job history

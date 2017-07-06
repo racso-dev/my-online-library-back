@@ -186,6 +186,6 @@ public class ParsingN43Job extends ParsingJob {
     protected void errorBlock(Exception e, String[] block, JobHistory jobHistory) {
         // Si il y a une erreur sur une ligne on invalid le fichier N43
         jobHistory.setStatus(JobStatus.FAIL);
-        jobHistory.setError(e.getMessage());
+        jobHistory.addError(e.getMessage());
     }
 }
