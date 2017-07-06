@@ -5,8 +5,8 @@ CREATE TABLE `marketpay`.`business_unit` (
   `bank_account_name` VARCHAR(45) NOT NULL,
   `bank_account_number` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `bank_account_number_idx` (`bank_account_number` ASC)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  INDEX `bank_account_number_idx` (`bank_account_number` ASC))
+  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`store` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -21,7 +21,7 @@ CREATE TABLE `marketpay`.`store` (
     REFERENCES `marketpay`.`business_unit` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`users` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -44,7 +44,7 @@ CREATE TABLE `marketpay`.`users` (
     REFERENCES `marketpay`.`store` (`contract_number`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`transactions` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
