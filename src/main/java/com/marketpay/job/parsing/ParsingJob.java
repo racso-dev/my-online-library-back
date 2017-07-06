@@ -33,6 +33,7 @@ public abstract class ParsingJob {
         //On créé le jobHistory
 
         JobHistory jobHistory = new JobHistory();
+        jobHistory.setStatus(JobStatus.IN_PROGRESS);
 
         if (filePath == null) {
             LOGGER.warn("Le filepath ne peut pas être null");
@@ -41,7 +42,6 @@ public abstract class ParsingJob {
         }
 
         try {
-            jobHistory.setStatus(JobStatus.IN_PROGRESS);
             if (filePath.contains(CODA_EXTENSION)) {
                 LOGGER.info("Parsing d'un fichier CODA");
                 parsingCoda.parsing(filePath, jobHistory);
