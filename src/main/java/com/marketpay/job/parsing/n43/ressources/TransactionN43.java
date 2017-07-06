@@ -1,4 +1,6 @@
-package com.marketpay.references;
+package com.marketpay.job.parsing.n43.ressources;
+
+import com.marketpay.references.Transaction;
 
 public class TransactionN43 extends Transaction {
     private int operation_type;

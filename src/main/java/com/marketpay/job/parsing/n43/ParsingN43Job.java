@@ -1,8 +1,7 @@
 package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.references.Transaction;
-import com.marketpay.references.TransactionN43;
+import com.marketpay.job.parsing.n43.ressources.TransactionN43;
 import com.marketpay.references.TransactionSens;
 import org.springframework.stereotype.Component;
 
