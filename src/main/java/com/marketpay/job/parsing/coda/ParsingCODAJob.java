@@ -1,6 +1,8 @@
 package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.ParsingJob;
+import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.references.JobStatus;
 import com.marketpay.references.TransactionSens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @param filePath : path du fichier à parser
      */
     @Override
-    public void parsing(String filePath, Object jobHistory) throws IOException {
+    public void parsing(String filePath, JobHistory jobHistory) throws IOException {
         String dailyCoda = new String(Files.readAllBytes(Paths.get(filePath)));
         String[] codas = dailyCoda.split("(?<=\\r\\n9.{127})\\r\\n");
         for (String coda : codas) {
@@ -30,20 +32,22 @@ public class ParsingCODAJob extends ParsingJob {
     }
 
     @Override
-    protected void errorBlock(Exception e, String[] block, Object jobHistory) {
+    protected void errorBlock(Exception e, String[] block, JobHistory jobHistory) {
         //On sauvegarde le block en erreur dans la table block avec un status d'erreur
         //TODO ETI
 
-        //On sauvegarde l'erreur au niveau du JobHistory
-        //TODO ETI
+        // On met à jour le status du job et la liste d'erreur
+        jobHistory.setStatus(JobStatus.BLOCK_FAIL);
+        String error = jobHistory.getError();
+        jobHistory.addError(error);
     }
 
     /**
-     * TODO CHEKROUN
+     * Permet de parser chacun des blocks coda et enregistre le block en base
      * @param block
      * @param jobHistory
      */
-    public void parsingCodaBlock(String[] block, Object jobHistory) {
+    public void parsingCodaBlock(String[] block, JobHistory jobHistory) {
         try {
             String headerRecipientLine = block[0];
             String headerAccountLine = block[1];
@@ -59,10 +63,11 @@ public class ParsingCODAJob extends ParsingJob {
             LOGGER.error("Une erreur s'est produit pendant le parsing du block CODA", e);
             errorBlock(e, block, jobHistory);
         }
+        // TODO: save block
     }
 
     /**
-     * TODO CHEKROUN
+     * Parse les lignes de transactions et les enregistres en base
      * @param detailLine1
      * @param detailLine2
      */
@@ -73,6 +78,7 @@ public class ParsingCODAJob extends ParsingJob {
         getCardType(detailLine1);
         getGrossAmount(detailLine2);
         getTransactionDate(detailLine1);
+        // TODO: Save transaction
     }
 
     /**
