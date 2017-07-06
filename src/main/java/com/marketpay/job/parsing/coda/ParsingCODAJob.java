@@ -1,18 +1,27 @@
 package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.ParsingJob;
+import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.references.JobStatus;
 import com.marketpay.references.TransactionSens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class ParsingCODAJob extends ParsingJob {
 
+    private final String ENDBLOCK_REGEX = "^9 .*";
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingCODAJob.class);
 
     /**
@@ -20,49 +29,61 @@ public class ParsingCODAJob extends ParsingJob {
      * @param filePath : path du fichier à parser
      */
     @Override
-    public void parsing(String filePath, Object jobHistory) throws IOException {
+    public void parsing(String filePath, JobHistory jobHistory) throws IOException {
         String dailyCoda = new String(Files.readAllBytes(Paths.get(filePath)));
-        String[] codas = dailyCoda.split("(?<=\\r\\n9.{127})\\r\\n");
-        for (String coda : codas) {
-            String[] block = coda.split("\\r\\n");
-            parsingCodaBlock(block, jobHistory);
+        FileReader input = new FileReader(filePath);
+        BufferedReader buffer = new BufferedReader(input);
+        List<String> block = new ArrayList<>();
+        String line;
+        Pattern endBlockPattern = Pattern.compile(ENDBLOCK_REGEX);
+        while ((line = buffer.readLine()) != null) {
+            block.add(line);
+            Matcher matcher = endBlockPattern.matcher(line);
+            if (matcher.find()) {
+                parsingCodaBlock(block, jobHistory);
+                // Ecrasement de la liste
+                block.clear();
+            }
         }
     }
 
     @Override
-    protected void errorBlock(Exception e, String[] block, Object jobHistory) {
+    protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         //On sauvegarde le block en erreur dans la table block avec un status d'erreur
         //TODO ETI
 
-        //On sauvegarde l'erreur au niveau du JobHistory
-        //TODO ETI
+        // On met à jour le status du job et la liste d'erreur
+        jobHistory.setStatus(JobStatus.BLOCK_FAIL);
+        String error = jobHistory.getError();
+        jobHistory.addError(error);
     }
 
     /**
-     * TODO CHEKROUN
+     * Permet de parser chacun des blocks coda et enregistre le block en base
      * @param block
      * @param jobHistory
      */
-    public void parsingCodaBlock(String[] block, Object jobHistory) {
+    public void parsingCodaBlock(List<String> block, JobHistory jobHistory) {
         try {
-            String headerRecipientLine = block[0];
-            String headerAccountLine = block[1];
-            String footerTotal = block[block.length - 1];
+            String headerRecipientLine = block.get(0);
+            String headerAccountLine = block.get(1);
+            String footerTotal = block.get(block.size() - 1);
 
             getBuTitle(headerRecipientLine);
             getCompteNumber(headerAccountLine);
             getTotalAmount(footerTotal);
-            for (int i = 4; i < (block.length - 2); i = i + 2) {
-                parsingDetailLines(block[i], block[i + 2]);
+            for (int i = 4; i < (block.size() - 2); i = i + 2) {
+                parsingDetailLines(block.get(i), block.get(i + 1));
             }
         } catch (Exception e) {
             LOGGER.error("Une erreur s'est produit pendant le parsing du block CODA", e);
             errorBlock(e, block, jobHistory);
         }
+        // TODO: save block
     }
 
     /**
-     * TODO CHEKROUN
+     * Parse les lignes de transactions et les enregistres en base
      * @param detailLine1
      * @param detailLine2
      */
@@ -73,6 +94,7 @@ public class ParsingCODAJob extends ParsingJob {
         getCardType(detailLine1);
         getGrossAmount(detailLine2);
         getTransactionDate(detailLine1);
+        // TODO: Save transaction
     }
 
     /**

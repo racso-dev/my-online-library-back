@@ -1,11 +1,15 @@
 package com.marketpay.job.parsing;
 
 import com.marketpay.job.parsing.coda.ParsingCODAJob;
+import com.marketpay.job.parsing.n43.ParsingN43Job;
+import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.references.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.IOException;
@@ -19,17 +23,22 @@ public abstract class ParsingJob {
     @Autowired
     private ParsingCODAJob parsingCoda;
 
+    @Autowired
+    private ParsingN43Job parsingN43;
+
     /**
      * Permet de parser les fichiers en entrée
      * @param filePath
      */
     private void parsingFile(String filePath) {
+
         //On créé le jobHistory
-        //TODO ETI
-        Object jobHistory = null;
+        JobHistory jobHistory = new JobHistory();
+        jobHistory.setStatus(JobStatus.IN_PROGRESS);
 
         if (filePath == null) {
-            LOGGER.warn("Le filepath ne peut pas être null");
+            LOGGER.error("Le filepath ne peut pas être null");
+            saveJobHistory(jobHistory, new Exception("Le filepath ne peut pas être null"));
             return;
         }
 
@@ -39,7 +48,7 @@ public abstract class ParsingJob {
                 parsingCoda.parsing(filePath, jobHistory);
             } else {
                 LOGGER.info("Parsing d'un fichier N43");
-                // TODO: ajout du parsing du fichier N43
+                parsingN43.parsing(filePath, jobHistory);
             }
         } catch (IOException e) {
             LOGGER.error("Une erreur est survenue lors du traitement du fichier " + filePath, e);
@@ -86,28 +95,31 @@ public abstract class ParsingJob {
      * @param filePath
      * @param jobHistory
      */
-    public abstract void parsing(String filePath, Object jobHistory) throws IOException;
+    public abstract void parsing(String filePath, JobHistory jobHistory) throws IOException;
 
     /**
      * Gestion des erreurs survenue lors du parsing d'un block
      * @param e
      * @param block
      */
-    protected abstract void errorBlock(Exception e, String[] block, Object jobHistory);
+    protected abstract void errorBlock(Exception e, List<String> block, JobHistory jobHistory);
 
     /**
      * Method qui save le jobHistory en fonction du bon déroulement du parsing
      * @param jobHistory
      * @param e
      */
-    private void saveJobHistory(Object jobHistory, Exception e){
+    private void saveJobHistory(JobHistory jobHistory, Exception e){
         if(e == null){
             //Tout est OK
-            //TODO ETI
+            jobHistory.setStatus(JobStatus.SUCESS);
         } else {
             //Il y a eu une erreur
-            //TODO ETI
+            jobHistory.setStatus(JobStatus.FAIL);
+            jobHistory.addError(e.getMessage());
         }
+
+        //TODO ETI : Save le job history
     }
 
 }

@@ -1,5 +1,7 @@
 package com.marketpay.job.parsing.coda;
 
+import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.references.JobStatus;
 import com.marketpay.references.TransactionSens;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +10,8 @@ import static org.junit.Assert.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -20,6 +24,8 @@ public class ParsingCODAJobTests {
     private String GROSS_AMOUNT_MOCK = "2200020000BRUT:  000000000152151  COM:  000000000000259                                                                      0 0\n";
     private String FINAL_LINE_MOCK = "9               000010000000001573190000000001573190                                                                           2\n";
     private String ACCOUNT_LINE_MOCK = "10009735047736314 EUR BE   0030000        0000000000000000310517JAGI  concept BVBA                                           009\n";
+    private String CODAFILE_PATH = "src/test/resources/parsing/parsingCODAFile.txt";
+    private String BAD_CODAFILE_PATH = "src/test/resources/parsing/parsingBadCODAFile.txt";
 
     @Test
     public void parsingCardTypeTest() {
@@ -68,4 +74,30 @@ public class ParsingCODAJobTests {
         int totalAmount = parsingCODAJob.getTotalAmount(FINAL_LINE_MOCK);
         assertEquals(totalAmount, 1573190);
     }
+
+    @Test
+    public void parsingGoodCodaFile() {
+        JobHistory jobHistory = new JobHistory();
+        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        try {
+            parsingCODAJob.parsing(CODAFILE_PATH, jobHistory);
+            assertTrue(jobHistory.getStatus() == JobStatus.IN_PROGRESS);
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void parsingBadCodaFile() {
+        JobHistory jobHistory = new JobHistory();
+        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        try {
+            parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
+            assertTrue(jobHistory.getStatus() == JobStatus.BLOCK_FAIL);
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+
 }
