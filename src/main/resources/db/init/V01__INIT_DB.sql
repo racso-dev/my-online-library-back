@@ -42,7 +42,6 @@ CREATE TABLE `marketpay`.`user` (
 CREATE TABLE `marketpay`.`transaction` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME NOT NULL,
-  `id_client` BIGINT(20) NOT NULL,
   `trade_date` DATETIME NOT NULL,
   `card_type` VARCHAR(45) NOT NULL,
   `sens` VARCHAR(45) NOT NULL,
