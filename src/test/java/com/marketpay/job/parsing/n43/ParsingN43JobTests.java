@@ -1,5 +1,7 @@
 package com.marketpay.job.parsing.n43;
 
+import com.marketpay.references.Transaction;
+import com.marketpay.references.TransactionN43;
 import com.marketpay.references.TransactionSens;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +18,7 @@ public class ParsingN43JobTests {
     private final String TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
     private final String COMISSION_LINE = "22    1500170606170605172051000000000014650002704735                            \n";
     private final String BAD_FIRST_LINE = "110049150026101157911706061706062000000000000009783\n";
+    private final String SECOND_TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
 
     @Autowired
     private ParsingN43Job parsingN43Job;
@@ -40,8 +43,8 @@ public class ParsingN43JobTests {
 
     @Test
     public void getContractNumberTest() {
-        String contractNumber = parsingN43Job.getContractNumber(TRANSACTION_LINE);
-        assertTrue(contractNumber.equals("0002704735"));
+        Integer contractNumber = parsingN43Job.getContractNumber(TRANSACTION_LINE);
+        assertTrue(contractNumber == 2704735);
     }
 
     @Test
@@ -52,8 +55,8 @@ public class ParsingN43JobTests {
 
     @Test
     public void getOperationTypeTest() {
-        String operation = parsingN43Job.getOperationType(TRANSACTION_LINE);
-        assertTrue(operation.equals("125"));
+        Integer operation = parsingN43Job.getOperationType(TRANSACTION_LINE);
+        assertTrue(operation.equals(125));
     }
 
     @Test
@@ -86,6 +89,74 @@ public class ParsingN43JobTests {
         assertEquals(grossAmount, -1);
     }
 
+    @Test
+    public void parsingShouldCombine() {
+        TransactionN43 firstTransaction = new TransactionN43();
+        TransactionN43 secondTransaction = new TransactionN43();
+        firstTransaction.setOperation_type(125);
+        secondTransaction.setOperation_type(125);
+
+        assertTrue(parsingN43Job.shouldAgrega(firstTransaction, secondTransaction));
+    }
+
+    @Test
+    public void parsingShouldNotCombine() {
+        TransactionN43 firstTransaction = new TransactionN43();
+        TransactionN43 secondTransaction = new TransactionN43();
+        firstTransaction.setOperation_type(127);
+        secondTransaction.setOperation_type(127);
+
+        assertFalse(parsingN43Job.shouldAgrega(firstTransaction, secondTransaction));
+    }
+
+    @Test
+    public void combineTwoCredit() {
+        TransactionN43 firstTransaction = new TransactionN43();
+        firstTransaction.setNet_amount(10);
+        firstTransaction.setGross_amount(25);
+
+        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
+        assertEquals(combinedTransaction.getGross_amount(), 50);
+        assertEquals(combinedTransaction.getNet_amount(), 20);
+    }
+
+    @Test
+    public void combineShouldReturnDebitTransaction() {
+        TransactionN43 firstTransaction = new TransactionN43();
+        firstTransaction.setGross_amount(25);
+        firstTransaction.setNet_amount(10);
+        firstTransaction.setSens(TransactionSens.CREDIT);
+
+        TransactionN43 secondTransaction = new TransactionN43();
+        secondTransaction.setGross_amount(50);
+        secondTransaction.setNet_amount(20);
+        secondTransaction.setSens(TransactionSens.DEBIT);
+
+        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+
+        assertEquals(combinedTransaction.getNet_amount(), 10);
+        assertEquals(combinedTransaction.getGross_amount(), 25);
+        assertTrue(combinedTransaction.getSens() == TransactionSens.DEBIT);
+    }
+
+    @Test
+    public void combineShouldReturnCreditTransaction() {
+        TransactionN43 firstTransaction = new TransactionN43();
+        firstTransaction.setGross_amount(75);
+        firstTransaction.setNet_amount(30);
+        firstTransaction.setSens(TransactionSens.CREDIT);
+
+        TransactionN43 secondTransaction = new TransactionN43();
+        secondTransaction.setGross_amount(50);
+        secondTransaction.setNet_amount(20);
+        secondTransaction.setSens(TransactionSens.DEBIT);
+
+        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+
+        assertEquals(combinedTransaction.getNet_amount(), 10);
+        assertEquals(combinedTransaction.getGross_amount(), 25);
+        assertTrue(combinedTransaction.getSens() == TransactionSens.CREDIT);
+    }
 
 
 }
