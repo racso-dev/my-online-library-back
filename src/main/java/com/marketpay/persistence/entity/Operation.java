@@ -10,7 +10,7 @@ import java.time.LocalDate;
  * Created by antony on 06/07/17.
  */
 @Entity
-public class Transaction {
+public class Operation {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
