@@ -1,11 +1,8 @@
 CREATE TABLE `marketpay`.`business_unit` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `id` BIGINT(20) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
   `location` VARCHAR(2) NOT NULL,
-  `bank_account_name` VARCHAR(45) NOT NULL,
-  `bank_account_number` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `bank_account_number_idx` (`bank_account_number` ASC))
+  PRIMARY KEY (`id`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`store` (
@@ -28,7 +25,7 @@ CREATE TABLE `marketpay`.`users` (
   `profile` SMALLINT(5) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
-  `id_bu` VARCHAR(45) NULL,
+  `id_bu` BIGINT(20) NULL,
   `id_store` VARCHAR(45) NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC),
@@ -36,14 +33,10 @@ CREATE TABLE `marketpay`.`users` (
   INDEX `id_store_idx` (`id_store` ASC),
   CONSTRAINT `id_bu_user`
     FOREIGN KEY (`id_bu`)
-    REFERENCES `marketpay`.`business_unit` (`bank_account_number`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    REFERENCES `marketpay`.`business_unit` (`id`),
   CONSTRAINT `id_store_user`
     FOREIGN KEY (`id_store`)
-    REFERENCES `marketpay`.`store` (`contract_number`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `marketpay`.`store` (`contract_number`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`transactions` (
@@ -56,6 +49,7 @@ CREATE TABLE `marketpay`.`transactions` (
   `gross_amount` BIGINT(20) NOT NULL,
   `net_amount` BIGINT(20) NOT NULL,
   `contract_number` VARCHAR(45) NOT NULL,
+  `name_store` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `funding_date_idx` (`funding_date` ASC),
   INDEX `contract_number_idx` (`contract_number` ASC))
@@ -64,13 +58,11 @@ CREATE TABLE `marketpay`.`transactions` (
 CREATE TABLE `marketpay`.`block` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME(2) NOT NULL,
-  `id_bu` VARCHAR(45) NOT NULL,
   `content` VARCHAR(45) NOT NULL,
+  `id_bu` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `id_bu_idx` (`id_bu` ASC),
   CONSTRAINT `id_bu_block`
     FOREIGN KEY (`id_bu`)
-    REFERENCES `marketpay`.`business_unit` (`bank_account_number`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    REFERENCES `marketpay`.`business_unit` (`id`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
