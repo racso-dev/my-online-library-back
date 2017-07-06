@@ -39,7 +39,7 @@ CREATE TABLE `marketpay`.`user` (
     REFERENCES `marketpay`.`store` (`contract_number`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `marketpay`.`transaction` (
+CREATE TABLE `marketpay`.`operation` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME NOT NULL,
   `trade_date` DATETIME NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE `marketpay`.`transaction` (
   `id_store` BIGINT(20) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `funding_date_contract_number_idx` (`funding_date` ASC, `contract_number` ASC),
-  CONSTRAINT `id_store_transactions`
+  CONSTRAINT `id_store_operation`
     FOREIGN KEY (`id_store`)
     REFERENCES `marketpay`.`store` (`id`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
