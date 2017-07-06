@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.IOException;
@@ -101,7 +102,7 @@ public abstract class ParsingJob {
      * @param e
      * @param block
      */
-    protected abstract void errorBlock(Exception e, String[] block, JobHistory jobHistory);
+    protected abstract void errorBlock(Exception e, List<String> block, JobHistory jobHistory);
 
     /**
      * Method qui save le jobHistory en fonction du bon déroulement du parsing

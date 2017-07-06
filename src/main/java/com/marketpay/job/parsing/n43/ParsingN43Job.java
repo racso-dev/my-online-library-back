@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ParsingN43Job extends ParsingJob {
@@ -183,7 +184,7 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     @Override
-    protected void errorBlock(Exception e, String[] block, JobHistory jobHistory) {
+    protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         // Si il y a une erreur sur une ligne on invalid le fichier N43
         jobHistory.setStatus(JobStatus.FAIL);
         jobHistory.addError(e.getMessage());
