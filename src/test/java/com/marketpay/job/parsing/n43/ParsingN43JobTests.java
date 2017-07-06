@@ -1,6 +1,8 @@
 package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.n43.ressources.TransactionN43;
+import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.references.JobStatus;
 import com.marketpay.references.TransactionSens;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +10,8 @@ import static org.junit.Assert.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -17,7 +21,7 @@ public class ParsingN43JobTests {
     private final String TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
     private final String COMISSION_LINE = "22    1500170606170605172051000000000014650002704735                            \n";
     private final String BAD_FIRST_LINE = "110049150026101157911706061706062000000000000009783\n";
-    private final String SECOND_TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
+    private String N43FILE_PATH = "src/test/resources/parsing/parsingN43File.txt";
 
     @Autowired
     private ParsingN43Job parsingN43Job;
@@ -155,6 +159,18 @@ public class ParsingN43JobTests {
         assertEquals(combinedTransaction.getNet_amount(), 10);
         assertEquals(combinedTransaction.getGross_amount(), 25);
         assertTrue(combinedTransaction.getSens() == TransactionSens.CREDIT);
+    }
+
+    @Test
+    public void parsingGoodN43File() {
+        JobHistory jobHistory = new JobHistory();
+        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        try {
+            parsingN43Job.parsing(N43FILE_PATH, jobHistory);
+            assertTrue(jobHistory.getStatus() == JobStatus.IN_PROGRESS);
+        } catch (IOException e) {
+            fail();
+        }
     }
 
 
