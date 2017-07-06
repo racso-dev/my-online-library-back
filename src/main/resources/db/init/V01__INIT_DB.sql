@@ -20,7 +20,7 @@ CREATE TABLE `marketpay`.`store` (
     ON UPDATE NO ACTION)
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `marketpay`.`users` (
+CREATE TABLE `marketpay`.`user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `profile` SMALLINT(5) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE `marketpay`.`users` (
     REFERENCES `marketpay`.`store` (`contract_number`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `marketpay`.`transactions` (
+CREATE TABLE `marketpay`.`transaction` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME NOT NULL,
   `id_client` BIGINT(20) NOT NULL,
