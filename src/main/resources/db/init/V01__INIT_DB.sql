@@ -1,22 +1,22 @@
 CREATE TABLE `marketpay`.`business_unit` (
-  `id` INT NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `location` VARCHAR(2) NOT NULL,
   `bank_account_name` VARCHAR(45) NOT NULL,
   `bank_account_number` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `bank_account_number_UNIQUE` (`bank_account_number` ASC)
+  INDEX `bank_account_number_idx` (`bank_account_number` ASC)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`store` (
-  `id` INT NOT NULL,
-  `id_bu` INT NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `id_bu` BIGINT(20) NOT NULL,
   `contract_number` VARCHAR(45) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `contract_number` (`contract_number` ASC),
-  INDEX `fk_id_bu_idx` (`id_bu` ASC),
-  CONSTRAINT `fk_id_bu`
+  UNIQUE INDEX `contract_number_idx_uq` (`contract_number` ASC),
+  INDEX `id_bu_idx` (`id_bu` ASC),
+  CONSTRAINT `id_bu_store`
     FOREIGN KEY (`id_bu`)
     REFERENCES `marketpay`.`business_unit` (`id`)
     ON DELETE NO ACTION
@@ -24,7 +24,7 @@ CREATE TABLE `marketpay`.`store` (
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`users` (
-  `id` INT NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `profile` SMALLINT(5) NOT NULL,
   `email` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE `marketpay`.`users` (
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`transactions` (
-  `id` INT NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME NOT NULL,
   `id_client` BIGINT(20) NOT NULL,
   `trade_date` DATETIME NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE `marketpay`.`transactions` (
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `marketpay`.`block` (
-  `id` INT NOT NULL,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME(2) NOT NULL,
   `id_bu` VARCHAR(45) NOT NULL,
   `content` VARCHAR(45) NOT NULL,
