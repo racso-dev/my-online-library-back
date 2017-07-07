@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * Created by antony on 07/07/17.
  */
 @Entity
-public class JobInformation {
+public class JobHistory {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
