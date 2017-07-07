@@ -1,6 +1,7 @@
 package com.marketpay;
 
 import com.marketpay.conf.DBConfig;
+import com.marketpay.references.SpringEnvProfile;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public class MyFlyway {
                 safeMigrate(DB_INIT);
                 safeMigrate(DB_DELTA);
                 Environment environment = context.getEnvironment();
-                if(environment != null && environment.getActiveProfiles() != null && Arrays.asList(environment.getActiveProfiles()).contains("dev")){
+                if(environment != null && environment.getActiveProfiles() != null && Arrays.asList(environment.getActiveProfiles()).contains(SpringEnvProfile.DEV.getKey())){
                     safeMigrate(DB_DEV);
                 }
             } catch (IOException e) {
