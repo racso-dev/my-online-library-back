@@ -2,9 +2,11 @@ package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
+import com.marketpay.persistence.BusinessUnitRepository;
 import com.marketpay.persistence.JobHistoryRepository;
 import com.marketpay.persistence.OperationRepository;
 import com.marketpay.persistence.StoreRepository;
+import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;
@@ -24,7 +26,6 @@ public class ParsingN43Job extends ParsingJob {
 
     // Identifié sur les lignes commençant par 11
     private final String BU_LINE_INFORMATION = "11";
-    private final String CLIEN_NAME_REGEX = ".{51}(.*)"; // Groupe 1
     private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format JJMMAA
 
     // Identifié sur les lignes commençant par 22
@@ -46,7 +47,6 @@ public class ParsingN43Job extends ParsingJob {
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
 
-
     @Override
     public void parsing(String filePath, JobHistory jobHistory) throws IOException {
         FileReader file = new FileReader(filePath);
@@ -59,7 +59,6 @@ public class ParsingN43Job extends ParsingJob {
             while ((line = buffer.readLine()) != null) {
                 OperationN43 newOperation = new OperationN43();
                 if (line.startsWith(BU_LINE_INFORMATION)) {
-                    getClientName(line);
                     String foundingDateString = getFinaningDate(line);
                     foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
                 } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
@@ -67,6 +66,7 @@ public class ParsingN43Job extends ParsingJob {
                     if (foundingDate != null) {
                         newOperation.setFundingDate(foundingDate);
                     }
+
                     newOperation.setOperationType(getOperationType(line));
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line));
@@ -98,10 +98,6 @@ public class ParsingN43Job extends ParsingJob {
             buffer.close();
             file.close();
         }
-    }
-
-    public String getClientName(String firstLine) {
-        return matchFromRegex(firstLine, CLIEN_NAME_REGEX, 1);
     }
 
     public String getFinaningDate(String line) {

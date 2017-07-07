@@ -146,7 +146,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return String
      */
     public String getClientId(String firstLine) {
-        return firstLine.substring(71, 82);
+        return firstLine.substring(71, 82).trim();
     }
 
     /**

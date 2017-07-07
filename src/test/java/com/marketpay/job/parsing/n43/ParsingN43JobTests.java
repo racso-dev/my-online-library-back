@@ -27,18 +27,6 @@ public class ParsingN43JobTests {
     private ParsingN43Job parsingN43Job;
 
     @Test
-    public void getClientNameTest() {
-        String clientName = parsingN43Job.getClientName(FIRSTLINE_N43_FILE);
-        assertEquals("GROUP SUPECO MAXOR", clientName);
-    }
-
-    @Test
-    public void getClientShouldFail() {
-        String clientName = parsingN43Job.getClientName(BAD_FIRST_LINE);
-        assertEquals("", clientName);
-    }
-
-    @Test
     public void getFinancingDateTest() {
         String financingDate = parsingN43Job.getFinaningDate(FIRSTLINE_N43_FILE);
         assertEquals("170606", financingDate);

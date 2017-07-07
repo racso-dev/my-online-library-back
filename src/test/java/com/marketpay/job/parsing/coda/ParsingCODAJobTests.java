@@ -26,11 +26,18 @@ public class ParsingCODAJobTests {
     private String ACCOUNT_LINE_MOCK = "10009735047736314 EUR BE   0030000        0000000000000000310517JAGI  concept BVBA                                           009\n";
     private String CODAFILE_PATH = "src/test/resources/parsing/parsingCODAFile.txt";
     private String BAD_CODAFILE_PATH = "src/test/resources/parsing/parsingBadCODAFile.txt";
+    private String FIRST_LINE_MOCK = "0000001061700005        46390589  JAGI  concept BVBA        KREDBEBB   0675354481  00000                                       2\n";
 
     @Test
     public void parsingCardTypeTest() {
         String cardType = parsingCODAJob.getCardType(TRANSACTION_LINE_MOCK);
         assertEquals("MAE", cardType);
+    }
+
+    @Test
+    public void parsingClientIdTest() {
+        String clientId = parsingCODAJob.getClientId(FIRST_LINE_MOCK);
+        assertEquals("0675354481", clientId);
     }
 
     @Test
