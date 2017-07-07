@@ -1,6 +1,6 @@
 package com.marketpay.job.parsing.coda;
 
-import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.references.JobStatus;
 import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
@@ -78,10 +78,11 @@ public class ParsingCODAJobTests {
     @Test
     public void parsingGoodCodaFile() {
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(CODAFILE_PATH, jobHistory);
-            assertEquals(JobStatus.IN_PROGRESS, jobHistory.getStatus());
+            Integer status = jobHistory.getStatus();
+            assertEquals(JobStatus.IN_PROGRESS.getCode(), status);
         } catch (IOException e) {
             fail();
         }
@@ -90,10 +91,11 @@ public class ParsingCODAJobTests {
     @Test
     public void parsingBadCodaFile() {
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
-            assertEquals(JobStatus.BLOCK_FAIL, jobHistory.getStatus());
+            Integer status = jobHistory.getStatus();
+            assertEquals(JobStatus.BLOCK_FAIL.getCode(), status);
         } catch (IOException e) {
             fail();
         }

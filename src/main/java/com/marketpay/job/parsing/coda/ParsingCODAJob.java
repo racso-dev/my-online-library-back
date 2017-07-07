@@ -1,11 +1,9 @@
 package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.persistence.BlockRepository;
-import com.marketpay.persistence.JobHistoryRepository;
-import com.marketpay.persistence.OperationRepository;
-import com.marketpay.persistence.StoreRepository;
+import com.marketpay.persistence.*;
 import com.marketpay.persistence.entity.Block;
+import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;
@@ -39,6 +37,8 @@ public class ParsingCODAJob extends ParsingJob {
     private BlockRepository blockRepository;
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
+    @Autowired
+    private BusinessUnitRepository businessUnitRepository;
 
     /**
      * Permet de découper le fichier en block de n relevés
@@ -65,12 +65,15 @@ public class ParsingCODAJob extends ParsingJob {
     @Override
     protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         //On sauvegarde le block en erreur dans la table block avec un status d'erreur
+        String headerRecipientLine = block.get(0);
+        String clientId = getClientId(headerRecipientLine);
+        BusinessUnit businessUnit = businessUnitRepository.findFirstByClientId(clientId);
         String centralisationLine1 = block.get(2);
         Block codaBlock = new Block();
         String foundingDate = getFoundingDate(centralisationLine1);
         codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
         codaBlock.setContent(String.join("\\n", block));
-        // TODO codaBlock.setIdBu();
+        codaBlock.setIdBu(businessUnit.getId());
         codaBlock.setStatus(JobStatus.BLOCK_FAIL.getCode());
         blockRepository.save(codaBlock);
 
@@ -90,20 +93,19 @@ public class ParsingCODAJob extends ParsingJob {
 
         try {
             String headerRecipientLine = block.get(0);
-            String headerAccountLine = block.get(1);
             String centralisationLine1 = block.get(2);
-            String footerTotal = block.get(block.size() - 1);
 
-            getBuTitle(headerRecipientLine);
-            getCompteNumber(headerAccountLine);
-            getTotalAmount(footerTotal);
+            // Récupération de la BU
+            String clientId = getClientId(headerRecipientLine);
+            BusinessUnit businessUnit = businessUnitRepository.findFirstByClientId(clientId);
+            // Récupération de la date de création
             String foundingDateString = getFoundingDate(centralisationLine1);
             LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
             codaBlock.setFundingDate(foundingDate);
-            // TODO: Save the buId to the block
+            codaBlock.setIdBu(businessUnit.getId());
             blockRepository.save(codaBlock);
 
             for (int i = 4; i < (block.size() - 2); i = i + 2) {
@@ -139,12 +141,12 @@ public class ParsingCODAJob extends ParsingJob {
     }
 
     /**
-     * Récupération du Bussiness Unit name apartir de la première ligne du block
-     * @param firstLine: Première ligne du block
-     * @return le  Bussiness Unit name associé au block
+     * Récupération de l'id du client
+     * @param firstLine Entête destinataire du fichier CODA
+     * @return String
      */
-    public String getBuTitle(String firstLine) {
-        return firstLine.substring(34, 60);
+    public String getClientId(String firstLine) {
+        return firstLine.substring(71, 82);
     }
 
     /**
