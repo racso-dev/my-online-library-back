@@ -8,6 +8,7 @@ import com.marketpay.persistence.StoreRepository;
 import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;
+import com.marketpay.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class ParsingCODAJob extends ParsingJob {
         String centralisationLine1 = block.get(2);
         Block codaBlock = new Block();
         String foundingDate = getFoundingDate(centralisationLine1);
-        codaBlock.setFundingDate(convertStringToLocalDate("ddMMyy", foundingDate));
+        codaBlock.setFundingDate(DateUtils.convertStringToLocalDate("ddMMyy", foundingDate));
         codaBlock.setContent(String.join("\\n", block));
         // TODO codaBlock.setIdBu();
         codaBlock.setStatus(JobStatus.BLOCK_FAIL.getCode());
@@ -93,7 +94,7 @@ public class ParsingCODAJob extends ParsingJob {
             getCompteNumber(headerAccountLine);
             getTotalAmount(footerTotal);
             String foundingDateString = getFoundingDate(centralisationLine1);
-            LocalDate foundingDate = convertStringToLocalDate("ddMMyy",  foundingDateString);
+            LocalDate foundingDate = DateUtils.convertStringToLocalDate("ddMMyy",  foundingDateString);
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
@@ -128,7 +129,7 @@ public class ParsingCODAJob extends ParsingJob {
         operation.setCardType(getCardType(detailLine1));
         operation.setGrossAmount(getGrossAmount(detailLine2));
         String dateString = getTransactionDate(detailLine1);
-        operation.setTradeDate(convertStringToLocalDate("ddMMyy", dateString));
+        operation.setTradeDate(DateUtils.convertStringToLocalDate("ddMMyy", dateString));
 
         return operation;
     }

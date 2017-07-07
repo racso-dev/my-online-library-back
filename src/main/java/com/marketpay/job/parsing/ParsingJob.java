@@ -93,17 +93,6 @@ public abstract class ParsingJob {
     }
 
     /**
-     * Permet de transformer un string en local date
-     * @param format format du string
-     * @param dateString string a transformer
-     * @return LocalDate
-     */
-    protected LocalDate convertStringToLocalDate(String format, String dateString) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-        return LocalDate.parse(dateString, formatter);
-    }
-
-    /**
      * Method pour parse le fichier
      * @param filePath
      * @param jobHistory

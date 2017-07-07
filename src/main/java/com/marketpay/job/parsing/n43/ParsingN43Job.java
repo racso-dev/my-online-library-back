@@ -7,6 +7,7 @@ import com.marketpay.persistence.OperationRepository;
 import com.marketpay.persistence.StoreRepository;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;
+import com.marketpay.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,7 +58,7 @@ public class ParsingN43Job extends ParsingJob {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
                     getClientName(line);
                     String foundingDateString = getFinaningDate(line);
-                    foundingDate = convertStringToLocalDate("ddMMyy", foundingDateString);
+                    foundingDate = DateUtils.convertStringToLocalDate("ddMMyy", foundingDateString);
                 } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
 
                     if (foundingDate != null) {
