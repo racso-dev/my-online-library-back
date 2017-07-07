@@ -25,5 +25,10 @@ Par exemple
 ```
 
 
+## TIPS
+Si le port que vous souhaitez utiliser n'est pas disponible et que vous voulez le libérer :
+ - lsof -i :'port' (par exemple lsof -i :3000)
+ - kill -9 'PID'
+
 TODOux Thomas C. et Antony T.
 
