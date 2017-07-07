@@ -1,10 +1,12 @@
 package com.marketpay;
 
 import com.marketpay.conf.DBConfig;
+import com.marketpay.conf.SpringDatasource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.core.env.Environment;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 /**
  * Created by antony on 03/07/17.
  */
+@Component
 public class MyFlyway {
     private static final String DEV_PROFILE = "DEV";
 
@@ -24,6 +27,7 @@ public class MyFlyway {
     private static final String DB_DEV = "db/dev";
 
     private final ApplicationContext context;
+    private final SpringDatasource springDatasource;
     private DBConfig dbConfig;
 
     public static void init(ApplicationContext applicationContext) {
@@ -39,6 +43,7 @@ public class MyFlyway {
     private MyFlyway(ApplicationContext applicationContext) {
         this.context = applicationContext;
         this.dbConfig = this.context.getBean(DBConfig.class);
+        this.springDatasource = this.context.getBean(SpringDatasource.class);
 
         if(dbConfig.isFlyway()){
             try {
@@ -65,7 +70,7 @@ public class MyFlyway {
             logger.warn("Le dossier renseigné pour Flyway n'existe pas / est vide");
             return;
         }
-        if (dbConfig.getUser() == null) {
+        if (springDatasource.getUserName() == null) {
             logger.warn("Aucun user configuré pour la migration Flyway");
             return;
         }
@@ -86,17 +91,17 @@ public class MyFlyway {
      * @throws IOException
      */
     private void migrate(String folder) throws IOException {
-        logger.info("Installation MyFlyway - url: " + dbConfig.getUrl() + " - répertoire: " + folder);
+        logger.info("Installation MyFlyway - url: " + springDatasource.getUrl() + " - répertoire: " + folder);
 
-        String fullUrl = dbConfig.getUrl();
+        String fullUrl = springDatasource.getUrl();
         String url = fullUrl.substring(0, fullUrl.lastIndexOf("/") + 1);
         String schema = fullUrl.substring(fullUrl.lastIndexOf("/") + 1);
         Flyway flyway = new Flyway();
         flyway.setDataSource(new org.flywaydb.core.internal.util.jdbc.DriverDataSource(Thread.currentThread().getContextClassLoader(),
-            dbConfig.getDriver(),
+            springDatasource.getDriverClassName(),
             url,
-            dbConfig.getUser(),
-            dbConfig.getPassword()));
+            springDatasource.getUserName(),
+            springDatasource.getPassword()));
         flyway.setSchemas(schema);
         flyway.setBaselineOnMigrate(false);
         flyway.setValidateOnMigrate(false);
