@@ -1,11 +1,12 @@
 package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.job.parsing.resources.JobHistory;
 import com.marketpay.persistence.BlockRepository;
+import com.marketpay.persistence.JobHistoryRepository;
 import com.marketpay.persistence.OperationRepository;
 import com.marketpay.persistence.StoreRepository;
 import com.marketpay.persistence.entity.Block;
+import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;
 import com.marketpay.utils.DateUtils;
@@ -36,6 +37,8 @@ public class ParsingCODAJob extends ParsingJob {
     private StoreRepository storeRepository;
     @Autowired
     private BlockRepository blockRepository;
+    @Autowired
+    private JobHistoryRepository jobHistoryRepository;
 
     /**
      * Permet de découper le fichier en block de n relevés
@@ -72,9 +75,10 @@ public class ParsingCODAJob extends ParsingJob {
         blockRepository.save(codaBlock);
 
         // On met à jour le status du job et la liste d'erreur
-        jobHistory.setStatus(JobStatus.BLOCK_FAIL);
-        String error = jobHistory.getError();
-        jobHistory.addError(error);
+        jobHistory.setStatus(JobStatus.BLOCK_FAIL.getCode());
+        jobHistory.addError(e.getMessage());
+        jobHistoryRepository.save(jobHistory);
+
     }
 
     /**

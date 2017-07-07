@@ -2,9 +2,10 @@ package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
-import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.persistence.JobHistoryRepository;
 import com.marketpay.persistence.OperationRepository;
 import com.marketpay.persistence.StoreRepository;
+import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;
 import com.marketpay.utils.DateUtils;
@@ -42,6 +43,8 @@ public class ParsingN43Job extends ParsingJob {
 
     @Autowired
     private StoreRepository storeRepository;
+    @Autowired
+    private JobHistoryRepository jobHistoryRepository;
 
 
     @Override
@@ -188,7 +191,8 @@ public class ParsingN43Job extends ParsingJob {
     @Override
     protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         // Si il y a une erreur sur une ligne on invalid le fichier N43
-        jobHistory.setStatus(JobStatus.FAIL);
+        jobHistory.setStatus(JobStatus.FAIL.getCode());
         jobHistory.addError(e.getMessage());
+        jobHistoryRepository.save(jobHistory);
     }
 }
