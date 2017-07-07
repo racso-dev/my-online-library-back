@@ -17,7 +17,7 @@ import java.util.Arrays;
  */
 @Component
 public class MyFlyway {
-    private static final String DEV_PROFILE = "DEV";
+    private static final String DEV_PROFILE = "dev";
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
