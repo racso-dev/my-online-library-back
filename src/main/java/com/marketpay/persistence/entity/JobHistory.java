@@ -19,6 +19,24 @@ public class JobHistory {
     private int status;
     private String filename;
     private String filetype;
+    private String jobError;
+
+    public String getJobError() {
+        return jobError;
+    }
+
+    public void setJobError(String jobError) {
+        this.jobError = jobError;
+    }
+
+    public void addError(String error) {
+        if(this.jobError == null) {
+            setJobError(error);
+        } else {
+            this.jobError = jobError.concat("\\n");
+            this.jobError = jobError.concat(error);
+        }
+    }
 
     public Long getId() {
         return id;

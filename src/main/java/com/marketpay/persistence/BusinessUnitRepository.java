@@ -8,4 +8,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface BusinessUnitRepository extends CrudRepository<BusinessUnit, Long> {
     //TODO en attente d'un vrai ID de BU
+    BusinessUnit findFirstByClientId(String clientId);
 }
