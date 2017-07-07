@@ -58,13 +58,13 @@ public class ParsingN43Job extends ParsingJob {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
                     getClientName(line);
                     String foundingDateString = getFinaningDate(line);
-                    foundingDate = DateUtils.convertStringToLocalDate("ddMMyy", foundingDateString);
+                    foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
                 } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
 
                     if (foundingDate != null) {
                         newOperation.setFundingDate(foundingDate);
                     }
-                    newOperation.setOperation_type(getOperationType(line));
+                    newOperation.setOperationType(getOperationType(line));
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line));
                     newOperation.setSens(getSens(line));
@@ -139,7 +139,7 @@ public class ParsingN43Job extends ParsingJob {
      * @return Bool
      */
     public Boolean shouldCombine(OperationN43 firstTransaction, OperationN43 secondTransaction) {
-        if (firstTransaction.getOperation_type() == secondTransaction.getOperation_type() && firstTransaction.getOperation_type() != UNPAID_OPERATION) {
+        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != UNPAID_OPERATION) {
             return true;
         }
         return false;

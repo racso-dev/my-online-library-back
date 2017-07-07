@@ -21,6 +21,7 @@ public abstract class ParsingJob {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingJob.class);
     private final String CODA_EXTENSION = "BEOC4C.txt";
+    protected final String DATE_FORMAT_FILE = "ddMMyy";
 
     @Autowired
     private ParsingCODAJob parsingCoda;

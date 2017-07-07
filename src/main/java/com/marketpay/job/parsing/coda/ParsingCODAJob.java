@@ -65,7 +65,7 @@ public class ParsingCODAJob extends ParsingJob {
         String centralisationLine1 = block.get(2);
         Block codaBlock = new Block();
         String foundingDate = getFoundingDate(centralisationLine1);
-        codaBlock.setFundingDate(DateUtils.convertStringToLocalDate("ddMMyy", foundingDate));
+        codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
         codaBlock.setContent(String.join("\\n", block));
         // TODO codaBlock.setIdBu();
         codaBlock.setStatus(JobStatus.BLOCK_FAIL.getCode());
@@ -94,7 +94,7 @@ public class ParsingCODAJob extends ParsingJob {
             getCompteNumber(headerAccountLine);
             getTotalAmount(footerTotal);
             String foundingDateString = getFoundingDate(centralisationLine1);
-            LocalDate foundingDate = DateUtils.convertStringToLocalDate("ddMMyy",  foundingDateString);
+            LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
@@ -129,7 +129,7 @@ public class ParsingCODAJob extends ParsingJob {
         operation.setCardType(getCardType(detailLine1));
         operation.setGrossAmount(getGrossAmount(detailLine2));
         String dateString = getTransactionDate(detailLine1);
-        operation.setTradeDate(DateUtils.convertStringToLocalDate("ddMMyy", dateString));
+        operation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, dateString));
 
         return operation;
     }

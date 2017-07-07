@@ -29,75 +29,75 @@ public class ParsingN43JobTests {
     @Test
     public void getClientNameTest() {
         String clientName = parsingN43Job.getClientName(FIRSTLINE_N43_FILE);
-        assertTrue(clientName.equals("GROUP SUPECO MAXOR"));
+        assertEquals("GROUP SUPECO MAXOR", clientName);
     }
 
     @Test
     public void getClientShouldFail() {
         String clientName = parsingN43Job.getClientName(BAD_FIRST_LINE);
-        assertTrue(clientName.equals(""));
+        assertEquals("", clientName);
     }
 
     @Test
     public void getFinancingDateTest() {
         String financingDate = parsingN43Job.getFinaningDate(FIRSTLINE_N43_FILE);
-        assertTrue(financingDate.equals("170606"));
+        assertEquals("170606", financingDate);
     }
 
     @Test
     public void getContractNumberTest() {
         String contractNumber = parsingN43Job.getContractNumber(TRANSACTION_LINE);
-        assertTrue(contractNumber.equals("0002704735"));
+        assertEquals("0002704735", contractNumber);
     }
 
     @Test
     public void getTransactionDateTest() {
         String transactionDate = parsingN43Job.getTransactionDate(TRANSACTION_LINE);
-        assertTrue(transactionDate.equals("170605"));
+        assertEquals("170605", transactionDate);
     }
 
     @Test
     public void getOperationTypeTest() {
-        Integer operation = parsingN43Job.getOperationType(TRANSACTION_LINE);
-        assertTrue(operation.equals(125));
+        int operation = parsingN43Job.getOperationType(TRANSACTION_LINE);
+        assertEquals(125, operation);
     }
 
     @Test
     public void getSensTest() {
         Integer sens = parsingN43Job.getSens(TRANSACTION_LINE);
-        assertEquals(sens, OPERATION_SENS.CREDIT.getCode());
+        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens);
     }
 
     @Test
     public void getCommisionTest() {
         int commision = parsingN43Job.getCommission(COMISSION_LINE);
-        assertEquals(commision, 1465);
+        assertEquals(1465, commision);
     }
 
     @Test
     public void getComissionShouldFail() {
         int comision = parsingN43Job.getCommission(TRANSACTION_LINE);
-        assertEquals(comision, -1);
+        assertEquals(-1, comision);
     }
 
     @Test
     public void getGrossAmountTest() {
         int grossAmount = parsingN43Job.getGrossAmount(TRANSACTION_LINE);
-        assertEquals(grossAmount, 710734);
+        assertEquals(710734, grossAmount);
     }
 
     @Test
     public void getGrossAmountShouldFail() {
         int grossAmount = parsingN43Job.getGrossAmount(COMISSION_LINE);
-        assertEquals(grossAmount, -1);
+        assertEquals(-1, grossAmount);
     }
 
     @Test
     public void parsingShouldCombine() {
         OperationN43 firstTransaction = new OperationN43();
         OperationN43 secondTransaction = new OperationN43();
-        firstTransaction.setOperation_type(125);
-        secondTransaction.setOperation_type(125);
+        firstTransaction.setOperationType(125);
+        secondTransaction.setOperationType(125);
 
         assertTrue(parsingN43Job.shouldCombine(firstTransaction, secondTransaction));
     }
@@ -106,8 +106,8 @@ public class ParsingN43JobTests {
     public void parsingShouldNotCombine() {
         OperationN43 firstTransaction = new OperationN43();
         OperationN43 secondTransaction = new OperationN43();
-        firstTransaction.setOperation_type(127);
-        secondTransaction.setOperation_type(127);
+        firstTransaction.setOperationType(127);
+        secondTransaction.setOperationType(127);
 
         assertFalse(parsingN43Job.shouldCombine(firstTransaction, secondTransaction));
     }
@@ -119,8 +119,8 @@ public class ParsingN43JobTests {
         firstTransaction.setGrossAmount(25);
 
         OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
-        assertEquals(combinedTransaction.getGrossAmount(), 50);
-        assertEquals(combinedTransaction.getNetAmount(), 20);
+        assertEquals(50, combinedTransaction.getGrossAmount());
+        assertEquals(20, combinedTransaction.getNetAmount());
     }
 
     @Test
@@ -137,10 +137,10 @@ public class ParsingN43JobTests {
 
         OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
-        assertEquals(combinedTransaction.getNetAmount(), 10);
-        assertEquals(combinedTransaction.getGrossAmount(), 25);
+        assertEquals(10, combinedTransaction.getNetAmount());
+        assertEquals(25, combinedTransaction.getGrossAmount());
         Integer sens = combinedTransaction.getSens();
-        assertEquals(sens, OPERATION_SENS.DEBIT.getCode());
+        assertEquals(OPERATION_SENS.DEBIT.getCode(), sens);
     }
 
     @Test
@@ -157,10 +157,10 @@ public class ParsingN43JobTests {
 
         OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
-        assertEquals(combinedTransaction.getNetAmount(), 10);
-        assertEquals(combinedTransaction.getGrossAmount(), 25);
+        assertEquals(10, combinedTransaction.getNetAmount());
+        assertEquals(25, combinedTransaction.getGrossAmount());
         Integer sens = combinedTransaction.getSens();
-        assertEquals(sens, OPERATION_SENS.CREDIT.getCode());
+        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens);
     }
 
     @Test
@@ -169,7 +169,7 @@ public class ParsingN43JobTests {
         jobHistory.setStatus(JobStatus.IN_PROGRESS);
         try {
             parsingN43Job.parsing(N43FILE_PATH, jobHistory);
-            assertTrue(jobHistory.getStatus() == JobStatus.IN_PROGRESS);
+            assertEquals(JobStatus.IN_PROGRESS, jobHistory.getStatus());
         } catch (IOException e) {
             fail();
         }
