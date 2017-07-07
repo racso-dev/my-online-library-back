@@ -51,10 +51,10 @@ public class ParsingN43Job extends ParsingJob {
 
         try {
             String line;
-            ArrayList<OperationN43> operationN43s = new ArrayList<>();
+            ArrayList<OperationN43> operationN43List = new ArrayList<>();
             LocalDate foundingDate = null;
             while ((line = buffer.readLine()) != null) {
-                OperationN43 newTransaction = new OperationN43();
+                OperationN43 newOperation = new OperationN43();
                 if (line.startsWith(BU_LINE_INFORMATION)) {
                     getClientName(line);
                     String foundingDateString = getFinaningDate(line);
@@ -62,27 +62,27 @@ public class ParsingN43Job extends ParsingJob {
                 } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
 
                     if (foundingDate != null) {
-                        newTransaction.setFundingDate(foundingDate);
+                        newOperation.setFundingDate(foundingDate);
                     }
-                    newTransaction.setOperation_type(getOperationType(line));
-                    newTransaction.setContractNumber(getContractNumber(line));
-                    newTransaction.setGrossAmount(getGrossAmount(line));
-                    newTransaction.setSens(getSens(line));
-                    String storeName = storeRepository.findFirstByContractNumber(newTransaction.getContractNumber()).getName();
-                    newTransaction.setNameStore(storeName);
-                    if (!operationN43s.isEmpty()) {
-                        OperationN43 lastOrder = operationN43s.get(operationN43s.size() - 1);
-                        if (shouldCombine(lastOrder, newTransaction)) {
+                    newOperation.setOperation_type(getOperationType(line));
+                    newOperation.setContractNumber(getContractNumber(line));
+                    newOperation.setGrossAmount(getGrossAmount(line));
+                    newOperation.setSens(getSens(line));
+                    String storeName = storeRepository.findFirstByContractNumber(newOperation.getContractNumber()).getName();
+                    newOperation.setNameStore(storeName);
+                    if (!operationN43List.isEmpty()) {
+                        OperationN43 lastOrder = operationN43List.get(operationN43List.size() - 1);
+                        if (shouldCombine(lastOrder, newOperation)) {
                             // On agrége les transactions puis on remplace la dernière transaction par la transaction agrégée
-                            newTransaction = combineTransaction(lastOrder, newTransaction);
-                            operationN43s.remove(lastOrder);
+                            newOperation = combineTransaction(lastOrder, newOperation);
+                            operationN43List.remove(lastOrder);
                         }
                     }
-                    operationN43s.add(newTransaction);
+                    operationN43List.add(newOperation);
                 }
             }
 
-            for(Operation operation: operationN43s) {
+            for(Operation operation: operationN43List) {
                 operationRepository.save(operation);
             }
         } catch (Exception e) {
