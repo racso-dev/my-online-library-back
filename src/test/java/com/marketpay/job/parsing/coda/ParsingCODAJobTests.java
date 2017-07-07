@@ -2,7 +2,7 @@ package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.resources.JobHistory;
 import com.marketpay.references.JobStatus;
-import com.marketpay.references.OperationSens;
+import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
@@ -42,7 +42,7 @@ public class ParsingCODAJobTests {
     @Test
     public void parsingSensTest() {
         Integer sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
-        assertTrue(sens == 0);
+        assertEquals(sens, OPERATION_SENS.CREDIT.getCode());
     }
 
     @Test

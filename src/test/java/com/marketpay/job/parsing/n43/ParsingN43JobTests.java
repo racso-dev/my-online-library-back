@@ -3,6 +3,7 @@ package com.marketpay.job.parsing.n43;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.job.parsing.resources.JobHistory;
 import com.marketpay.references.JobStatus;
+import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
@@ -63,8 +64,8 @@ public class ParsingN43JobTests {
 
     @Test
     public void getSensTest() {
-        int sens = parsingN43Job.getSens(TRANSACTION_LINE);
-        assertTrue(sens == 2);
+        Integer sens = parsingN43Job.getSens(TRANSACTION_LINE);
+        assertEquals(sens, OPERATION_SENS.CREDIT.getCode());
     }
 
     @Test
@@ -127,18 +128,19 @@ public class ParsingN43JobTests {
         OperationN43 firstTransaction = new OperationN43();
         firstTransaction.setGrossAmount(25);
         firstTransaction.setNetAmount(10);
-        firstTransaction.setSens(0);
+        firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
         OperationN43 secondTransaction = new OperationN43();
         secondTransaction.setGrossAmount(50);
         secondTransaction.setNetAmount(20);
-        secondTransaction.setSens(1);
+        secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
         OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
         assertEquals(combinedTransaction.getNetAmount(), 10);
         assertEquals(combinedTransaction.getGrossAmount(), 25);
-        assertTrue(combinedTransaction.getSens() == 1);
+        Integer sens = combinedTransaction.getSens();
+        assertEquals(sens, OPERATION_SENS.DEBIT.getCode());
     }
 
     @Test
@@ -146,18 +148,19 @@ public class ParsingN43JobTests {
         OperationN43 firstTransaction = new OperationN43();
         firstTransaction.setGrossAmount(75);
         firstTransaction.setNetAmount(30);
-        firstTransaction.setSens(0);
+        firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
         OperationN43 secondTransaction = new OperationN43();
         secondTransaction.setGrossAmount(50);
         secondTransaction.setNetAmount(20);
-        secondTransaction.setSens(1);
+        secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
         OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
         assertEquals(combinedTransaction.getNetAmount(), 10);
         assertEquals(combinedTransaction.getGrossAmount(), 25);
-        assertTrue(combinedTransaction.getSens() == 0);
+        Integer sens = combinedTransaction.getSens();
+        assertEquals(sens, OPERATION_SENS.CREDIT.getCode());
     }
 
     @Test

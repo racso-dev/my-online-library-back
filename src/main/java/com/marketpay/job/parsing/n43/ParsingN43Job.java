@@ -118,7 +118,7 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     public Integer getSens(String line) {
-        return convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2));
+        return convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2))%2;
     }
 
     public Integer getGrossAmount(String line) {
