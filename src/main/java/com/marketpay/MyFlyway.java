@@ -5,19 +5,23 @@ import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by antony on 03/07/17.
  */
 public class MyFlyway {
+    private static final String DEV_PROFILE = "DEV";
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     private static final String FILE_SRC_MAIN_RESOURCES = "file:src/main/resources/";
     private static final String DB_INIT = "db/init";
     private static final String DB_DELTA = "db/delta";
+    private static final String DB_DEV = "db/dev";
 
     private final ApplicationContext context;
     private DBConfig dbConfig;
@@ -40,6 +44,10 @@ public class MyFlyway {
             try {
                 safeMigrate(DB_INIT);
                 safeMigrate(DB_DELTA);
+                Environment environment = context.getEnvironment();
+                if(environment != null && environment.getActiveProfiles() != null && Arrays.asList(environment.getActiveProfiles()).contains(DEV_PROFILE)){
+                    safeMigrate(DB_DEV);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
