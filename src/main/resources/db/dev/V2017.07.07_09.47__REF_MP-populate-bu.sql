@@ -1,4 +1,5 @@
-INSERT INTO business_unit (name, location) values ('Carrefour Anto', 'FR');
-INSERT INTO business_unit (name, location) values ('Carrefour Thomatoto', 'FR');
-INSERT INTO business_unit (name, location) values ('Carrefour Etienne', 'FR');
-INSERT INTO business_unit (name, location) values ('Carrefour SGouGou', 'FR');
+INSERT INTO business_unit (name, location) values
+('Carrefour Anto', 'FR'),
+('Carrefour Thomatoto', 'FR'),
+('Carrefour Etienne', 'FR'),
+('Carrefour SGouGou', 'FR');
