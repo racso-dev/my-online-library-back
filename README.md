@@ -1,8 +1,5 @@
 # Market Pay API
 
-## TODO
-Script dev qui complète la table Block.
-
 ## Nom des commits
 Chaque nom de commit doit être préfixé par l'une des valeurs suivantes :
  - [EVOL] Ajout de logique
