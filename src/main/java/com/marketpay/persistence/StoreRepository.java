@@ -10,5 +10,6 @@ import java.util.List;
  */
 public interface StoreRepository extends CrudRepository<Store, Long> {
     List<Store> findByIdBu(long idBu);
-    List<Store> findByContractNumber(String contractNumer);
+    List<Store> findByContractNumber(String contractNumber);
+    Store findFirstByContractNumber(String contractNumber);
 }

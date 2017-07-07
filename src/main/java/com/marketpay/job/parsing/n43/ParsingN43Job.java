@@ -1,15 +1,19 @@
 package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.job.parsing.n43.ressources.TransactionN43;
+import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.persistence.OperationRepository;
+import com.marketpay.persistence.StoreRepository;
+import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;
-import com.marketpay.references.TransactionSens;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +23,7 @@ public class ParsingN43Job extends ParsingJob {
     // Identifié sur les lignes commençant par 11
     private final String BU_LINE_INFORMATION = "11";
     private final String CLIEN_NAME_REGEX = ".{51}(.*)"; // Groupe 1
-    private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format AA/MM/JJ
+    private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format JJMMAA
 
     // Identifié sur les lignes commençant par 22
     private final String TRANSACTION_LINE_INFORMATION = "22";
@@ -29,11 +33,15 @@ public class ParsingN43Job extends ParsingJob {
     private final String GROSS_AMOUNT_REGEX = "^.{22}12\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISION_REGEX = "^.{22}17\\d{3}\\d{1}(\\d{14})"; // Groupe 1
 
-    // Identifié sur les lignes commençant par 33
-    private final String END_FILE_INFORMATION = "33";
-    private final String TOTAL_AMOUNT_REGEX = ".{59}(\\d{14})"; // Groupe 1
-
     private final int UNPAID_OPERATION = 127;
+
+
+    @Autowired
+    private OperationRepository operationRepository;
+
+    @Autowired
+    private StoreRepository storeRepository;
+
 
     @Override
     public void parsing(String filePath, JobHistory jobHistory) throws IOException {
@@ -42,36 +50,40 @@ public class ParsingN43Job extends ParsingJob {
 
         try {
             String line;
-            ArrayList<TransactionN43> transactionN43s = new ArrayList<>();
-
+            ArrayList<OperationN43> operationN43s = new ArrayList<>();
+            LocalDate foundingDate = null;
             while ((line = buffer.readLine()) != null) {
-                TransactionN43 newTransaction = new TransactionN43();
+                OperationN43 newTransaction = new OperationN43();
                 if (line.startsWith(BU_LINE_INFORMATION)) {
                     getClientName(line);
-                    getFinaningDate(line);
+                    String foundingDateString = getFinaningDate(line);
+                    foundingDate = convertStringToLocalDate("ddMMyy", foundingDateString);
                 } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
 
+                    if (foundingDate != null) {
+                        newTransaction.setFundingDate(foundingDate);
+                    }
                     newTransaction.setOperation_type(getOperationType(line));
-                    newTransaction.setContract_number(getContractNumber(line));
-                    newTransaction.setGross_amount(getGrossAmount(line));
+                    newTransaction.setContractNumber(getContractNumber(line));
+                    newTransaction.setGrossAmount(getGrossAmount(line));
                     newTransaction.setSens(getSens(line));
-
-                    if (!transactionN43s.isEmpty()) {
-                        TransactionN43 lastOrder = transactionN43s.get(transactionN43s.size() - 1);
-                        if (shouldAgrega(lastOrder, newTransaction)) {
+                    String storeName = storeRepository.findFirstByContractNumber(newTransaction.getContractNumber()).getName();
+                    newTransaction.setNameStore(storeName);
+                    if (!operationN43s.isEmpty()) {
+                        OperationN43 lastOrder = operationN43s.get(operationN43s.size() - 1);
+                        if (shouldCombine(lastOrder, newTransaction)) {
                             // On agrége les transactions puis on remplace la dernière transaction par la transaction agrégée
                             newTransaction = combineTransaction(lastOrder, newTransaction);
-                            transactionN43s.remove(lastOrder);
+                            operationN43s.remove(lastOrder);
                         }
                     }
-                    transactionN43s.add(newTransaction);
-                } else if (line.startsWith(END_FILE_INFORMATION)) {
-                    getTotalAmount(line);
+                    operationN43s.add(newTransaction);
                 }
-
-                // TODO : Save result
             }
 
+            for(Operation operation: operationN43s) {
+                operationRepository.save(operation);
+            }
         } catch (Exception e) {
             if(e instanceof IOException) {
                 throw e;
@@ -92,9 +104,8 @@ public class ParsingN43Job extends ParsingJob {
         return matchFromRegex(line, FINANCING_DATE_REGEX, 1);
     }
 
-    public Integer getContractNumber(String line) {
-        String contractNumber = matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
-        return convertStringToInt(contractNumber);
+    public String getContractNumber(String line) {
+        return matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
     }
 
     public String getTransactionDate(String line) {
@@ -106,13 +117,8 @@ public class ParsingN43Job extends ParsingJob {
         return convertStringToInt(operationString);
     }
 
-    public TransactionSens getSens(String line) {
-        Integer sens = convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2));
-        if(sens == 1) {
-            return TransactionSens.CREDIT;
-        } else {
-            return TransactionSens.DEBIT;
-        }
+    public Integer getSens(String line) {
+        return convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2));
     }
 
     public Integer getGrossAmount(String line) {
@@ -125,18 +131,13 @@ public class ParsingN43Job extends ParsingJob {
         return convertStringToInt(amount);
     }
 
-    public Integer getTotalAmount(String line) {
-        String totalAmount = matchFromRegex(line, TOTAL_AMOUNT_REGEX, 1);
-        return convertStringToInt(totalAmount);
-    }
-
     /**
      * Permet de savoir si on doit ou non agréger deux transactions
      * @param firstTransaction
      * @param secondTransaction
      * @return Bool
      */
-    public Boolean shouldAgrega(TransactionN43 firstTransaction, TransactionN43 secondTransaction) {
+    public Boolean shouldCombine(OperationN43 firstTransaction, OperationN43 secondTransaction) {
         if (firstTransaction.getOperation_type() == secondTransaction.getOperation_type() && firstTransaction.getOperation_type() != UNPAID_OPERATION) {
             return true;
         }
@@ -149,34 +150,34 @@ public class ParsingN43Job extends ParsingJob {
      * @param secondTransaction
      * @return Une seule transaction
      */
-    public TransactionN43 combineTransaction(TransactionN43 firstTransaction, TransactionN43 secondTransaction) {
-        TransactionN43 combinedTransaction;
+    public OperationN43 combineTransaction(OperationN43 firstTransaction, OperationN43 secondTransaction) {
+        OperationN43 combinedTransaction;
 
         if( firstTransaction.getSens() == secondTransaction.getSens()) {
             // On ajoute les montants
             combinedTransaction = firstTransaction;
-            int combineNetAmount = firstTransaction.getNet_amount() + secondTransaction.getNet_amount();
-            combinedTransaction.setNet_amount(combineNetAmount);
+            Long combineNetAmount = firstTransaction.getNetAmount() + secondTransaction.getNetAmount();
+            combinedTransaction.setNetAmount(combineNetAmount);
 
-            int combineGrossAmount = firstTransaction.getGross_amount() + secondTransaction.getGross_amount();
-            combinedTransaction.setGross_amount(combineGrossAmount);
+            Long combineGrossAmount = firstTransaction.getGrossAmount() + secondTransaction.getGrossAmount();
+            combinedTransaction.setGrossAmount(combineGrossAmount);
 
         } else {
             // On soustrait les montants
             combinedTransaction = firstTransaction;
 
-            int combineNetAmount = firstTransaction.getNet_amount() - secondTransaction.getNet_amount();
-            int combineGrossAmount = firstTransaction.getGross_amount() - secondTransaction.getGross_amount();
+            Long combineNetAmount = firstTransaction.getNetAmount() - secondTransaction.getNetAmount();
+            Long combineGrossAmount = firstTransaction.getGrossAmount() - secondTransaction.getGrossAmount();
 
             if (combineGrossAmount < 0)  {
                 // On prend le sens du 2 et on remet en positif
                 combinedTransaction.setSens(secondTransaction.getSens());
-                combinedTransaction.setGross_amount(combineGrossAmount * -1);
-                combinedTransaction.setNet_amount(combineNetAmount * -1);
+                combinedTransaction.setGrossAmount(combineGrossAmount * -1);
+                combinedTransaction.setNetAmount(combineNetAmount * -1);
             } else {
                 // On prend le sens du 1
-                combinedTransaction.setNet_amount(combineNetAmount);
-                combinedTransaction.setGross_amount(combineGrossAmount);
+                combinedTransaction.setNetAmount(combineNetAmount);
+                combinedTransaction.setGrossAmount(combineGrossAmount);
             }
         }
 

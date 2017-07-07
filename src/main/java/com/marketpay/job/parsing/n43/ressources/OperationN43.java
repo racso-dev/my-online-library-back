@@ -1,8 +1,8 @@
 package com.marketpay.job.parsing.n43.ressources;
 
-import com.marketpay.references.Transaction;
+import com.marketpay.persistence.entity.Operation;
 
-public class TransactionN43 extends Transaction {
+public class OperationN43 extends Operation {
     private int operation_type;
 
     public int getOperation_type() {

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,6 +90,17 @@ public abstract class ParsingJob {
         }
 
         return Integer.parseInt(amount.trim());
+    }
+
+    /**
+     * Permet de transformer un string en local date
+     * @param format format du string
+     * @param dateString string a transformer
+     * @return LocalDate
+     */
+    protected LocalDate convertStringToLocalDate(String format, String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return LocalDate.parse(dateString, formatter);
     }
 
     /**

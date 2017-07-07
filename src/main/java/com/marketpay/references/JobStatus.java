@@ -14,4 +14,8 @@ public enum JobStatus {
         this.code = code;
         this.value = value;
     }
+
+    public Integer getCode() {
+        return this.code;
+    }
 }

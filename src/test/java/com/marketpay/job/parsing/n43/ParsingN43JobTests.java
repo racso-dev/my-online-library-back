@@ -1,9 +1,8 @@
 package com.marketpay.job.parsing.n43;
 
-import com.marketpay.job.parsing.n43.ressources.TransactionN43;
+import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.job.parsing.resources.JobHistory;
 import com.marketpay.references.JobStatus;
-import com.marketpay.references.TransactionSens;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
@@ -46,8 +45,8 @@ public class ParsingN43JobTests {
 
     @Test
     public void getContractNumberTest() {
-        Integer contractNumber = parsingN43Job.getContractNumber(TRANSACTION_LINE);
-        assertTrue(contractNumber == 2704735);
+        String contractNumber = parsingN43Job.getContractNumber(TRANSACTION_LINE);
+        assertTrue(contractNumber.equals("0002704735"));
     }
 
     @Test
@@ -64,8 +63,8 @@ public class ParsingN43JobTests {
 
     @Test
     public void getSensTest() {
-        TransactionSens sens = parsingN43Job.getSens(TRANSACTION_LINE);
-        assertTrue(sens == TransactionSens.DEBIT);
+        int sens = parsingN43Job.getSens(TRANSACTION_LINE);
+        assertTrue(sens == 2);
     }
 
     @Test
@@ -94,71 +93,71 @@ public class ParsingN43JobTests {
 
     @Test
     public void parsingShouldCombine() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        TransactionN43 secondTransaction = new TransactionN43();
+        OperationN43 firstTransaction = new OperationN43();
+        OperationN43 secondTransaction = new OperationN43();
         firstTransaction.setOperation_type(125);
         secondTransaction.setOperation_type(125);
 
-        assertTrue(parsingN43Job.shouldAgrega(firstTransaction, secondTransaction));
+        assertTrue(parsingN43Job.shouldCombine(firstTransaction, secondTransaction));
     }
 
     @Test
     public void parsingShouldNotCombine() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        TransactionN43 secondTransaction = new TransactionN43();
+        OperationN43 firstTransaction = new OperationN43();
+        OperationN43 secondTransaction = new OperationN43();
         firstTransaction.setOperation_type(127);
         secondTransaction.setOperation_type(127);
 
-        assertFalse(parsingN43Job.shouldAgrega(firstTransaction, secondTransaction));
+        assertFalse(parsingN43Job.shouldCombine(firstTransaction, secondTransaction));
     }
 
     @Test
     public void combineTwoCredit() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        firstTransaction.setNet_amount(10);
-        firstTransaction.setGross_amount(25);
+        OperationN43 firstTransaction = new OperationN43();
+        firstTransaction.setNetAmount(10);
+        firstTransaction.setGrossAmount(25);
 
-        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
-        assertEquals(combinedTransaction.getGross_amount(), 50);
-        assertEquals(combinedTransaction.getNet_amount(), 20);
+        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
+        assertEquals(combinedTransaction.getGrossAmount(), 50);
+        assertEquals(combinedTransaction.getNetAmount(), 20);
     }
 
     @Test
     public void combineShouldReturnDebitTransaction() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        firstTransaction.setGross_amount(25);
-        firstTransaction.setNet_amount(10);
-        firstTransaction.setSens(TransactionSens.CREDIT);
+        OperationN43 firstTransaction = new OperationN43();
+        firstTransaction.setGrossAmount(25);
+        firstTransaction.setNetAmount(10);
+        firstTransaction.setSens(0);
 
-        TransactionN43 secondTransaction = new TransactionN43();
-        secondTransaction.setGross_amount(50);
-        secondTransaction.setNet_amount(20);
-        secondTransaction.setSens(TransactionSens.DEBIT);
+        OperationN43 secondTransaction = new OperationN43();
+        secondTransaction.setGrossAmount(50);
+        secondTransaction.setNetAmount(20);
+        secondTransaction.setSens(1);
 
-        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
-        assertEquals(combinedTransaction.getNet_amount(), 10);
-        assertEquals(combinedTransaction.getGross_amount(), 25);
-        assertTrue(combinedTransaction.getSens() == TransactionSens.DEBIT);
+        assertEquals(combinedTransaction.getNetAmount(), 10);
+        assertEquals(combinedTransaction.getGrossAmount(), 25);
+        assertTrue(combinedTransaction.getSens() == 1);
     }
 
     @Test
     public void combineShouldReturnCreditTransaction() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        firstTransaction.setGross_amount(75);
-        firstTransaction.setNet_amount(30);
-        firstTransaction.setSens(TransactionSens.CREDIT);
+        OperationN43 firstTransaction = new OperationN43();
+        firstTransaction.setGrossAmount(75);
+        firstTransaction.setNetAmount(30);
+        firstTransaction.setSens(0);
 
-        TransactionN43 secondTransaction = new TransactionN43();
-        secondTransaction.setGross_amount(50);
-        secondTransaction.setNet_amount(20);
-        secondTransaction.setSens(TransactionSens.DEBIT);
+        OperationN43 secondTransaction = new OperationN43();
+        secondTransaction.setGrossAmount(50);
+        secondTransaction.setNetAmount(20);
+        secondTransaction.setSens(1);
 
-        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
-        assertEquals(combinedTransaction.getNet_amount(), 10);
-        assertEquals(combinedTransaction.getGross_amount(), 25);
-        assertTrue(combinedTransaction.getSens() == TransactionSens.CREDIT);
+        assertEquals(combinedTransaction.getNetAmount(), 10);
+        assertEquals(combinedTransaction.getGrossAmount(), 25);
+        assertTrue(combinedTransaction.getSens() == 0);
     }
 
     @Test

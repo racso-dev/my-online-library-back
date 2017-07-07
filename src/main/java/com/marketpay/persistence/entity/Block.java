@@ -1,9 +1,6 @@
 package com.marketpay.persistence.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -15,6 +12,7 @@ public class Block {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     private LocalDate fundingDate;
+    @Lob
     private String content;
     private int status;
     private long idBu;

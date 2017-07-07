@@ -1,0 +1,14 @@
+database:
+  driver: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost/marketpay
+  user: root
+  password: root
+  packageName:
+  flyway: true
+
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost/marketpay
+    username: root
+    password: root
