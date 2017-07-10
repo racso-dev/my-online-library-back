@@ -4,7 +4,6 @@ import com.marketpay.persistence.converter.LocalDateAttributeConverter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Created by antony on 06/07/17.
@@ -15,17 +14,17 @@ public class Block {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
     @Convert(converter = LocalDateAttributeConverter.class)
-    private LocalDateTime fundingDate;
+    private LocalDate fundingDate;
     @Lob
     private String content;
     private int status;
     private long idBu;
 
-    public LocalDateTime getFundingDate() {
+    public LocalDate getFundingDate() {
         return fundingDate;
     }
 
-    public void setFundingDate(LocalDateTime fundingDate) {
+    public void setFundingDate(LocalDate fundingDate) {
         this.fundingDate = fundingDate;
     }
 

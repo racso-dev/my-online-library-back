@@ -109,7 +109,7 @@ public class ParsingCODAJob extends ParsingJob {
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
-            //codaBlock.setFundingDate(foundingDate);
+            codaBlock.setFundingDate(foundingDate);
             if (businessUnit.isPresent()) {
                 codaBlock.setIdBu(businessUnit.get().getId());
             }

@@ -2,21 +2,22 @@ package com.marketpay.persistence.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.time.LocalDateTime;
+import java.sql.Date;
+import java.time.LocalDate;
 
 /**
  * Created by tchekroun on 10/07/2017.
  */
 @Converter(autoApply = true)
-public class LocalDateAttributeConverter implements AttributeConverter<LocalDateTime, java.sql.Timestamp> {
+public class LocalDateAttributeConverter implements AttributeConverter<LocalDate, Date> {
 
     @Override
-    public java.sql.Timestamp convertToDatabaseColumn(java.time.LocalDateTime entityValue) {
-        return entityValue == null ? null : java.sql.Timestamp.valueOf(entityValue);
+    public Date convertToDatabaseColumn(LocalDate locDate) {
+        return (locDate == null ? null : Date.valueOf(locDate));
     }
 
     @Override
-    public java.time.LocalDateTime convertToEntityAttribute(java.sql.Timestamp dbValue) {
-        return dbValue == null ? null : dbValue.toLocalDateTime();
+    public LocalDate convertToEntityAttribute(Date sqlDate) {
+        return (sqlDate == null ? null : sqlDate.toLocalDate());
     }
 }
