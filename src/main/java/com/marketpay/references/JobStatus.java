@@ -7,7 +7,7 @@ public enum JobStatus {
     FAIL(3, "erreur");
 
 
-    private Integer code;
+    private int code;
     private String value;
 
     JobStatus(int code, String value) {
@@ -15,7 +15,7 @@ public enum JobStatus {
         this.value = value;
     }
 
-    public Integer getCode() {
+    public int getCode() {
         return this.code;
     }
 }

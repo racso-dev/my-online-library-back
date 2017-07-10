@@ -4,10 +4,10 @@ public enum OPERATION_SENS {
     CREDIT(0, "Crédit"),
     DEBIT(1, "Débit");
 
-    private Integer code;
+    private int code;
     private String value;
 
-    OPERATION_SENS(Integer code, String value) {
+    OPERATION_SENS(int code, String value) {
         this.code = code;
         this.value = value;
     }
@@ -21,7 +21,7 @@ public enum OPERATION_SENS {
         return null;
     }
 
-    public Integer getCode() {
+    public int getCode() {
         return this.code;
     }
 }

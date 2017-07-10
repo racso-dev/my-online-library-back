@@ -1,22 +1,19 @@
 package com.marketpay.job.parsing.coda;
 
 import com.marketpay.MarketPayUnitTests;
-import com.marketpay.persistence.*;
-import com.marketpay.persistence.entity.*;
+import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.references.JobStatus;
 import com.marketpay.references.OPERATION_SENS;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -55,7 +52,8 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     @Test
     public void parsingSensTest() {
         Integer sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
-        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens);
+        assertNotNull(sens);
+        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens.intValue());
     }
 
     @Test
@@ -95,7 +93,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
         jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(CODAFILE_PATH, jobHistory);
-            Integer status = jobHistory.getStatus();
+            int status = jobHistory.getStatus();
             assertEquals(JobStatus.IN_PROGRESS.getCode(), status);
         } catch (IOException e) {
             fail();
@@ -108,7 +106,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
         jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
-            Integer status = jobHistory.getStatus();
+            int status = jobHistory.getStatus();
             assertEquals(JobStatus.BLOCK_FAIL.getCode(), status);
         } catch (IOException e) {
             fail();

@@ -57,7 +57,8 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
     @Test
     public void getSensTest() {
         Integer sens = parsingN43Job.getSens(TRANSACTION_LINE);
-        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens);
+        assertNotNull(sens);
+        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens.intValue());
     }
 
     @Test
@@ -131,7 +132,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
         assertEquals(10, combinedTransaction.getNetAmount());
         assertEquals(25, combinedTransaction.getGrossAmount());
-        Integer sens = combinedTransaction.getSens();
+        int sens = combinedTransaction.getSens();
         assertEquals(OPERATION_SENS.DEBIT.getCode(), sens);
     }
 
@@ -151,7 +152,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
         assertEquals(10, combinedTransaction.getNetAmount());
         assertEquals(25, combinedTransaction.getGrossAmount());
-        Integer sens = combinedTransaction.getSens();
+        int sens = combinedTransaction.getSens();
         assertEquals(OPERATION_SENS.CREDIT.getCode(), sens);
     }
 
@@ -161,7 +162,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingN43Job.parsing(N43FILE_PATH, jobHistory);
-            Integer status = jobHistory.getStatus();
+            int status = jobHistory.getStatus();
             assertEquals(JobStatus.IN_PROGRESS.getCode(), status);
         } catch (IOException e) {
             fail();
