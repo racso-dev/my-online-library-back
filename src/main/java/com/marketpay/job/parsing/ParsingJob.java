@@ -2,7 +2,7 @@ package com.marketpay.job.parsing;
 
 import com.marketpay.job.parsing.coda.ParsingCODAJob;
 import com.marketpay.job.parsing.n43.ParsingN43Job;
-import com.marketpay.persistence.JobHistoryRepository;
+import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.references.JOB_TYPE;
 import com.marketpay.references.JobStatus;

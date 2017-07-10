@@ -2,11 +2,9 @@ package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
-import com.marketpay.persistence.BusinessUnitRepository;
-import com.marketpay.persistence.JobHistoryRepository;
-import com.marketpay.persistence.OperationRepository;
-import com.marketpay.persistence.StoreRepository;
-import com.marketpay.persistence.entity.BusinessUnit;
+import com.marketpay.persistence.repository.JobHistoryRepository;
+import com.marketpay.persistence.repository.OperationRepository;
+import com.marketpay.persistence.repository.StoreRepository;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JobStatus;

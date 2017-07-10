@@ -1,16 +1,14 @@
 package com.marketpay;
 
-import com.marketpay.persistence.*;
 import com.marketpay.persistence.entity.*;
+import com.marketpay.persistence.repository.*;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Created by tchekroun on 10/07/2017.
@@ -69,6 +67,6 @@ public class MarketPayUnitTests {
     }
 
     public void createBlockHistoryReturnMock() {
-        Mockito.doReturn(new Block()).when(blockRepository).save((Block) Matchers.anyObject());
+        //Mockito.doReturn(new Block()).when(blockRepository).save((Block) Matchers.anyObject());
     }
 }

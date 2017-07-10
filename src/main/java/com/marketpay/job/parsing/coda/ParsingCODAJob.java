@@ -1,11 +1,11 @@
 package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.persistence.*;
 import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
+import com.marketpay.persistence.repository.*;
 import com.marketpay.references.JobStatus;
 import com.marketpay.utils.DateUtils;
 import org.slf4j.Logger;
