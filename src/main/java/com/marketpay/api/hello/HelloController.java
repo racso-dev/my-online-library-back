@@ -21,20 +21,12 @@ public class HelloController extends MarketPayController {
     @Autowired
     private HelloService helloService;
 
-    @Autowired
-    private BlockRepository blockRepository;
-
     /**
      * Hello world d'exemple
      * @return
      */
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public @ResponseBody String hello() {
-        Optional<Block> block = blockRepository.findFirstById(7l);
-        if(block.isPresent()) {
-            return "youhou";
-        }
         return helloService.hello();
-
     }
 }
