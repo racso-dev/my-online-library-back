@@ -1,9 +1,8 @@
 package com.marketpay.persistence.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.marketpay.persistence.converter.LocalDateAttributeConverter;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -14,7 +13,9 @@ public class Operation {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
+    @Convert(converter = LocalDateAttributeConverter.class)
     private LocalDate fundingDate;
+    @Convert(converter = LocalDateAttributeConverter.class)
     private LocalDate tradeDate;
     private String cardType;
     private int sens;
