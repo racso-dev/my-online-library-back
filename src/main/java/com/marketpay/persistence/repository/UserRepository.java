@@ -1,14 +1,14 @@
-package com.marketpay.persistence;
+package com.marketpay.persistence.repository;
 
+import com.marketpay.persistence.OptionalCRUDRepository;
 import com.marketpay.persistence.entity.User;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
 /**
  * Created by antony on 06/07/17.
  */
-public interface UserRepository extends CrudRepository<User, Long>{
+public interface UserRepository extends OptionalCRUDRepository<User, Long> {
     List<User> findByProfile(int profile);
     List<User> findByLogin(String login);
     List<User> findByIdBu(long idBu);
