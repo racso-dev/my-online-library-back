@@ -3,7 +3,7 @@ package com.marketpay.job.parsing.n43;
 import com.marketpay.MarketPayUnitTests;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.persistence.entity.JobHistory;
-import com.marketpay.references.JobStatus;
+import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -159,11 +159,11 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
     @Test
     public void parsingGoodN43File() {
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
+        jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingN43Job.parsing(N43FILE_PATH, jobHistory);
             int status = jobHistory.getStatus();
-            assertEquals(JobStatus.IN_PROGRESS.getCode(), status);
+            assertEquals(JOB_STATUS.IN_PROGRESS.getCode(), status);
         } catch (IOException e) {
             fail();
         }

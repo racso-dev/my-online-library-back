@@ -1,9 +1,8 @@
 package com.marketpay.persistence.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.marketpay.persistence.converter.LocalDateTimeAttributeConverter;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -15,6 +14,7 @@ public class JobHistory {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
     private LocalDateTime dateTime;
     private int status;
     private String filename;

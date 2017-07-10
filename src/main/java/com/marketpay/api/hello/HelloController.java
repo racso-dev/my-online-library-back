@@ -25,5 +25,4 @@ public class HelloController extends MarketPayController {
     public @ResponseBody String hello() {
         return helloService.hello();
     }
-
 }

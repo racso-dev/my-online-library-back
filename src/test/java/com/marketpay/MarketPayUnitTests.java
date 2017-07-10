@@ -1,16 +1,16 @@
 package com.marketpay;
 
-import com.marketpay.persistence.*;
 import com.marketpay.persistence.entity.*;
+import com.marketpay.persistence.repository.*;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Optional;
 
 /**
  * Created by tchekroun on 10/07/2017.
@@ -51,7 +51,7 @@ public class MarketPayUnitTests {
     public void createBusinessReturnMock() {
         BusinessUnit businessUnit = new BusinessUnit();
         businessUnit.setId(12l);
-        Mockito.doReturn(businessUnit).when(businessUnitRepository).findFirstByClientId(Matchers.anyString());
+        Mockito.doReturn(Optional.of(businessUnit)).when(businessUnitRepository).findFirstByClientId(Matchers.anyString());
     }
 
     public void createOperationReturnMock() {
@@ -61,7 +61,7 @@ public class MarketPayUnitTests {
     public void createStoreRepositoryReturnMock() {
         Store store = new Store();
         store.setName("toot");
-        Mockito.doReturn(store).when(storeRepository).findFirstByContractNumber(Matchers.anyString());
+        Mockito.doReturn(Optional.of(store)).when(storeRepository).findFirstByContractNumber(Matchers.anyString());
     }
 
     public void createJobHistoryReturnMock() {

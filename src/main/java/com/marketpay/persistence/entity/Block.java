@@ -1,5 +1,7 @@
 package com.marketpay.persistence.entity;
 
+import com.marketpay.persistence.converter.LocalDateAttributeConverter;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -10,7 +12,8 @@ import java.time.LocalDate;
 public class Block {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    private long id;
+    @Convert(converter = LocalDateAttributeConverter.class)
     private LocalDate fundingDate;
     @Lob
     private String content;

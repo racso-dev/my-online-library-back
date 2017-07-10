@@ -2,14 +2,13 @@ package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
-import com.marketpay.persistence.BusinessUnitRepository;
-import com.marketpay.persistence.JobHistoryRepository;
-import com.marketpay.persistence.OperationRepository;
-import com.marketpay.persistence.StoreRepository;
-import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
-import com.marketpay.references.JobStatus;
+import com.marketpay.persistence.entity.Store;
+import com.marketpay.persistence.repository.JobHistoryRepository;
+import com.marketpay.persistence.repository.OperationRepository;
+import com.marketpay.persistence.repository.StoreRepository;
+import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +19,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ParsingN43Job extends ParsingJob {
@@ -71,8 +71,11 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line));
                     newOperation.setSens(getSens(line));
-                    String storeName = storeRepository.findFirstByContractNumber(newOperation.getContractNumber()).getName();
-                    newOperation.setNameStore(storeName);
+                    Optional<Store> storeOpt = storeRepository.findFirstByContractNumber(newOperation.getContractNumber());
+                    if(storeOpt.isPresent()) {
+                        newOperation.setNameStore(storeOpt.get().getName());
+                    }
+
                     if (!operationN43List.isEmpty()) {
                         OperationN43 lastOrder = operationN43List.get(operationN43List.size() - 1);
                         if (shouldCombine(lastOrder, newOperation)) {
@@ -187,7 +190,7 @@ public class ParsingN43Job extends ParsingJob {
     @Override
     protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         // Si il y a une erreur sur une ligne on invalid le fichier N43
-        jobHistory.setStatus(JobStatus.FAIL.getCode());
+        jobHistory.setStatus(JOB_STATUS.FAIL.getCode());
         jobHistory.addError(e.getMessage());
         jobHistoryRepository.save(jobHistory);
     }
