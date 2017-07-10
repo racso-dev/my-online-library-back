@@ -71,7 +71,7 @@ public class ParsingCODAJob extends ParsingJob {
             Optional<BusinessUnit> businessUnit = businessUnitRepository.findFirstByClientId(clientId);
             String centralisationLine1 = block.get(2);
             String foundingDate = getFoundingDate(centralisationLine1);
-            codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
+            //codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
             if(businessUnit.isPresent()) {
                 codaBlock.setIdBu(businessUnit.get().getId());
             }
@@ -109,7 +109,7 @@ public class ParsingCODAJob extends ParsingJob {
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
-            codaBlock.setFundingDate(foundingDate);
+            //codaBlock.setFundingDate(foundingDate);
             if (businessUnit.isPresent()) {
                 codaBlock.setIdBu(businessUnit.get().getId());
             }
