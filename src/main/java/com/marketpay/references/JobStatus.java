@@ -7,7 +7,7 @@ public enum JobStatus {
     FAIL(3, "erreur");
 
 
-    private int code;
+    private Integer code;
     private String value;
 
     JobStatus(int code, String value) {

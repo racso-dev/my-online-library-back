@@ -65,15 +65,20 @@ public class ParsingCODAJob extends ParsingJob {
     @Override
     protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         //On sauvegarde le block en erreur dans la table block avec un status d'erreur
-        String headerRecipientLine = block.get(0);
-        String clientId = getClientId(headerRecipientLine);
-        BusinessUnit businessUnit = businessUnitRepository.findFirstByClientId(clientId);
-        String centralisationLine1 = block.get(2);
         Block codaBlock = new Block();
-        String foundingDate = getFoundingDate(centralisationLine1);
-        codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
+
+        if(block.size() > 3) {
+            String headerRecipientLine = block.get(0);
+            String clientId = getClientId(headerRecipientLine);
+            BusinessUnit businessUnit = businessUnitRepository.findFirstByClientId(clientId);
+            String centralisationLine1 = block.get(2);
+            String foundingDate = getFoundingDate(centralisationLine1);
+            codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
+            codaBlock.setIdBu(businessUnit.getId());
+        }
+
+
         codaBlock.setContent(String.join("\\n", block));
-        codaBlock.setIdBu(businessUnit.getId());
         codaBlock.setStatus(JobStatus.BLOCK_FAIL.getCode());
         blockRepository.save(codaBlock);
 
@@ -109,11 +114,15 @@ public class ParsingCODAJob extends ParsingJob {
             blockRepository.save(codaBlock);
 
             for (int i = 4; i < (block.size() - 2); i = i + 2) {
-                Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
-                operation.setFundingDate(foundingDate);
-                String storeName = storeRepository.findFirstByContractNumber(operation.getContractNumber()).getName();
-                operation.setNameStore(storeName);
-                operationRepository.save(operation);
+                String detailLine1 = block.get(i);
+                String detailLine2 = block.get(i+1);
+                if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
+                    Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
+                    operation.setFundingDate(foundingDate);
+                    String storeName = storeRepository.findFirstByContractNumber(operation.getContractNumber()).getName();
+                    operation.setNameStore(storeName);
+                    operationRepository.save(operation);
+                }
             }
         } catch (Exception e) {
             LOGGER.error("Une erreur s'est produit pendant le parsing du block CODA", e);

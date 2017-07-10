@@ -1,22 +1,28 @@
 package com.marketpay.job.parsing.coda;
 
-import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.MarketPayUnitTests;
+import com.marketpay.persistence.*;
+import com.marketpay.persistence.entity.*;
 import com.marketpay.references.JobStatus;
 import com.marketpay.references.OPERATION_SENS;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
-
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ParsingCODAJobTests {
+public class ParsingCODAJobTests extends MarketPayUnitTests {
 
+    @InjectMocks
     @Autowired
     private ParsingCODAJob parsingCODAJob;
 
@@ -84,6 +90,7 @@ public class ParsingCODAJobTests {
 
     @Test
     public void parsingGoodCodaFile() {
+
         JobHistory jobHistory = new JobHistory();
         jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {

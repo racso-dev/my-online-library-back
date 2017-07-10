@@ -53,11 +53,11 @@ public abstract class ParsingJob {
         try {
             if (filePath.contains(CODA_EXTENSION)) {
                 LOGGER.info("Parsing d'un fichier CODA");
-                jobHistory.setFiletype(JOB_TYPE.CODA.getValue());
+                jobHistory.setFiletype(JOB_TYPE.CODA.getCode());
                 parsingCoda.parsing(filePath, jobHistory);
             } else {
                 LOGGER.info("Parsing d'un fichier N43");
-                jobHistory.setFiletype(JOB_TYPE.N43.getValue());
+                jobHistory.setFiletype(JOB_TYPE.N43.getCode());
                 parsingN43.parsing(filePath, jobHistory);
             }
         } catch (IOException e) {
