@@ -2,6 +2,7 @@ package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
+import com.marketpay.persistence.entity.Store;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.StoreRepository;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ParsingN43Job extends ParsingJob {
@@ -69,8 +71,11 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line));
                     newOperation.setSens(getSens(line));
-                    String storeName = storeRepository.findFirstByContractNumber(newOperation.getContractNumber()).getName();
-                    newOperation.setNameStore(storeName);
+                    Optional<Store> store = storeRepository.findFirstByContractNumber(newOperation.getContractNumber());
+                    if(store.isPresent()) {
+                        newOperation.setNameStore(store.get().getName());
+                    }
+
                     if (!operationN43List.isEmpty()) {
                         OperationN43 lastOrder = operationN43List.get(operationN43List.size() - 1);
                         if (shouldCombine(lastOrder, newOperation)) {

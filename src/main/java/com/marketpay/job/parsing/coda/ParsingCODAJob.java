@@ -1,10 +1,7 @@
 package com.marketpay.job.parsing.coda;
 
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.persistence.entity.Block;
-import com.marketpay.persistence.entity.BusinessUnit;
-import com.marketpay.persistence.entity.JobHistory;
-import com.marketpay.persistence.entity.Operation;
+import com.marketpay.persistence.entity.*;
 import com.marketpay.persistence.repository.*;
 import com.marketpay.references.JobStatus;
 import com.marketpay.utils.DateUtils;
@@ -19,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,11 +68,13 @@ public class ParsingCODAJob extends ParsingJob {
         if(block.size() > 3) {
             String headerRecipientLine = block.get(0);
             String clientId = getClientId(headerRecipientLine);
-            BusinessUnit businessUnit = businessUnitRepository.findFirstByClientId(clientId);
+            Optional<BusinessUnit> businessUnit = businessUnitRepository.findFirstByClientId(clientId);
             String centralisationLine1 = block.get(2);
             String foundingDate = getFoundingDate(centralisationLine1);
             codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
-            codaBlock.setIdBu(businessUnit.getId());
+            if(businessUnit.isPresent()) {
+                codaBlock.setIdBu(businessUnit.get().getId());
+            }
         }
 
 
@@ -102,7 +102,7 @@ public class ParsingCODAJob extends ParsingJob {
 
             // Récupération de la BU
             String clientId = getClientId(headerRecipientLine);
-            BusinessUnit businessUnit = businessUnitRepository.findFirstByClientId(clientId);
+            Optional<BusinessUnit> businessUnit = businessUnitRepository.findFirstByClientId(clientId);
             // Récupération de la date de création
             String foundingDateString = getFoundingDate(centralisationLine1);
             LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
@@ -110,7 +110,9 @@ public class ParsingCODAJob extends ParsingJob {
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
             codaBlock.setFundingDate(foundingDate);
-            codaBlock.setIdBu(businessUnit.getId());
+            if (businessUnit.isPresent()) {
+                codaBlock.setIdBu(businessUnit.get().getId());
+            }
             blockRepository.save(codaBlock);
 
             for (int i = 4; i < (block.size() - 2); i = i + 2) {
@@ -119,8 +121,10 @@ public class ParsingCODAJob extends ParsingJob {
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
                     operation.setFundingDate(foundingDate);
-                    String storeName = storeRepository.findFirstByContractNumber(operation.getContractNumber()).getName();
-                    operation.setNameStore(storeName);
+                    Optional<Store> store = storeRepository.findFirstByContractNumber(operation.getContractNumber());
+                    if(store.isPresent()) {
+                        operation.setNameStore(store.get().getName());
+                    }
                     operationRepository.save(operation);
                 }
             }
