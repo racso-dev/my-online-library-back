@@ -8,7 +8,7 @@ import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.StoreRepository;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
-import com.marketpay.references.JobStatus;
+import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -71,9 +71,9 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line));
                     newOperation.setSens(getSens(line));
-                    Optional<Store> store = storeRepository.findFirstByContractNumber(newOperation.getContractNumber());
-                    if(store.isPresent()) {
-                        newOperation.setNameStore(store.get().getName());
+                    Optional<Store> storeOpt = storeRepository.findFirstByContractNumber(newOperation.getContractNumber());
+                    if(storeOpt.isPresent()) {
+                        newOperation.setNameStore(storeOpt.get().getName());
                     }
 
                     if (!operationN43List.isEmpty()) {
@@ -190,7 +190,7 @@ public class ParsingN43Job extends ParsingJob {
     @Override
     protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         // Si il y a une erreur sur une ligne on invalid le fichier N43
-        jobHistory.setStatus(JobStatus.FAIL.getCode());
+        jobHistory.setStatus(JOB_STATUS.FAIL.getCode());
         jobHistory.addError(e.getMessage());
         jobHistoryRepository.save(jobHistory);
     }

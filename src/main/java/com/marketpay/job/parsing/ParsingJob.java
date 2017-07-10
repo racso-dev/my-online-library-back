@@ -5,7 +5,7 @@ import com.marketpay.job.parsing.n43.ParsingN43Job;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.references.JOB_TYPE;
-import com.marketpay.references.JobStatus;
+import com.marketpay.references.JOB_STATUS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public abstract class ParsingJob {
 
         //On créé le jobHistory
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
+        jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
 
         if (filePath == null) {
             LOGGER.error("Le filepath ne peut pas être null");
@@ -122,10 +122,10 @@ public abstract class ParsingJob {
     private void saveJobHistory(JobHistory jobHistory, Exception e){
         if(e == null){
             //Tout est OK
-            jobHistory.setStatus(JobStatus.SUCESS.getCode());
+            jobHistory.setStatus(JOB_STATUS.SUCESS.getCode());
         } else {
             //Il y a eu une erreur
-            jobHistory.setStatus(JobStatus.FAIL.getCode());
+            jobHistory.setStatus(JOB_STATUS.FAIL.getCode());
             jobHistory.addError(e.getMessage());
         }
         jobHistoryRepository.save(jobHistory);

@@ -3,7 +3,7 @@ package com.marketpay.job.parsing.coda;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.persistence.entity.*;
 import com.marketpay.persistence.repository.*;
-import com.marketpay.references.JobStatus;
+import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,11 +79,11 @@ public class ParsingCODAJob extends ParsingJob {
 
 
         codaBlock.setContent(String.join("\\n", block));
-        codaBlock.setStatus(JobStatus.BLOCK_FAIL.getCode());
+        codaBlock.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
         blockRepository.save(codaBlock);
 
         // On met à jour le status du job et la liste d'erreur
-        jobHistory.setStatus(JobStatus.BLOCK_FAIL.getCode());
+        jobHistory.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
         jobHistory.addError(e.getMessage());
         jobHistoryRepository.save(jobHistory);
 
@@ -102,7 +102,7 @@ public class ParsingCODAJob extends ParsingJob {
 
             // Récupération de la BU
             String clientId = getClientId(headerRecipientLine);
-            Optional<BusinessUnit> businessUnit = businessUnitRepository.findFirstByClientId(clientId);
+            Optional<BusinessUnit> businessUnitOpt = businessUnitRepository.findFirstByClientId(clientId);
             // Récupération de la date de création
             String foundingDateString = getFoundingDate(centralisationLine1);
             LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
@@ -110,8 +110,10 @@ public class ParsingCODAJob extends ParsingJob {
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
             codaBlock.setFundingDate(foundingDate);
-            if (businessUnit.isPresent()) {
-                codaBlock.setIdBu(businessUnit.get().getId());
+            if (businessUnitOpt.isPresent()) {
+                codaBlock.setIdBu(businessUnitOpt.get().getId());
+            } else {
+                jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_BU.getCode());
             }
             blockRepository.save(codaBlock);
 
@@ -121,9 +123,11 @@ public class ParsingCODAJob extends ParsingJob {
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
                     operation.setFundingDate(foundingDate);
-                    Optional<Store> store = storeRepository.findFirstByContractNumber(operation.getContractNumber());
-                    if(store.isPresent()) {
-                        operation.setNameStore(store.get().getName());
+                    Optional<Store> storeOpt = storeRepository.findFirstByContractNumber(operation.getContractNumber());
+                    if(storeOpt.isPresent()) {
+                        operation.setNameStore(storeOpt.get().getName());
+                    } else {
+                        jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_STORE.getCode());
                     }
                     operationRepository.save(operation);
                 }

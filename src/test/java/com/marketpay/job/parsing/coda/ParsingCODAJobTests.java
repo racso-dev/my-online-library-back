@@ -2,7 +2,7 @@ package com.marketpay.job.parsing.coda;
 
 import com.marketpay.MarketPayUnitTests;
 import com.marketpay.persistence.entity.JobHistory;
-import com.marketpay.references.JobStatus;
+import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,11 +90,11 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     public void parsingGoodCodaFile() {
 
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
+        jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(CODAFILE_PATH, jobHistory);
             int status = jobHistory.getStatus();
-            assertEquals(JobStatus.IN_PROGRESS.getCode(), status);
+            assertEquals(JOB_STATUS.IN_PROGRESS.getCode(), status);
         } catch (IOException e) {
             fail();
         }
@@ -103,11 +103,11 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     @Test
     public void parsingBadCodaFile() {
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
+        jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
             int status = jobHistory.getStatus();
-            assertEquals(JobStatus.BLOCK_FAIL.getCode(), status);
+            assertEquals(JOB_STATUS.BLOCK_FAIL.getCode(), status);
         } catch (IOException e) {
             fail();
         }
