@@ -10,6 +10,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 /**
  * Created by tchekroun on 10/07/2017.
  */
@@ -49,7 +51,7 @@ public class MarketPayUnitTests {
     public void createBusinessReturnMock() {
         BusinessUnit businessUnit = new BusinessUnit();
         businessUnit.setId(12l);
-        Mockito.doReturn(businessUnit).when(businessUnitRepository).findFirstByClientId(Matchers.anyString());
+        Mockito.doReturn(Optional.of(businessUnit)).when(businessUnitRepository).findFirstByClientId(Matchers.anyString());
     }
 
     public void createOperationReturnMock() {
@@ -59,7 +61,7 @@ public class MarketPayUnitTests {
     public void createStoreRepositoryReturnMock() {
         Store store = new Store();
         store.setName("toot");
-        Mockito.doReturn(store).when(storeRepository).findFirstByContractNumber(Matchers.anyString());
+        Mockito.doReturn(Optional.of(store)).when(storeRepository).findFirstByContractNumber(Matchers.anyString());
     }
 
     public void createJobHistoryReturnMock() {
@@ -67,6 +69,6 @@ public class MarketPayUnitTests {
     }
 
     public void createBlockHistoryReturnMock() {
-        //Mockito.doReturn(new Block()).when(blockRepository).save((Block) Matchers.anyObject());
+        Mockito.doReturn(new Block()).when(blockRepository).save((Block) Matchers.anyObject());
     }
 }
