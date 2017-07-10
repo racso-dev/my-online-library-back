@@ -1,5 +1,6 @@
 package com.marketpay.job.parsing.n43;
 
+import com.marketpay.MarketPayUnitTests;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.references.JobStatus;
@@ -7,6 +8,8 @@ import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
+
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -15,7 +18,7 @@ import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ParsingN43JobTests {
+public class ParsingN43JobTests extends MarketPayUnitTests {
 
     private final String FIRSTLINE_N43_FILE = "110049150026101157911706061706062000000000000009783GROUP SUPECO MAXOR\n";
     private final String TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
@@ -24,6 +27,7 @@ public class ParsingN43JobTests {
     private String N43FILE_PATH = "src/test/resources/parsing/parsingN43File.txt";
 
     @Autowired
+    @InjectMocks
     private ParsingN43Job parsingN43Job;
 
     @Test
