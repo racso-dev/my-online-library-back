@@ -10,5 +10,4 @@ import java.util.Optional;
  */
 public interface BlockRepository extends OptionalCRUDRepository<Block, Long> {
     Optional<Block> findFirstById(long id);
-
 }
