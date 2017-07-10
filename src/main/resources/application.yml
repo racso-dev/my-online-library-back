@@ -4,6 +4,8 @@ server:
 management:
   port: 9000
   context-path: /manage
+  security:
+    enabled: false
 
 database:
   driver:
