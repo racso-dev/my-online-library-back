@@ -2,12 +2,12 @@ package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
+import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.entity.Store;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.StoreRepository;
-import com.marketpay.persistence.entity.JobHistory;
-import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
