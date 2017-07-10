@@ -1,22 +1,25 @@
 package com.marketpay.job.parsing.coda;
 
-import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.MarketPayUnitTests;
+import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.references.JobStatus;
-import com.marketpay.references.TransactionSens;
+import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
-
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 
+import static org.junit.Assert.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ParsingCODAJobTests {
+public class ParsingCODAJobTests extends MarketPayUnitTests {
 
+    @InjectMocks
     @Autowired
     private ParsingCODAJob parsingCODAJob;
 
@@ -26,62 +29,72 @@ public class ParsingCODAJobTests {
     private String ACCOUNT_LINE_MOCK = "10009735047736314 EUR BE   0030000        0000000000000000310517JAGI  concept BVBA                                           009\n";
     private String CODAFILE_PATH = "src/test/resources/parsing/parsingCODAFile.txt";
     private String BAD_CODAFILE_PATH = "src/test/resources/parsing/parsingBadCODAFile.txt";
+    private String FIRST_LINE_MOCK = "0000001061700005        46390589  JAGI  concept BVBA        KREDBEBB   0675354481  00000                                       2\n";
 
     @Test
     public void parsingCardTypeTest() {
         String cardType = parsingCODAJob.getCardType(TRANSACTION_LINE_MOCK);
-        assertTrue(cardType.equals("MAE"));
+        assertEquals("MAE", cardType);
+    }
+
+    @Test
+    public void parsingClientIdTest() {
+        String clientId = parsingCODAJob.getClientId(FIRST_LINE_MOCK);
+        assertEquals("0675354481", clientId);
     }
 
     @Test
     public void parsingCompteNumberTest() {
         String compteNumber = parsingCODAJob.getCompteNumber(ACCOUNT_LINE_MOCK);
-        assertTrue(compteNumber.equals("735047736314"));
+        assertEquals("735047736314", compteNumber);
     }
 
     @Test
     public void parsingSensTest() {
-        TransactionSens sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
-        assertTrue(sens == TransactionSens.CREDIT);
+        Integer sens = parsingCODAJob.getSens(TRANSACTION_LINE_MOCK);
+        assertNotNull(sens);
+        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens.intValue());
     }
 
     @Test
     public void parsingContractNumberTest() {
         String contractNumber = parsingCODAJob.getContractNumber(TRANSACTION_LINE_MOCK);
-        assertTrue(contractNumber.equals("3080461"));
+        assertEquals("3080461", contractNumber);
     }
 
     @Test
     public void parsingNetAmountTest() {
         int netAmount = parsingCODAJob.getNetAmount(TRANSACTION_LINE_MOCK);
-        assertEquals(netAmount, 1518920);
+        assertEquals(1518920, netAmount);
     }
 
     @Test
     public void parsingDateTest() {
         String transactionDate = parsingCODAJob.getTransactionDate(TRANSACTION_LINE_MOCK);
-        assertTrue(transactionDate.equals("310517"));
+        assertEquals("310517", transactionDate);
     }
 
     @Test
     public void parsingGrossAmountTest() {
         int grossAmount = parsingCODAJob.getGrossAmount(GROSS_AMOUNT_MOCK);
-        assertEquals(grossAmount, 152151);
+        assertEquals(152151, grossAmount);
     }
 
     @Test
     public void parsingTotalAmountTest() {
         int totalAmount = parsingCODAJob.getTotalAmount(FINAL_LINE_MOCK);
-        assertEquals(totalAmount, 1573190);
+        assertEquals(1573190, totalAmount);
     }
 
     @Test
     public void parsingGoodCodaFile() {
+
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(CODAFILE_PATH, jobHistory);
-            assertTrue(jobHistory.getStatus() == JobStatus.IN_PROGRESS);
+            int status = jobHistory.getStatus();
+            assertEquals(JobStatus.IN_PROGRESS.getCode(), status);
         } catch (IOException e) {
             fail();
         }
@@ -90,10 +103,11 @@ public class ParsingCODAJobTests {
     @Test
     public void parsingBadCodaFile() {
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
-            assertTrue(jobHistory.getStatus() == JobStatus.BLOCK_FAIL);
+            int status = jobHistory.getStatus();
+            assertEquals(JobStatus.BLOCK_FAIL.getCode(), status);
         } catch (IOException e) {
             fail();
         }

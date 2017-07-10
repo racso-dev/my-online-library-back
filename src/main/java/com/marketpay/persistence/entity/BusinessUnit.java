@@ -15,6 +15,23 @@ public class BusinessUnit {
     private Long id;
     private String name;
     private String location;
+    private String clientId;
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 
     public String getName() {
         return name;

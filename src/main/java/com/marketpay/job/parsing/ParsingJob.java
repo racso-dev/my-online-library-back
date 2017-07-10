@@ -2,7 +2,9 @@ package com.marketpay.job.parsing;
 
 import com.marketpay.job.parsing.coda.ParsingCODAJob;
 import com.marketpay.job.parsing.n43.ParsingN43Job;
-import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.persistence.JobHistoryRepository;
+import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.references.JOB_TYPE;
 import com.marketpay.references.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +21,16 @@ public abstract class ParsingJob {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingJob.class);
     private final String CODA_EXTENSION = "BEOC4C.txt";
+    protected final String DATE_FORMAT_FILE = "ddMMyy";
 
     @Autowired
     private ParsingCODAJob parsingCoda;
 
     @Autowired
     private ParsingN43Job parsingN43;
+
+    @Autowired
+    private JobHistoryRepository jobHistoryRepository;
 
     /**
      * Permet de parser les fichiers en entrée
@@ -34,7 +40,7 @@ public abstract class ParsingJob {
 
         //On créé le jobHistory
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
 
         if (filePath == null) {
             LOGGER.error("Le filepath ne peut pas être null");
@@ -42,12 +48,16 @@ public abstract class ParsingJob {
             return;
         }
 
+        jobHistory.setFilename(filePath);
+
         try {
             if (filePath.contains(CODA_EXTENSION)) {
                 LOGGER.info("Parsing d'un fichier CODA");
+                jobHistory.setFiletype(JOB_TYPE.CODA.getCode());
                 parsingCoda.parsing(filePath, jobHistory);
             } else {
                 LOGGER.info("Parsing d'un fichier N43");
+                jobHistory.setFiletype(JOB_TYPE.N43.getCode());
                 parsingN43.parsing(filePath, jobHistory);
             }
         } catch (IOException e) {
@@ -112,14 +122,13 @@ public abstract class ParsingJob {
     private void saveJobHistory(JobHistory jobHistory, Exception e){
         if(e == null){
             //Tout est OK
-            jobHistory.setStatus(JobStatus.SUCESS);
+            jobHistory.setStatus(JobStatus.SUCESS.getCode());
         } else {
             //Il y a eu une erreur
-            jobHistory.setStatus(JobStatus.FAIL);
+            jobHistory.setStatus(JobStatus.FAIL.getCode());
             jobHistory.addError(e.getMessage());
         }
-
-        //TODO ETI : Save le job history
+        jobHistoryRepository.save(jobHistory);
     }
 
 }

@@ -1,12 +1,15 @@
 package com.marketpay.job.parsing.n43;
 
-import com.marketpay.job.parsing.n43.ressources.TransactionN43;
-import com.marketpay.job.parsing.resources.JobHistory;
+import com.marketpay.MarketPayUnitTests;
+import com.marketpay.job.parsing.n43.ressources.OperationN43;
+import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.references.JobStatus;
-import com.marketpay.references.TransactionSens;
+import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
+
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -15,7 +18,7 @@ import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ParsingN43JobTests {
+public class ParsingN43JobTests extends MarketPayUnitTests {
 
     private final String FIRSTLINE_N43_FILE = "110049150026101157911706061706062000000000000009783GROUP SUPECO MAXOR\n";
     private final String TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
@@ -24,150 +27,143 @@ public class ParsingN43JobTests {
     private String N43FILE_PATH = "src/test/resources/parsing/parsingN43File.txt";
 
     @Autowired
+    @InjectMocks
     private ParsingN43Job parsingN43Job;
-
-    @Test
-    public void getClientNameTest() {
-        String clientName = parsingN43Job.getClientName(FIRSTLINE_N43_FILE);
-        assertTrue(clientName.equals("GROUP SUPECO MAXOR"));
-    }
-
-    @Test
-    public void getClientShouldFail() {
-        String clientName = parsingN43Job.getClientName(BAD_FIRST_LINE);
-        assertTrue(clientName.equals(""));
-    }
 
     @Test
     public void getFinancingDateTest() {
         String financingDate = parsingN43Job.getFinaningDate(FIRSTLINE_N43_FILE);
-        assertTrue(financingDate.equals("170606"));
+        assertEquals("170606", financingDate);
     }
 
     @Test
     public void getContractNumberTest() {
-        Integer contractNumber = parsingN43Job.getContractNumber(TRANSACTION_LINE);
-        assertTrue(contractNumber == 2704735);
+        String contractNumber = parsingN43Job.getContractNumber(TRANSACTION_LINE);
+        assertEquals("0002704735", contractNumber);
     }
 
     @Test
     public void getTransactionDateTest() {
         String transactionDate = parsingN43Job.getTransactionDate(TRANSACTION_LINE);
-        assertTrue(transactionDate.equals("170605"));
+        assertEquals("170605", transactionDate);
     }
 
     @Test
     public void getOperationTypeTest() {
-        Integer operation = parsingN43Job.getOperationType(TRANSACTION_LINE);
-        assertTrue(operation.equals(125));
+        int operation = parsingN43Job.getOperationType(TRANSACTION_LINE);
+        assertEquals(125, operation);
     }
 
     @Test
     public void getSensTest() {
-        TransactionSens sens = parsingN43Job.getSens(TRANSACTION_LINE);
-        assertTrue(sens == TransactionSens.DEBIT);
+        Integer sens = parsingN43Job.getSens(TRANSACTION_LINE);
+        assertNotNull(sens);
+        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens.intValue());
     }
 
     @Test
     public void getCommisionTest() {
         int commision = parsingN43Job.getCommission(COMISSION_LINE);
-        assertEquals(commision, 1465);
+        assertEquals(1465, commision);
     }
 
     @Test
     public void getComissionShouldFail() {
         int comision = parsingN43Job.getCommission(TRANSACTION_LINE);
-        assertEquals(comision, -1);
+        assertEquals(-1, comision);
     }
 
     @Test
     public void getGrossAmountTest() {
         int grossAmount = parsingN43Job.getGrossAmount(TRANSACTION_LINE);
-        assertEquals(grossAmount, 710734);
+        assertEquals(710734, grossAmount);
     }
 
     @Test
     public void getGrossAmountShouldFail() {
         int grossAmount = parsingN43Job.getGrossAmount(COMISSION_LINE);
-        assertEquals(grossAmount, -1);
+        assertEquals(-1, grossAmount);
     }
 
     @Test
     public void parsingShouldCombine() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        TransactionN43 secondTransaction = new TransactionN43();
-        firstTransaction.setOperation_type(125);
-        secondTransaction.setOperation_type(125);
+        OperationN43 firstTransaction = new OperationN43();
+        OperationN43 secondTransaction = new OperationN43();
+        firstTransaction.setOperationType(125);
+        secondTransaction.setOperationType(125);
 
-        assertTrue(parsingN43Job.shouldAgrega(firstTransaction, secondTransaction));
+        assertTrue(parsingN43Job.shouldCombine(firstTransaction, secondTransaction));
     }
 
     @Test
     public void parsingShouldNotCombine() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        TransactionN43 secondTransaction = new TransactionN43();
-        firstTransaction.setOperation_type(127);
-        secondTransaction.setOperation_type(127);
+        OperationN43 firstTransaction = new OperationN43();
+        OperationN43 secondTransaction = new OperationN43();
+        firstTransaction.setOperationType(127);
+        secondTransaction.setOperationType(127);
 
-        assertFalse(parsingN43Job.shouldAgrega(firstTransaction, secondTransaction));
+        assertFalse(parsingN43Job.shouldCombine(firstTransaction, secondTransaction));
     }
 
     @Test
     public void combineTwoCredit() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        firstTransaction.setNet_amount(10);
-        firstTransaction.setGross_amount(25);
+        OperationN43 firstTransaction = new OperationN43();
+        firstTransaction.setNetAmount(10);
+        firstTransaction.setGrossAmount(25);
 
-        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
-        assertEquals(combinedTransaction.getGross_amount(), 50);
-        assertEquals(combinedTransaction.getNet_amount(), 20);
+        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
+        assertEquals(50, combinedTransaction.getGrossAmount());
+        assertEquals(20, combinedTransaction.getNetAmount());
     }
 
     @Test
     public void combineShouldReturnDebitTransaction() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        firstTransaction.setGross_amount(25);
-        firstTransaction.setNet_amount(10);
-        firstTransaction.setSens(TransactionSens.CREDIT);
+        OperationN43 firstTransaction = new OperationN43();
+        firstTransaction.setGrossAmount(25);
+        firstTransaction.setNetAmount(10);
+        firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
-        TransactionN43 secondTransaction = new TransactionN43();
-        secondTransaction.setGross_amount(50);
-        secondTransaction.setNet_amount(20);
-        secondTransaction.setSens(TransactionSens.DEBIT);
+        OperationN43 secondTransaction = new OperationN43();
+        secondTransaction.setGrossAmount(50);
+        secondTransaction.setNetAmount(20);
+        secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
-        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
-        assertEquals(combinedTransaction.getNet_amount(), 10);
-        assertEquals(combinedTransaction.getGross_amount(), 25);
-        assertTrue(combinedTransaction.getSens() == TransactionSens.DEBIT);
+        assertEquals(10, combinedTransaction.getNetAmount());
+        assertEquals(25, combinedTransaction.getGrossAmount());
+        int sens = combinedTransaction.getSens();
+        assertEquals(OPERATION_SENS.DEBIT.getCode(), sens);
     }
 
     @Test
     public void combineShouldReturnCreditTransaction() {
-        TransactionN43 firstTransaction = new TransactionN43();
-        firstTransaction.setGross_amount(75);
-        firstTransaction.setNet_amount(30);
-        firstTransaction.setSens(TransactionSens.CREDIT);
+        OperationN43 firstTransaction = new OperationN43();
+        firstTransaction.setGrossAmount(75);
+        firstTransaction.setNetAmount(30);
+        firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
-        TransactionN43 secondTransaction = new TransactionN43();
-        secondTransaction.setGross_amount(50);
-        secondTransaction.setNet_amount(20);
-        secondTransaction.setSens(TransactionSens.DEBIT);
+        OperationN43 secondTransaction = new OperationN43();
+        secondTransaction.setGrossAmount(50);
+        secondTransaction.setNetAmount(20);
+        secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
-        TransactionN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
-        assertEquals(combinedTransaction.getNet_amount(), 10);
-        assertEquals(combinedTransaction.getGross_amount(), 25);
-        assertTrue(combinedTransaction.getSens() == TransactionSens.CREDIT);
+        assertEquals(10, combinedTransaction.getNetAmount());
+        assertEquals(25, combinedTransaction.getGrossAmount());
+        int sens = combinedTransaction.getSens();
+        assertEquals(OPERATION_SENS.CREDIT.getCode(), sens);
     }
 
     @Test
     public void parsingGoodN43File() {
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setStatus(JobStatus.IN_PROGRESS);
+        jobHistory.setStatus(JobStatus.IN_PROGRESS.getCode());
         try {
             parsingN43Job.parsing(N43FILE_PATH, jobHistory);
-            assertTrue(jobHistory.getStatus() == JobStatus.IN_PROGRESS);
+            int status = jobHistory.getStatus();
+            assertEquals(JobStatus.IN_PROGRESS.getCode(), status);
         } catch (IOException e) {
             fail();
         }
