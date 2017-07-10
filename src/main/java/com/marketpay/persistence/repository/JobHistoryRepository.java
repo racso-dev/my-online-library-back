@@ -14,7 +14,6 @@ import java.util.Optional;
 public interface JobHistoryRepository extends OptionalCRUDRepository<JobHistory, Long> {
     List<JobHistory> findByStatus(int status);
     List<JobHistory> findByFiletype(String filetype);
-    Optional<JobHistory> findFirstById(long id);
     List<JobHistory> findByDateTime(LocalDateTime localDateTime);
     List<JobHistory> findByFilename(String filename);
 }

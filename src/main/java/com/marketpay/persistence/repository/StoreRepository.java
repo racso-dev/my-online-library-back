@@ -12,6 +12,5 @@ import java.util.Optional;
  */
 public interface StoreRepository extends OptionalCRUDRepository<Store, Long> {
     List<Store> findByIdBu(long idBu);
-    List<Store> findByContractNumber(String contractNumber);
     Optional<Store> findFirstByContractNumber(String contractNumber);
 }

@@ -71,7 +71,7 @@ public class ParsingCODAJob extends ParsingJob {
             Optional<BusinessUnit> businessUnitOpt = businessUnitRepository.findFirstByClientId(clientId);
             String centralisationLine1 = block.get(2);
             String foundingDate = getFoundingDate(centralisationLine1);
-            //codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
+            codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
             if(businessUnitOpt.isPresent()) {
                 codaBlock.setIdBu(businessUnitOpt.get().getId());
             }
