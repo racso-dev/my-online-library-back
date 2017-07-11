@@ -29,12 +29,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
             .antMatchers("/").permitAll()
             .antMatchers("/manage/**").permitAll()
             .antMatchers(HttpMethod.POST, "/login").permitAll()
-            .antMatchers("/api/**").authenticated()
-                .and()
-                    // We filter the api/login requests
-                .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(),tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
-                    // And filter other requests to check the presence of JWT in header
-                .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService),UsernamePasswordAuthenticationFilter.class);
+            .antMatchers("/api/**").permitAll();
+        //TODO CHEKROUN remettre le filtre
+//            .antMatchers("/api/**").authenticated()
+//                .and()
+//                    // We filter the api/login requests
+//                .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(),tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
+//                    // And filter other requests to check the presence of JWT in header
+//                .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService),UsernamePasswordAuthenticationFilter.class);
     }
 
     @Value("${spring.datasource.driverClassName}")
