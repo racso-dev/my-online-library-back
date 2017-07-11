@@ -1,0 +1,9 @@
+database:
+  flyway: true
+
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost/marketpay
+    username: marketpay
+    password: marketpay

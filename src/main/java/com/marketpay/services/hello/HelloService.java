@@ -13,7 +13,7 @@ public class HelloService {
      * @return
      */
     public String hello(){
-        return "Salut les meufs";
+        return "Hello world";
     }
 
 }
