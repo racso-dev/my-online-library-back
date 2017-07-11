@@ -30,5 +30,9 @@ Si le port que vous souhaitez utiliser n'est pas disponible et que vous voulez l
  - lsof -i :'port' (par exemple lsof -i :3000)
  - kill -9 'PID'
 
+## Swagger
+Swagger est sur l'url: http://localhost:8000/swagger-ui.html
+
+
 TODOux Thomas C. et Antony T.
 
