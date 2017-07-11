@@ -12,4 +12,5 @@ import java.util.List;
  */
 public interface OperationRepository extends OptionalCRUDRepository<Operation, Long> {
     List<Operation> findByFundingDateAndIdStore(LocalDate date, long idStore);
+    List<Operation> findOperationsByIdStoreInAndFundingDate(List<Long> idStoreList, LocalDate date);
 }
