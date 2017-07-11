@@ -59,7 +59,7 @@ CREATE TABLE `marketpay`.`operation` (
 
 CREATE TABLE `marketpay`.`block` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `funding_date` DATETIME(2) NOT NULL,
+  `funding_date` DATETIME NOT NULL,
   `content` LONGTEXT NOT NULL,
   `status` INT NOT NULL,
   `id_bu` BIGINT(20) NOT NULL,
