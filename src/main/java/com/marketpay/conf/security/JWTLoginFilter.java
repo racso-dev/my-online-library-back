@@ -1,11 +1,13 @@
 package com.marketpay.conf.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,8 +19,12 @@ import java.util.Collections;
  * Created by sgourio on 10/07/2017.
  */
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter{
-    public JWTLoginFilter(String url, AuthenticationManager authManager) {
+
+    private final TokenAuthenticationService tokenAuthenticationService;
+
+    public JWTLoginFilter(String url, AuthenticationManager authManager, TokenAuthenticationService tokenAuthenticationService) {
         super(new AntPathRequestMatcher(url));
+        this.tokenAuthenticationService = tokenAuthenticationService;
         setAuthenticationManager(authManager);
     }
 
@@ -37,6 +43,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter{
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException, ServletException {
-        TokenAuthenticationService.addAuthentication(res, auth.getName());
+        tokenAuthenticationService.addAuthentication(res, auth.getName());
     }
 }
