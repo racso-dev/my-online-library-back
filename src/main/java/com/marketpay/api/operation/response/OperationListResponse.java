@@ -10,4 +10,11 @@ import java.util.List;
 public class OperationListResponse {
     private List<Operation> operationList;
 
+    public List<Operation> getOperationList() {
+        return operationList;
+    }
+
+    public void setOperationList(List<Operation> operationList) {
+        this.operationList = operationList;
+    }
 }
