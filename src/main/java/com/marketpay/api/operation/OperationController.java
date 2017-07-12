@@ -15,7 +15,7 @@ import java.util.List;
  * Created by tchekroun on 10/07/2017.
  */
 @RestController
-@RequestMapping(value = "/operation")
+@RequestMapping(value = "/api/operation")
 public class OperationController extends MarketPayController {
 
     @Autowired
