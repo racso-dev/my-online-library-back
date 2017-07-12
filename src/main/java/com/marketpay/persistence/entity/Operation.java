@@ -1,6 +1,8 @@
 package com.marketpay.persistence.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.marketpay.persistence.converter.LocalDateAttributeConverter;
+import com.marketpay.utils.serializer.LocalDateSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ public class Operation {
     @Convert(converter = LocalDateAttributeConverter.class)
     private LocalDate fundingDate;
     @Convert(converter = LocalDateAttributeConverter.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate tradeDate;
     private String cardType;
     private int sens;
