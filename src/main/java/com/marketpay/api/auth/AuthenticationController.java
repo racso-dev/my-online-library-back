@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 /**
  * Created by etienne on 03/07/17.
  */
-@RequestMapping(value = "/auth")
+@RequestMapping(value = "/api/auth")
 public class AuthenticationController extends MarketPayController {
 
     //TODO ETI

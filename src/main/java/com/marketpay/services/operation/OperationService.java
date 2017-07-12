@@ -23,8 +23,7 @@ public class OperationService {
      * @return List d'opération
      */
     public List<Operation> getOperationFromStoreIdListAndLocalDate(LocalDate localDate, List<Long> storeIdList) {
-        List<Operation> operationList = operationRepository.findOperationsByIdStoreInAndFundingDate(storeIdList, localDate);
-        return operationList;
+        return operationRepository.findOperationsByIdStoreInAndFundingDate(storeIdList, localDate);
     }
 
 }
