@@ -9,13 +9,17 @@ import javax.persistence.Id;
  * Created by antony on 06/07/17.
  */
 @Entity
-public class Store {
+public class Shop {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     private long idBu;
     private String contractNumber;
     private String name;
+
+    public Long getId() {
+        return id;
+    }
 
     public long getIdBu() {
         return idBu;

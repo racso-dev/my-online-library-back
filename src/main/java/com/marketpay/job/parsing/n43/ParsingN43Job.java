@@ -4,10 +4,10 @@ import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
-import com.marketpay.persistence.entity.Store;
+import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.repository.OperationRepository;
-import com.marketpay.persistence.repository.StoreRepository;
+import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class ParsingN43Job extends ParsingJob {
     private OperationRepository operationRepository;
 
     @Autowired
-    private StoreRepository storeRepository;
+    private ShopRepository shopRepository;
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
 
@@ -71,9 +71,9 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line));
                     newOperation.setSens(getSens(line));
-                    Optional<Store> storeOpt = storeRepository.findFirstByContractNumber(newOperation.getContractNumber());
-                    if(storeOpt.isPresent()) {
-                        newOperation.setNameStore(storeOpt.get().getName());
+                    Optional<Shop> shopOpt = shopRepository.findFirstByContractNumber(newOperation.getContractNumber());
+                    if(shopOpt.isPresent()) {
+                        newOperation.setNameShop(shopOpt.get().getName());
                     }
 
                     if (!operationN43List.isEmpty()) {
