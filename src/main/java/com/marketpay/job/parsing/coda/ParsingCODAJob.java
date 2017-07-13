@@ -30,7 +30,7 @@ public class ParsingCODAJob extends ParsingJob {
     private OperationRepository operationRepository;
 
     @Autowired
-    private StoreRepository storeRepository;
+    private ShopRepository shopRepository;
     @Autowired
     private BlockRepository blockRepository;
     @Autowired
@@ -123,11 +123,11 @@ public class ParsingCODAJob extends ParsingJob {
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
                     operation.setFundingDate(foundingDate);
-                    Optional<Store> storeOpt = storeRepository.findFirstByContractNumber(operation.getContractNumber());
-                    if(storeOpt.isPresent()) {
-                        operation.setNameStore(storeOpt.get().getName());
+                    Optional<Shop> shopOpt = shopRepository.findFirstByContractNumber(operation.getContractNumber());
+                    if(shopOpt.isPresent()) {
+                        operation.setNameShop(shopOpt.get().getName());
                     } else {
-                        jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_STORE.getCode());
+                        jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_SHOP.getCode());
                     }
                     operationRepository.save(operation);
                 }

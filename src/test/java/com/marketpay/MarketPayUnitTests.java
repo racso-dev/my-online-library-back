@@ -32,7 +32,7 @@ public class MarketPayUnitTests {
 
     @Mock
     @Autowired
-    private StoreRepository storeRepository = Mockito.mock(StoreRepository.class);
+    private ShopRepository shopRepository = Mockito.mock(ShopRepository.class);
 
     @Mock
     @Autowired
@@ -45,7 +45,7 @@ public class MarketPayUnitTests {
         createBusinessReturnMock();
         createJobHistoryReturnMock();
         createOperationReturnMock();
-        createStoreRepositoryReturnMock();
+        createShopRepositoryReturnMock();
     }
 
     public void createBusinessReturnMock() {
@@ -58,10 +58,10 @@ public class MarketPayUnitTests {
         Mockito.doReturn(new Operation()).when(operationRepository).save((Operation) Matchers.anyObject());
     }
 
-    public void createStoreRepositoryReturnMock() {
-        Store store = new Store();
-        store.setName("toot");
-        Mockito.doReturn(Optional.of(store)).when(storeRepository).findFirstByContractNumber(Matchers.anyString());
+    public void createShopRepositoryReturnMock() {
+        Shop shop = new Shop();
+        shop.setName("toot");
+        Mockito.doReturn(Optional.of(shop)).when(shopRepository).findFirstByContractNumber(Matchers.anyString());
     }
 
     public void createJobHistoryReturnMock() {

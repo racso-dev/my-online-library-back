@@ -18,7 +18,11 @@ public class User {
     private String login;
     private String password;
     private long idBu;
-    private String idStore;
+    private long idShop;
+
+    public Long getId() {
+        return id;
+    }
 
     public long getProfile() {
         return profile;
@@ -60,11 +64,11 @@ public class User {
         this.idBu = idBu;
     }
 
-    public String getIdStore() {
-        return idStore;
+    public long getIdShop() {
+        return idShop;
     }
 
-    public void setIdStore(String idStore) {
-        this.idStore = idStore;
+    public void setIdShop(long idShop) {
+        this.idShop = idShop;
     }
 }

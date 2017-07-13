@@ -31,11 +31,11 @@ public class OperationController extends MarketPayController {
     OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "yyyyMMdd") LocalDate localDate) {
         OperationListResponse response = new OperationListResponse();
 
-        // TODO: Récupérrer la liste de store associé à l'utilisateur connecté via la session
-        List<Long> storeIdList = new ArrayList<>();
-        storeIdList.add(2l);
-        storeIdList.add(1l);
-        response.setOperationList(operationService.getOperationFromStoreIdListAndLocalDate(localDate, storeIdList));
+        // TODO: Récupérrer la liste de shop associé à l'utilisateur connecté via la session
+        List<Long> shopIdList = new ArrayList<>();
+        shopIdList.add(2l);
+        shopIdList.add(1l);
+        response.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
 
         return response;
     }

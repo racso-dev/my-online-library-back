@@ -19,11 +19,11 @@ public class OperationService {
     /**
      * Permet de récupérer la liste d'opération effectué dans x magasins à un instant T
      * @param localDate
-     * @param storeIdList
+     * @param shopIdList
      * @return List d'opération
      */
-    public List<Operation> getOperationFromStoreIdListAndLocalDate(LocalDate localDate, List<Long> storeIdList) {
-        return operationRepository.findOperationsByIdStoreInAndFundingDate(storeIdList, localDate);
+    public List<Operation> getOperationFromShopIdListAndLocalDate(LocalDate localDate, List<Long> shopIdList) {
+        return operationRepository.findOperationsByIdShopInAndFundingDate(shopIdList, localDate);
     }
 
 }

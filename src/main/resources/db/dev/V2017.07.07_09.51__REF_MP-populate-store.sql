@@ -1,4 +1,4 @@
-INSERT INTO store (id_bu, contract_number, name) values
+INSERT INTO shop (id_bu, contract_number, name) values
 (1, '123', 'Market Anto'),
 (2, '1234', 'Market Thotooooo'),
 (3, '1235', 'Market ETI TI TI'),

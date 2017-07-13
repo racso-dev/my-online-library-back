@@ -25,8 +25,8 @@ public class Operation {
     private long grossAmount;
     private long netAmount;
     private String contractNumber;
-    private String nameStore;
-    private long idStore;
+    private String nameShop;
+    private long idShop;
 
     public LocalDate getFundingDate() {
         return fundingDate;
@@ -84,19 +84,19 @@ public class Operation {
         this.contractNumber = contractNumber;
     }
 
-    public String getNameStore() {
-        return nameStore;
+    public String getNameShop() {
+        return nameShop;
     }
 
-    public void setNameStore(String nameStore) {
-        this.nameStore = nameStore;
+    public void setNameShop(String nameShop) {
+        this.nameShop = nameShop;
     }
 
-    public long getIdStore() {
-        return idStore;
+    public long getIdShop() {
+        return idShop;
     }
 
-    public void setIdStore(long idStore) {
-        this.idStore = idStore;
+    public void setIdShop(long idShop) {
+        this.idShop = idShop;
     }
 }
