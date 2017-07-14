@@ -23,16 +23,15 @@ public class TokenAuthenticationService {
     @Value("${jwt.secret}")
     private String SECRET;
     private final String COOKIE_NAME = "sid";
-    private final String TOKEN_PREFIX = "Bearer";
-    private final String HEADER_STRING = "Authorization";
 
     public void addAuthentication(HttpServletRequest req, HttpServletResponse res, String username) {
         String JWT = Jwts.builder()
-            .setSubject(username)
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
+            .setPayload("{\"sub\":\"" + username +"\", \"profile\":\"test\", \"exp\":"+new Date(System.currentTimeMillis() + EXPIRATIONTIME).getTime()+"}")
+            //.setSubject(username)
+            //.setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
             .signWith(SignatureAlgorithm.HS512, SECRET)
             .compact();
-        Cookie sessionCookie = new Cookie(COOKIE_NAME, TOKEN_PREFIX + JWT );
+        Cookie sessionCookie = new Cookie(COOKIE_NAME, JWT );
         res.addCookie(sessionCookie);
     }
 
@@ -45,7 +44,7 @@ public class TokenAuthenticationService {
                         // parse the token.
                         String user = Jwts.parser()
                             .setSigningKey(SECRET)
-                            .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                            .parseClaimsJws(token)
                             .getBody()
                             .getSubject();
 
