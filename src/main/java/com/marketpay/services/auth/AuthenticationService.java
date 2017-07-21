@@ -5,6 +5,8 @@ import com.marketpay.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * Created by etienne on 03/07/17.
  */
@@ -20,7 +22,7 @@ public class AuthenticationService {
      * @param password
      * @return un User ou null
      */
-    public User findUserFromConnectInformation(String login, String password) {
+    public Optional<User> findUserFromConnectInformation(String login, String password) {
         return userRepository.findUserByLoginAndPassword(login, password);
     }
 
