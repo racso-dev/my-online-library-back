@@ -13,4 +13,5 @@ public interface UserRepository extends OptionalCRUDRepository<User, Long> {
     List<User> findByLogin(String login);
     List<User> findByIdBu(long idBu);
     List<User> findByIdShop(long idShop);
+    User findUserByLoginAndPassword(String login, String password);
 }
