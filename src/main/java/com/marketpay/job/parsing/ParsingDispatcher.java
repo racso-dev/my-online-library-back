@@ -9,9 +9,12 @@ import com.marketpay.references.JOB_TYPE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
+@Component
 public class ParsingDispatcher {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingJob.class);
@@ -28,11 +31,12 @@ public class ParsingDispatcher {
      * Permet de parser les fichiers en entrée
      * @param filePath
      */
-    private void parsingFile(String filePath) {
+    public void parsingFile(String filePath) {
 
         //On créé le jobHistory
         JobHistory jobHistory = new JobHistory();
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
+        jobHistory.setDate(LocalDateTime.now());
 
         if (filePath == null) {
             LOGGER.error("Le filepath ne peut pas être null");
