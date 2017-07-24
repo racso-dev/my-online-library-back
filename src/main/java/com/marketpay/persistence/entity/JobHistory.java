@@ -15,7 +15,7 @@ public class JobHistory {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     @Convert(converter = LocalDateTimeAttributeConverter.class)
-    private LocalDateTime dateTime;
+    private LocalDateTime date;
     private int status;
     private String filename;
     private String filetype;
@@ -46,12 +46,12 @@ public class JobHistory {
         this.id = id;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getDate() {
+        return date;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 
     public int getStatus() {

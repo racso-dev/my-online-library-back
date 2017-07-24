@@ -1,0 +1,1 @@
+ALTER TABLE operation MODIFY card_type VARCHAR(45) NULL;

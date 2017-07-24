@@ -10,6 +10,8 @@ import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,8 @@ public class ParsingN43Job extends ParsingJob {
     private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format JJMMAA
 
     // Identifié sur les lignes commençant par 22
-    private final String TRANSACTION_LINE_INFORMATION = "22";
+    private final String TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT = "^22.{20}12\\d{3}";
+    private final String TRANSACTION_LINE_INFORMATION_WITH_COMMISION = "^22.{20}17\\d{3}";
     private final String CONTRACT_NUMBER_REGEX = "^.{42}(\\d{10})"; // Groupe 1
     private final String TRANSACTION_DATE_REGEX = "^.{16}(\\d{6})"; // Groupe 1
     private final String OPERATION_SENS_REGEX = "^.{22}12(\\d{3})(\\d{1})"; // Groupe 1 : opération Groupe 2 : Sens
@@ -38,6 +41,7 @@ public class ParsingN43Job extends ParsingJob {
 
     private final int UNPAID_OPERATION = 127;
 
+    private final Logger LOGGER = LoggerFactory.getLogger(ParsingN43Job.class);
 
     @Autowired
     private OperationRepository operationRepository;
@@ -57,12 +61,11 @@ public class ParsingN43Job extends ParsingJob {
             ArrayList<OperationN43> operationN43List = new ArrayList<>();
             LocalDate foundingDate = null;
             while ((line = buffer.readLine()) != null) {
-                OperationN43 newOperation = new OperationN43();
                 if (line.startsWith(BU_LINE_INFORMATION)) {
                     String foundingDateString = getFinaningDate(line);
                     foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
-                } else if (line.startsWith(TRANSACTION_LINE_INFORMATION)) {
-
+                } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT, 0) != null) {
+                    OperationN43 newOperation = new OperationN43();
                     if (foundingDate != null) {
                         newOperation.setFundingDate(foundingDate);
                     }
@@ -70,6 +73,9 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setOperationType(getOperationType(line));
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line));
+                    newOperation.setNetAmount(newOperation.getGrossAmount());
+                    String dateString = getTransactionDate(line);
+                    newOperation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, dateString));
                     newOperation.setSens(getSens(line));
                     Optional<Shop> shopOpt = shopRepository.findFirstByContractNumber(newOperation.getContractNumber());
                     if(shopOpt.isPresent()) {
@@ -85,11 +91,19 @@ public class ParsingN43Job extends ParsingJob {
                         }
                     }
                     operationN43List.add(newOperation);
+                } else if(matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_COMMISION, 0) != null) {
+                    Integer lastIndex = operationN43List.size() - 1;
+                    OperationN43 lastOperation = operationN43List.get(lastIndex);
+                    OperationN43 operation = operationN43List.get(lastIndex);
+                    Integer commission = getCommission(line);
+                    operation.setNetAmount(operation.getGrossAmount() + commission);
+                    operationN43List.remove(lastOperation);
+                    operationN43List.add(operation);
                 }
             }
 
-            for(Operation operation: operationN43List) {
-                operationRepository.save(operation);
+            for(OperationN43 operationN43: operationN43List) {
+                operationRepository.save(operationN43.toOperation());
             }
         } catch (Exception e) {
             if(e instanceof IOException) {
@@ -190,6 +204,7 @@ public class ParsingN43Job extends ParsingJob {
     @Override
     protected void errorBlock(Exception e, List<String> block, JobHistory jobHistory) {
         // Si il y a une erreur sur une ligne on invalid le fichier N43
+        LOGGER.error("Une erreur s'est produit pendant le parsing du block N43 : ", e);
         jobHistory.setStatus(JOB_STATUS.FAIL.getCode());
         jobHistory.addError(e.getMessage());
         jobHistoryRepository.save(jobHistory);
