@@ -17,13 +17,27 @@ public class AuthenticationService {
     private UserRepository userRepository;
 
     /**
-     * Permet de retrouver les informations d'un utilisateur via son login / mot de passe
+     * Service de login avec login password
      * @param login
      * @param password
      * @return un User ou null
      */
-    public Optional<User> findUserFromConnectInformation(String login, String password) {
+    public Optional<User> login(String login, String password) {
+
+        //On hash le password
+        //TODO ETI
+
+        //On récupère le user
+        //TODO ETI
+
+        //Si on a bien le user on connect, donc on génère le token
+        //TODO ETI
+
+        //On retourne le user
+        //TODO ETI
         return userRepository.findUserByLoginAndPassword(login, password);
     }
+
+
 
 }
