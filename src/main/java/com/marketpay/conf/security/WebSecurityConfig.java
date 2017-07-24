@@ -1,6 +1,10 @@
 package com.marketpay.conf.security;
 
-import com.marketpay.conf.CORSFilter;
+import com.marketpay.filter.CORSFilter;
+import com.marketpay.filter.security.JWTAuthenticationFilter;
+import com.marketpay.filter.security.JWTLoginFilter;
+import com.marketpay.services.auth.TokenAuthenticationService;
+import com.marketpay.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -37,9 +41,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
             .antMatchers("/api/**").authenticated()
             .and()
                 // We filter the api/login requests
-            .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(),tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
                     // And filter other requests to check the presence of JWT in header
-            .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService),UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new CORSFilter(), JWTLoginFilter.class);
     }
 
@@ -68,7 +72,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
             .dataSource(dataSource)
+            .passwordEncoder(PasswordUtils.PASSWORD_ENCODER)
             .usersByUsernameQuery("select login, password, true from user where login=?")
             .authoritiesByUsernameQuery("select login, profile from user where login=?");
     }
+
 }

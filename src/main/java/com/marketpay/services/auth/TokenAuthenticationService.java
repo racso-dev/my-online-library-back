@@ -1,4 +1,4 @@
-package com.marketpay.conf.security;
+package com.marketpay.services.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
