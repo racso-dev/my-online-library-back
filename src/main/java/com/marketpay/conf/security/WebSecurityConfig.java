@@ -1,5 +1,6 @@
 package com.marketpay.conf.security;
 
+import com.marketpay.conf.CORSFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
@@ -25,18 +27,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .csrf().disable().authorizeRequests()
             .antMatchers("/").permitAll()
             .antMatchers("/manage/**").permitAll()
+            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .antMatchers(HttpMethod.POST, "/login").permitAll()
-            .antMatchers("/api/**").permitAll();
-        //TODO CHEKROUN remettre le filtre
-//            .antMatchers("/api/**").authenticated()
-//                .and()
-//                    // We filter the api/login requests
-//                .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(),tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
-//                    // And filter other requests to check the presence of JWT in header
-//                .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService),UsernamePasswordAuthenticationFilter.class);
+//            .antMatchers("/api/**").permitAll();
+            .antMatchers("/api/**").authenticated()
+            .and()
+                // We filter the api/login requests
+            .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(),tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
+                    // And filter other requests to check the presence of JWT in header
+            .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService),UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new CORSFilter(), JWTLoginFilter.class);
     }
 
     @Value("${spring.datasource.driverClassName}")

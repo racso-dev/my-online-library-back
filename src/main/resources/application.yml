@@ -17,3 +17,6 @@ database:
 
 jwt:
   secret: UnEXV9#C;-q)xa2$=q4?um2[;L-~Hj(6SWw!cW~5f,yLzHv
+
+security:
+  sessions: stateless
