@@ -1,4 +1,4 @@
-package com.marketpay.conf;
+package com.marketpay.filter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

@@ -1,14 +1,11 @@
 package com.marketpay;
 
-import com.marketpay.conf.CORSFilter;
 import com.marketpay.conf.ServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 
 /**
  * Created by etienne on 03/07/17.

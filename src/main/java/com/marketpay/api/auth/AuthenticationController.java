@@ -25,28 +25,29 @@ public class AuthenticationController extends MarketPayController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    /**
-     * WS de login avec login et password
-     * @param request
-     * @param response
-     * @return
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public @ResponseBody LoginResponse login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
-
-        Optional<User> userOpt = authenticationService.login(request.getLogin(), request.getPassword());
-
-        LoginResponse loginResponse = new LoginResponse();
-
-        if (userOpt.isPresent()) {
-            //OK
-            loginResponse.setUser(userOpt.get());
-            response.setStatus(HttpStatus.OK.value());
-        } else {
-            //KO
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        }
-
-        return loginResponse;
-    }
+//    /**
+//     * TODO ETI
+//     * WS de login avec login et password
+//     * @param request
+//     * @param response
+//     * @return
+//     */
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    public @ResponseBody LoginResponse login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+//
+//        Optional<User> userOpt = authenticationService.login(request.getLogin(), request.getPassword());
+//
+//        LoginResponse loginResponse = new LoginResponse();
+//
+//        if (userOpt.isPresent()) {
+//            //OK
+//            loginResponse.setUser(userOpt.get());
+//            response.setStatus(HttpStatus.OK.value());
+//        } else {
+//            //KO
+//            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+//        }
+//
+//        return loginResponse;
+//    }
 }

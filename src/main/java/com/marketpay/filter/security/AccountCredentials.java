@@ -1,4 +1,4 @@
-package com.marketpay.conf.security;
+package com.marketpay.filter.security;
 
 /**
  * Created by sgourio on 10/07/2017.
