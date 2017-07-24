@@ -2,7 +2,8 @@ package com.marketpay.references;
 
 public enum JOB_TYPE {
     CODA("Coda"),
-    N43("N43");
+    N43("N43"),
+    REPOSITORY_SHOP("repository_shop");
 
     private String code;
 

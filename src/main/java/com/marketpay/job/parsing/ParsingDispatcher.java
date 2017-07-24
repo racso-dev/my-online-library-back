@@ -2,6 +2,7 @@ package com.marketpay.job.parsing;
 
 import com.marketpay.job.parsing.coda.ParsingCODAJob;
 import com.marketpay.job.parsing.n43.ParsingN43Job;
+import com.marketpay.job.parsing.repositoryshop.ParsingRepositoryShopJob;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.references.JOB_STATUS;
@@ -19,11 +20,14 @@ public class ParsingDispatcher {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingJob.class);
     private final String CODA_EXTENSION = "BEOC4C.txt";
+    private final String REPOSITORY_SHOP_CSV_EXTENSION = ".csv";
 
     @Autowired
     private ParsingCODAJob parsingCoda;
     @Autowired
     private ParsingN43Job parsingN43;
+    @Autowired
+    private ParsingRepositoryShopJob parsingRepositoryShopJob;
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
 
@@ -51,6 +55,10 @@ public class ParsingDispatcher {
                 LOGGER.info("Parsing d'un fichier CODA");
                 jobHistory.setFiletype(JOB_TYPE.CODA.getCode());
                 parsingCoda.parsing(filePath, jobHistory);
+            } else if(filePath.contains(REPOSITORY_SHOP_CSV_EXTENSION)) {
+                LOGGER.info("Parsing d'un fichier REFERENTIEL");
+                jobHistory.setFiletype(JOB_TYPE.REPOSITORY_SHOP.getCode());
+                parsingRepositoryShopJob.parsing(filePath, jobHistory);
             } else {
                 LOGGER.info("Parsing d'un fichier N43");
                 jobHistory.setFiletype(JOB_TYPE.N43.getCode());
