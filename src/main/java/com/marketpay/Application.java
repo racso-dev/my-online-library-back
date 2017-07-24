@@ -19,16 +19,6 @@ public class Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 
-    /**
-     * Enable CORS
-     */
-    @Bean
-    public FilterRegistrationBean corsFilter() {
-        final FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-        filterRegistrationBean.setFilter(new CORSFilter());
-        return filterRegistrationBean;
-    }
-
     public static void main(String[] args) {
 
         //Lancement de l'appli
