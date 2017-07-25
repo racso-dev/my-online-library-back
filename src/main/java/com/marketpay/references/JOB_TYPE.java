@@ -11,9 +11,9 @@ public enum JOB_TYPE {
         this.code = code;
     }
 
-    public static JOB_TYPE getByValue(String code) {
+    public static JOB_TYPE getByCode(String code) {
         for (JOB_TYPE type : values() ) {
-            if(type.code == code) {
+            if(type.code.equals(code)) {
                 return type;
             }
         }

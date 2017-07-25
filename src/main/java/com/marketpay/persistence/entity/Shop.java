@@ -16,6 +16,9 @@ public class Shop {
     private long idBu;
     private String contractNumber;
     private String name;
+    private String codeAl;
+    private String gln;
+    private String atica;
 
     public Long getId() {
         return id;
@@ -44,4 +47,29 @@ public class Shop {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getCodeAl() {
+        return codeAl;
+    }
+
+    public void setCodeAl(String codeAl) {
+        this.codeAl = codeAl;
+    }
+
+    public String getGln() {
+        return gln;
+    }
+
+    public void setGln(String gln) {
+        this.gln = gln;
+    }
+
+    public String getAtica() {
+        return atica;
+    }
+
+    public void setAtica(String atica) {
+        this.atica = atica;
+    }
+
 }

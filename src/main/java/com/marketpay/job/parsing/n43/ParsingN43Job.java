@@ -3,7 +3,6 @@ package com.marketpay.job.parsing.n43;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.persistence.entity.JobHistory;
-import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.repository.OperationRepository;
@@ -77,9 +76,10 @@ public class ParsingN43Job extends ParsingJob {
                     String dateString = getTransactionDate(line);
                     newOperation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, dateString));
                     newOperation.setSens(getSens(line));
-                    Optional<Shop> shopOpt = shopRepository.findFirstByContractNumber(newOperation.getContractNumber());
+                    Optional<Shop> shopOpt = shopRepository.findByContractNumber(newOperation.getContractNumber());
                     if(shopOpt.isPresent()) {
                         newOperation.setNameShop(shopOpt.get().getName());
+                        newOperation.setIdShop(shopOpt.get().getId());
                     }
 
                     if (!operationN43List.isEmpty()) {
@@ -122,7 +122,8 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     public String getContractNumber(String line) {
-        return matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
+        String contractNumber = matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
+        return Long.valueOf(contractNumber).toString();
     }
 
     public String getTransactionDate(String line) {

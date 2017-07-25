@@ -10,6 +10,5 @@ import java.util.Optional;
  * Created by antony on 06/07/17.
  */
 public interface BusinessUnitRepository extends OptionalCRUDRepository<BusinessUnit, Long> {
-    //TODO en attente d'un vrai ID de BU
-    Optional<BusinessUnit> findFirstByClientId(String clientId);
+    Optional<BusinessUnit> findByCodeBu(String codeBu);
 }

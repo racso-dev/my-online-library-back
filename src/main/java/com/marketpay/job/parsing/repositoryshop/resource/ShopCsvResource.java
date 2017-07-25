@@ -8,6 +8,7 @@ public class ShopCsvResource {
     private String Num_Contrat;
     private String Code_AL;
     private String GLN;
+    private String ATICA;
     private String Nom_AL;
     private String Code_BU;
     private String CIF;
@@ -70,5 +71,13 @@ public class ShopCsvResource {
 
     public void setNom_BU(String nom_BU) {
         Nom_BU = nom_BU;
+    }
+
+    public String getATICA() {
+        return ATICA;
+    }
+
+    public void setATICA(String ATICA) {
+        this.ATICA = ATICA;
     }
 }

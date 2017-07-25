@@ -27,8 +27,8 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     private String GROSS_AMOUNT_MOCK = "2200020000BRUT:  000000000152151  COM:  000000000000259                                                                      0 0\n";
     private String FINAL_LINE_MOCK = "9               000010000000001573190000000001573190                                                                           2\n";
     private String ACCOUNT_LINE_MOCK = "10009735047736314 EUR BE   0030000        0000000000000000310517JAGI  concept BVBA                                           009\n";
-    private String CODAFILE_PATH = "src/test/resources/parsing/parsingCODAFile.txt";
-    private String BAD_CODAFILE_PATH = "src/test/resources/parsing/parsingBadCODAFile.txt";
+    private String CODAFILE_PATH = "src/test/resources/parsing/parsingCODAFileBEOC4C.txt";
+    private String BAD_CODAFILE_PATH = "src/test/resources/parsing/parsingBadCODAFileBEOC4C.txt";
     private String FIRST_LINE_MOCK = "0000001061700005        46390589  JAGI  concept BVBA        KREDBEBB   0675354481  00000                                       2\n";
 
     @Test

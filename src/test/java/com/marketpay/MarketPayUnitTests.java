@@ -51,7 +51,7 @@ public class MarketPayUnitTests {
     public void createBusinessReturnMock() {
         BusinessUnit businessUnit = new BusinessUnit();
         businessUnit.setId(12l);
-        Mockito.doReturn(Optional.of(businessUnit)).when(businessUnitRepository).findFirstByClientId(Matchers.anyString());
+        //TODO ETI
     }
 
     public void createOperationReturnMock() {
@@ -61,7 +61,7 @@ public class MarketPayUnitTests {
     public void createShopRepositoryReturnMock() {
         Shop shop = new Shop();
         shop.setName("toot");
-        Mockito.doReturn(Optional.of(shop)).when(shopRepository).findFirstByContractNumber(Matchers.anyString());
+        Mockito.doReturn(Optional.of(shop)).when(shopRepository).findByContractNumber(Matchers.anyString());
     }
 
     public void createJobHistoryReturnMock() {

@@ -51,11 +51,11 @@ public class ParsingDispatcher {
         jobHistory.setFilename(filePath);
 
         try {
-            if (filePath.contains(CODA_EXTENSION)) {
+            if (filePath.toLowerCase().contains(CODA_EXTENSION.toLowerCase())) {
                 LOGGER.info("Parsing d'un fichier CODA");
                 jobHistory.setFiletype(JOB_TYPE.CODA.getCode());
                 parsingCoda.parsing(filePath, jobHistory);
-            } else if(filePath.contains(REPOSITORY_SHOP_CSV_EXTENSION)) {
+            } else if(filePath.toLowerCase().contains(REPOSITORY_SHOP_CSV_EXTENSION.toLowerCase())) {
                 LOGGER.info("Parsing d'un fichier REFERENTIEL");
                 jobHistory.setFiletype(JOB_TYPE.REPOSITORY_SHOP.getCode());
                 parsingRepositoryShopJob.parsing(filePath, jobHistory);

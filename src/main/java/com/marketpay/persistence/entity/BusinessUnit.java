@@ -15,22 +15,15 @@ public class BusinessUnit {
     private Long id;
     private String name;
     private String location;
-    private String clientId;
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public Long getId() {
-        return id;
-    }
+    private String codeBu;
+    private String cif;
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -47,5 +40,21 @@ public class BusinessUnit {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCodeBu() {
+        return codeBu;
+    }
+
+    public void setCodeBu(String codeBu) {
+        this.codeBu = codeBu;
+    }
+
+    public String getCif() {
+        return cif;
+    }
+
+    public void setCif(String cif) {
+        this.cif = cif;
     }
 }
