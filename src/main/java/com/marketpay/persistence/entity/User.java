@@ -17,8 +17,8 @@ public class User {
     private String email;
     private String login;
     private String password;
-    private long idBu;
-    private long idShop;
+    private Long idBu;
+    private Long idShop;
 
     public Long getId() {
         return id;
@@ -56,19 +56,19 @@ public class User {
         this.password = password;
     }
 
-    public long getIdBu() {
+    public Long getIdBu() {
         return idBu;
     }
 
-    public void setIdBu(long idBu) {
+    public void setIdBu(Long idBu) {
         this.idBu = idBu;
     }
 
-    public long getIdShop() {
+    public Long getIdShop() {
         return idShop;
     }
 
-    public void setIdShop(long idShop) {
+    public void setIdShop(Long idShop) {
         this.idShop = idShop;
     }
 }
