@@ -35,8 +35,6 @@ public class ParsingCODAJob extends ParsingJob {
     private BlockRepository blockRepository;
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
-    @Autowired
-    private BusinessUnitRepository businessUnitRepository;
 
     /**
      * Permet de découper le fichier en block de n relevés
@@ -66,17 +64,10 @@ public class ParsingCODAJob extends ParsingJob {
         Block codaBlock = new Block();
 
         if(block.size() > 3) {
-            String headerRecipientLine = block.get(0);
-            String clientId = getClientId(headerRecipientLine);
-            Optional<BusinessUnit> businessUnitOpt = businessUnitRepository.findFirstByClientId(clientId);
             String centralisationLine1 = block.get(2);
             String foundingDate = getFoundingDate(centralisationLine1);
             codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
-            if(businessUnitOpt.isPresent()) {
-                codaBlock.setIdBu(businessUnitOpt.get().getId());
-            }
         }
-
 
         codaBlock.setContent(String.join("\\n", block));
         codaBlock.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
@@ -97,12 +88,8 @@ public class ParsingCODAJob extends ParsingJob {
     public void parsingCodaBlock(List<String> block, JobHistory jobHistory) {
 
         try {
-            String headerRecipientLine = block.get(0);
             String centralisationLine1 = block.get(2);
 
-            // Récupération de la BU
-            String clientId = getClientId(headerRecipientLine);
-            Optional<BusinessUnit> businessUnitOpt = businessUnitRepository.findFirstByClientId(clientId);
             // Récupération de la date de création
             String foundingDateString = getFoundingDate(centralisationLine1);
             LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
@@ -110,12 +97,11 @@ public class ParsingCODAJob extends ParsingJob {
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
             codaBlock.setFundingDate(foundingDate);
-            if (businessUnitOpt.isPresent()) {
-                codaBlock.setIdBu(businessUnitOpt.get().getId());
-            } else {
-                jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_BU.getCode());
-            }
+            codaBlock.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
+
             blockRepository.save(codaBlock);
+
+            Long idBu = null;
 
             for (int i = 4; i < (block.size() - 2); i = i + 2) {
                 String detailLine1 = block.get(i);
@@ -123,15 +109,31 @@ public class ParsingCODAJob extends ParsingJob {
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
                     operation.setFundingDate(foundingDate);
-                    Optional<Shop> shopOpt = shopRepository.findFirstByContractNumber(operation.getContractNumber());
+                    Optional<Shop> shopOpt = shopRepository.findByContractNumber(operation.getContractNumber());
                     if(shopOpt.isPresent()) {
+                        idBu = shopOpt.get().getIdBu();
                         operation.setNameShop(shopOpt.get().getName());
+                        operation.setIdShop(shopOpt.get().getId());
                     } else {
                         jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_SHOP.getCode());
                     }
                     operationRepository.save(operation);
                 }
             }
+
+            //Récupération de l'idBU
+            //Via le shop donc le contractNumber dans les lignes du block
+            if (idBu != null) {
+                codaBlock.setIdBu(idBu);
+            } else {
+                jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_BU.getCode());
+                jobHistoryRepository.save(jobHistory);
+            }
+
+            codaBlock.setStatus(JOB_STATUS.SUCESS.getCode());
+            blockRepository.save(codaBlock);
+
+
         } catch (Exception e) {
             LOGGER.error("Une erreur s'est produit pendant le parsing du block CODA", e);
             errorBlock(e, block, jobHistory);

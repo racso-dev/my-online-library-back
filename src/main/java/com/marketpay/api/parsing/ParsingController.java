@@ -2,6 +2,8 @@ package com.marketpay.api.parsing;
 
 import com.marketpay.api.MarketPayController;
 import com.marketpay.job.parsing.ParsingDispatcher;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +18,7 @@ public class ParsingController extends MarketPayController {
     private ParsingDispatcher parsingDispatcher;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public @ResponseBody void parsingFileAtPath(@PathParam(value = "filepath") String filepath, HttpServletResponse response) {
+    public @ResponseBody void parsingFileAtPath(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
         parsingDispatcher.parsingFile(filepath);
         response.setStatus(HttpServletResponse.SC_OK);
     }

@@ -18,7 +18,7 @@ public class Block {
     @Lob
     private String content;
     private int status;
-    private long idBu;
+    private Long idBu;
 
     public LocalDate getFundingDate() {
         return fundingDate;
@@ -44,11 +44,19 @@ public class Block {
         this.status = status;
     }
 
-    public long getIdBu() {
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Long getIdBu() {
         return idBu;
     }
 
-    public void setIdBu(long idBu) {
+    public void setIdBu(Long idBu) {
         this.idBu = idBu;
     }
 }
