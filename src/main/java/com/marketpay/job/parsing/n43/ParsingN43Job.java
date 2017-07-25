@@ -1,8 +1,8 @@
 package com.marketpay.job.parsing.n43;
 
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.repository.OperationRepository;
@@ -57,14 +57,14 @@ public class ParsingN43Job extends ParsingJob {
 
         try {
             String line;
-            ArrayList<OperationN43> operationN43List = new ArrayList<>();
+            ArrayList<Operation> operations= new ArrayList<>();
             LocalDate foundingDate = null;
             while ((line = buffer.readLine()) != null) {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
                     String foundingDateString = getFinaningDate(line);
                     foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
                 } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT, 0) != null) {
-                    OperationN43 newOperation = new OperationN43();
+                    Operation newOperation = new Operation();
                     if (foundingDate != null) {
                         newOperation.setFundingDate(foundingDate);
                     }
@@ -82,28 +82,28 @@ public class ParsingN43Job extends ParsingJob {
                         newOperation.setIdShop(shopOpt.get().getId());
                     }
 
-                    if (!operationN43List.isEmpty()) {
-                        OperationN43 lastOrder = operationN43List.get(operationN43List.size() - 1);
+                    if (!operations.isEmpty()) {
+                        Operation lastOrder = operations.get(operations.size() - 1);
                         if (shouldCombine(lastOrder, newOperation)) {
                             // On agrége les transactions puis on remplace la dernière transaction par la transaction agrégée
                             newOperation = combineTransaction(lastOrder, newOperation);
-                            operationN43List.remove(lastOrder);
+                            operations.remove(lastOrder);
                         }
                     }
-                    operationN43List.add(newOperation);
+                    operations.add(newOperation);
                 } else if(matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_COMMISION, 0) != null) {
-                    Integer lastIndex = operationN43List.size() - 1;
-                    OperationN43 lastOperation = operationN43List.get(lastIndex);
-                    OperationN43 operation = operationN43List.get(lastIndex);
+                    Integer lastIndex = operations.size() - 1;
+                    Operation lastOperation = operations.get(lastIndex);
+                    Operation operation = operations.get(lastIndex);
                     Integer commission = getCommission(line);
                     operation.setNetAmount(operation.getGrossAmount() + commission);
-                    operationN43List.remove(lastOperation);
-                    operationN43List.add(operation);
+                    operations.remove(lastOperation);
+                    operations.add(operation);
                 }
             }
 
-            for(OperationN43 operationN43: operationN43List) {
-                operationRepository.save(operationN43.toOperation());
+            for(Operation operation: operations) {
+                operationRepository.save(operation);
             }
         } catch (Exception e) {
             if(e instanceof IOException) {
@@ -155,7 +155,7 @@ public class ParsingN43Job extends ParsingJob {
      * @param secondTransaction
      * @return Bool
      */
-    public Boolean shouldCombine(OperationN43 firstTransaction, OperationN43 secondTransaction) {
+    public Boolean shouldCombine(Operation firstTransaction, Operation secondTransaction) {
         if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != UNPAID_OPERATION) {
             return true;
         }
@@ -168,8 +168,8 @@ public class ParsingN43Job extends ParsingJob {
      * @param secondTransaction
      * @return Une seule transaction
      */
-    public OperationN43 combineTransaction(OperationN43 firstTransaction, OperationN43 secondTransaction) {
-        OperationN43 combinedTransaction;
+    public Operation combineTransaction(Operation firstTransaction, Operation secondTransaction) {
+        Operation combinedTransaction;
 
         if( firstTransaction.getSens() == secondTransaction.getSens()) {
             // On ajoute les montants

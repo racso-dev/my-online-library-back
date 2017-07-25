@@ -21,12 +21,21 @@ public class Operation {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate tradeDate;
     private String cardType;
+    private Integer operationType;
     private int sens;
     private long grossAmount;
     private long netAmount;
     private String contractNumber;
     private String nameShop;
     private Long idShop;
+
+    public Integer getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(Integer operationType) {
+        this.operationType = operationType;
+    }
 
     public Long getId() {
         return id;
