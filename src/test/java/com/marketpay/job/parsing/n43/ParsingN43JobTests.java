@@ -1,8 +1,8 @@
 package com.marketpay.job.parsing.n43;
 
 import com.marketpay.MarketPayUnitTests;
-import com.marketpay.job.parsing.n43.ressources.OperationN43;
 import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
@@ -87,8 +87,8 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingShouldCombine() {
-        OperationN43 firstTransaction = new OperationN43();
-        OperationN43 secondTransaction = new OperationN43();
+        Operation firstTransaction = new Operation();
+        Operation secondTransaction = new Operation();
         firstTransaction.setOperationType(125);
         secondTransaction.setOperationType(125);
 
@@ -97,8 +97,8 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingShouldNotCombine() {
-        OperationN43 firstTransaction = new OperationN43();
-        OperationN43 secondTransaction = new OperationN43();
+        Operation firstTransaction = new Operation();
+        Operation secondTransaction = new Operation();
         firstTransaction.setOperationType(127);
         secondTransaction.setOperationType(127);
 
@@ -107,28 +107,28 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void combineTwoCredit() {
-        OperationN43 firstTransaction = new OperationN43();
+        Operation firstTransaction = new Operation();
         firstTransaction.setNetAmount(10);
         firstTransaction.setGrossAmount(25);
 
-        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
+        Operation combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, firstTransaction);
         assertEquals(50, combinedTransaction.getGrossAmount());
         assertEquals(20, combinedTransaction.getNetAmount());
     }
 
     @Test
     public void combineShouldReturnDebitTransaction() {
-        OperationN43 firstTransaction = new OperationN43();
+        Operation firstTransaction = new Operation();
         firstTransaction.setGrossAmount(25);
         firstTransaction.setNetAmount(10);
         firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
-        OperationN43 secondTransaction = new OperationN43();
+        Operation secondTransaction = new Operation();
         secondTransaction.setGrossAmount(50);
         secondTransaction.setNetAmount(20);
         secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
-        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+        Operation combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
         assertEquals(10, combinedTransaction.getNetAmount());
         assertEquals(25, combinedTransaction.getGrossAmount());
@@ -138,17 +138,17 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void combineShouldReturnCreditTransaction() {
-        OperationN43 firstTransaction = new OperationN43();
+        Operation firstTransaction = new Operation();
         firstTransaction.setGrossAmount(75);
         firstTransaction.setNetAmount(30);
         firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
-        OperationN43 secondTransaction = new OperationN43();
+        Operation secondTransaction = new Operation();
         secondTransaction.setGrossAmount(50);
         secondTransaction.setNetAmount(20);
         secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
-        OperationN43 combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
+        Operation combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
         assertEquals(10, combinedTransaction.getNetAmount());
         assertEquals(25, combinedTransaction.getGrossAmount());
