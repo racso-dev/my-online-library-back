@@ -220,7 +220,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return valeur du net amount
      */
     public Integer getNetAmount(String line) {
-        String netAmountString = line.substring(32, 47);
+        String netAmountString = line.substring(32, 46);
         return convertStringToInt(netAmountString);
     }
 
@@ -239,7 +239,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return valeur du gross amount
      */
     public Integer getGrossAmount(String line) {
-        String grossAmountString = line.substring(17, 33);
+        String grossAmountString = line.substring(17, 32);
         return convertStringToInt(grossAmountString);
     }
 
