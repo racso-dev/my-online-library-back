@@ -42,7 +42,7 @@ public class OperationController extends MarketPayController {
     OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "yyyyMMdd") LocalDate localDate) {
         OperationListResponse response = new OperationListResponse();
 
-        //On récupère le user
+        //On récupère le user connecté
         Optional<User> userOpt = userRepository.findByLogin((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if(!userOpt.isPresent()){
             //TODO ETI
