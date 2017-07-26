@@ -2,7 +2,6 @@ package com.marketpay.persistence.repository;
 
 import com.marketpay.persistence.OptionalCRUDRepository;
 import com.marketpay.persistence.entity.Operation;
-import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDate;
 import java.util.List;

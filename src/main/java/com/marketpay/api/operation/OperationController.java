@@ -8,9 +8,11 @@ import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.services.operation.OperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +41,14 @@ public class OperationController extends MarketPayController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public @ResponseBody
-    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "yyyyMMdd") LocalDate localDate) {
-        OperationListResponse response = new OperationListResponse();
+    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "yyyyMMdd") LocalDate localDate, HttpServletResponse response) {
+        OperationListResponse operationListResponse = new OperationListResponse();
 
         //On récupère le user connecté
         Optional<User> userOpt = userRepository.findByLogin((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if(!userOpt.isPresent()){
-            //TODO ETI
-            return response;
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return operationListResponse;
         }
 
         List<Long> shopIdList = new ArrayList<>();
@@ -58,12 +60,12 @@ public class OperationController extends MarketPayController {
                 shopIdList.add(shop.getId());
             });
         } else {
-            //TODO ETI
-            return response;
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return operationListResponse;
         }
 
-        response.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
+        operationListResponse.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
 
-        return response;
+        return operationListResponse;
     }
 }
