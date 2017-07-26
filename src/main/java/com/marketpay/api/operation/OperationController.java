@@ -41,7 +41,7 @@ public class OperationController extends MarketPayController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public @ResponseBody
-    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "yyyyMMdd") LocalDate localDate, HttpServletResponse response) {
+    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop, HttpServletResponse response) {
         OperationListResponse operationListResponse = new OperationListResponse();
 
         //On récupère le user connecté
@@ -62,6 +62,16 @@ public class OperationController extends MarketPayController {
         } else {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return operationListResponse;
+        }
+
+        if( idShop != null) {
+            if( !shopIdList.contains(idShop) ) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                return operationListResponse;
+            } else {
+                shopIdList.clear();
+                shopIdList.add(idShop);
+            }
         }
 
         operationListResponse.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
