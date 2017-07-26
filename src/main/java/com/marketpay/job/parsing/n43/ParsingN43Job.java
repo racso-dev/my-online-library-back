@@ -57,7 +57,7 @@ public class ParsingN43Job extends ParsingJob {
 
         try {
             String line;
-            ArrayList<Operation> operations= new ArrayList<>();
+            List<Operation> operationList= new ArrayList<>();
             LocalDate foundingDate = null;
             while ((line = buffer.readLine()) != null) {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
@@ -82,27 +82,27 @@ public class ParsingN43Job extends ParsingJob {
                         newOperation.setIdShop(shopOpt.get().getId());
                     }
 
-                    if (!operations.isEmpty()) {
-                        Operation lastOrder = operations.get(operations.size() - 1);
+                    if (!operationList.isEmpty()) {
+                        Operation lastOrder = operationList.get(operationList.size() - 1);
                         if (shouldCombine(lastOrder, newOperation)) {
                             // On agrége les transactions puis on remplace la dernière transaction par la transaction agrégée
                             newOperation = combineTransaction(lastOrder, newOperation);
-                            operations.remove(lastOrder);
+                            operationList.remove(lastOrder);
                         }
                     }
-                    operations.add(newOperation);
+                    operationList.add(newOperation);
                 } else if(matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_COMMISION, 0) != null) {
-                    Integer lastIndex = operations.size() - 1;
-                    Operation lastOperation = operations.get(lastIndex);
-                    Operation operation = operations.get(lastIndex);
+                    Integer lastIndex = operationList.size() - 1;
+                    Operation lastOperation = operationList.get(lastIndex);
+                    Operation operation = operationList.get(lastIndex);
                     Integer commission = getCommission(line);
                     operation.setNetAmount(operation.getGrossAmount() + commission);
-                    operations.remove(lastOperation);
-                    operations.add(operation);
+                    operationList.remove(lastOperation);
+                    operationList.add(operation);
                 }
             }
 
-            for(Operation operation: operations) {
+            for(Operation operation: operationList) {
                 operationRepository.save(operation);
             }
         } catch (Exception e) {
