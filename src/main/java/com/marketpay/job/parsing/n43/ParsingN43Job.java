@@ -27,7 +27,7 @@ public class ParsingN43Job extends ParsingJob {
 
     // Identifié sur les lignes commençant par 11
     private final String BU_LINE_INFORMATION = "11";
-    private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format JJMMAA
+    private final String FINANCING_DATE_REGEX = "^.{22}(\\d{6})"; // Groupe 1 format JJMMAA
 
     // Identifié sur les lignes commençant par 22
     private final String TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT = "^22.{20}12\\d{3}";
