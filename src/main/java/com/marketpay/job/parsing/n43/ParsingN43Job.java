@@ -38,7 +38,7 @@ public class ParsingN43Job extends ParsingJob {
     private final String GROSS_AMOUNT_REGEX = "^.{22}12\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISION_REGEX = "^.{22}17\\d{3}\\d{1}(\\d{14})"; // Groupe 1
 
-    private final int UNPAID_OPERATION = 127;
+    private final int AGREGEA_OPERATION_TYPE = 125;
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingN43Job.class);
 
@@ -156,7 +156,7 @@ public class ParsingN43Job extends ParsingJob {
      * @return Bool
      */
     public Boolean shouldCombine(Operation firstTransaction, Operation secondTransaction) {
-        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != UNPAID_OPERATION) {
+        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() == AGREGEA_OPERATION_TYPE && firstTransaction.getContractNumber() == secondTransaction.getContractNumber()) {
             return true;
         }
         return false;
