@@ -64,8 +64,8 @@ public class ParsingCODAJob extends ParsingJob {
         Block codaBlock = new Block();
 
         if(block.size() > 3) {
-            String centralisationLine1 = block.get(2);
-            String foundingDate = getFoundingDate(centralisationLine1);
+            String centralisationLine2 = block.get(3);
+            String foundingDate = getFundingDate(centralisationLine2);
             codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
         }
 
@@ -91,7 +91,7 @@ public class ParsingCODAJob extends ParsingJob {
             String centralisationLine1 = block.get(2);
 
             // Récupération de la date de création
-            String foundingDateString = getFoundingDate(centralisationLine1);
+            String foundingDateString = getFundingDate(centralisationLine1);
             LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
 
             Block codaBlock = new Block();
@@ -173,8 +173,8 @@ public class ParsingCODAJob extends ParsingJob {
      * @param centralisationLine
      * @return
      */
-    public String getFoundingDate(String centralisationLine) {
-       return centralisationLine.substring(47, 53);
+    public String getFundingDate(String centralisationLine) {
+       return centralisationLine.substring(116, 122);
     }
 
     /**
