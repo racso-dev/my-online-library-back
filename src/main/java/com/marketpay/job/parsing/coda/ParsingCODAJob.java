@@ -63,20 +63,22 @@ public class ParsingCODAJob extends ParsingJob {
         //On sauvegarde le block en erreur dans la table block avec un status d'erreur
         Block codaBlock = new Block();
 
+        // On met à jour le status du job et la liste d'erreur
+        jobHistory.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
+        jobHistory.addError(e.getMessage());
+        jobHistoryRepository.save(jobHistory);
+
         if(block.size() > 3) {
             String centralisationLine2 = block.get(3);
             String foundingDate = getFundingDate(centralisationLine2);
             codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
         }
 
+        System.out.println(" Save block" + jobHistory.getStatus());
         codaBlock.setContent(String.join("\\n", block));
         codaBlock.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
         blockRepository.save(codaBlock);
 
-        // On met à jour le status du job et la liste d'erreur
-        jobHistory.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
-        jobHistory.addError(e.getMessage());
-        jobHistoryRepository.save(jobHistory);
 
     }
 
@@ -174,7 +176,7 @@ public class ParsingCODAJob extends ParsingJob {
      * @return
      */
     public String getFundingDate(String centralisationLine) {
-       return centralisationLine.substring(116, 122);
+       return centralisationLine.substring(115, 121);
     }
 
     /**

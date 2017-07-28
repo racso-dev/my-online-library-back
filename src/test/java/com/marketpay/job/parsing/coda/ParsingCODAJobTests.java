@@ -65,7 +65,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     @Test
     public void parsingNetAmountTest() {
         int netAmount = parsingCODAJob.getNetAmount(TRANSACTION_LINE_MOCK);
-        assertEquals(1518920, netAmount);
+        assertEquals(151892, netAmount);
     }
 
     @Test
@@ -106,10 +106,11 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
+        } catch (Exception e) {
+
+        } finally {
             int status = jobHistory.getStatus();
             assertEquals(JOB_STATUS.BLOCK_FAIL.getCode(), status);
-        } catch (IOException e) {
-            fail();
         }
     }
 
