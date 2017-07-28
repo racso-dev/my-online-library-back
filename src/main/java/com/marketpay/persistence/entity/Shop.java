@@ -1,9 +1,7 @@
 package com.marketpay.persistence.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by antony on 06/07/17.
@@ -14,7 +12,6 @@ public class Shop {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     private long idBu;
-    private String contractNumber;
     private String name;
     private String codeAl;
     private String gln;
@@ -30,14 +27,6 @@ public class Shop {
 
     public void setIdBu(long idBu) {
         this.idBu = idBu;
-    }
-
-    public String getContractNumber() {
-        return contractNumber;
-    }
-
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
     }
 
     public String getName() {

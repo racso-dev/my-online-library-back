@@ -4,14 +4,8 @@ import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.ParsingException;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.repositoryshop.resource.ShopCsvResource;
-import com.marketpay.persistence.entity.BusinessUnit;
-import com.marketpay.persistence.entity.JobHistory;
-import com.marketpay.persistence.entity.Operation;
-import com.marketpay.persistence.entity.Shop;
-import com.marketpay.persistence.repository.BusinessUnitRepository;
-import com.marketpay.persistence.repository.JobHistoryRepository;
-import com.marketpay.persistence.repository.OperationRepository;
-import com.marketpay.persistence.repository.ShopRepository;
+import com.marketpay.persistence.entity.*;
+import com.marketpay.persistence.repository.*;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.LOCATION;
 import org.slf4j.Logger;
@@ -49,6 +43,9 @@ public class ParsingRepositoryShopJob extends ParsingJob {
 
     @Autowired
     private OperationRepository operationRepository;
+
+    @Autowired
+    private ShopContractNumberRepository shopContractNumberRepository;
 
     @Override
     public void parsing(String filePath, JobHistory jobHistory) throws IOException {
@@ -90,13 +87,25 @@ public class ParsingRepositoryShopJob extends ParsingJob {
      */
     private void updateShopAndBU(ShopCsvResource shopCsv, LOCATION location) throws EntityNotFoundException {
         //On récupère le shop s'il existe déjà
-        Optional<Shop> shopOpt = shopRepository.findByContractNumber(shopCsv.getNum_Contrat());
+        Optional<Shop> shopOpt = shopRepository.findByCodeAl(shopCsv.getCode_AL());
 
         //S'il existe on le met à jour ainsi que sa BU
         if(shopOpt.isPresent()){
             //Mise à jour shop
             shopOpt.get().setName(shopCsv.getNom_AL());
             shopRepository.save(shopOpt.get());
+
+            //On met à jour les shopContractNumber associé
+            if(!shopContractNumberRepository.findByContractNumber(shopCsv.getNum_Contrat()).isPresent()){
+                //On n'a pas encore ce contractNumber donc on l'ajoute
+                ShopContractNumber shopContractNumber = new ShopContractNumber();
+                shopContractNumber.setIdShop(shopOpt.get().getId());
+                shopContractNumber.setContractNumber(shopCsv.getNum_Contrat());
+                shopContractNumberRepository.save(shopContractNumber);
+
+                //On met à jour les opérations appartenant à ce contractNumber
+                updateOperationShop(shopOpt.get(), shopCsv.getNum_Contrat());
+            }
 
             //Mise à jour BU
             BusinessUnit businessUnit = businessUnitRepository.findOne(shopOpt.get().getIdBu()).orElseThrow(() ->
@@ -128,19 +137,26 @@ public class ParsingRepositoryShopJob extends ParsingJob {
                 newBU++;
             }
 
-            //On créé le shop
+            //On créé le shop et son shopContractNumber
             Shop shop = new Shop();
             shop.setIdBu(businessUnit.getId());
             shop.setAtica(shopCsv.getATICA());
             shop.setCodeAl(shopCsv.getCode_AL());
-            shop.setContractNumber(shopCsv.getNum_Contrat());
             shop.setGln(shopCsv.getGLN());
             shop.setName(shopCsv.getNom_AL());
-            shopRepository.save(shop);
+            shop = shopRepository.save(shop);
+
+            //TODO ETI check shopContractNumber not exist
+
+            ShopContractNumber shopContractNumber = new ShopContractNumber();
+            shopContractNumber.setIdShop(shop.getId());
+            shopContractNumber.setContractNumber(shopCsv.getNum_Contrat());
+            shopContractNumberRepository.save(shopContractNumber);
+
             newShop++;
 
-            //On met à jour les opérations appartenant à ce shop
-            updateOperationShop(shop);
+            //On met à jour les opérations appartenant à ce contractNumber
+            updateOperationShop(shop, shopCsv.getNum_Contrat());
         }
 
     }
@@ -173,9 +189,9 @@ public class ParsingRepositoryShopJob extends ParsingJob {
      * Méthode qui met à jour les opérations avec le contract number du shop mais non encore associées
      * @param shop
      */
-    private void updateOperationShop(Shop shop){
+    private void updateOperationShop(Shop shop, String contractNumber){
         //On récupère les operations avec le contractNumber du shop et qui n'ont pas d'association à un shop
-        List<Operation> operationList = operationRepository.findByContractNumberAndIdShopIsNull(shop.getContractNumber());
+        List<Operation> operationList = operationRepository.findByContractNumberAndIdShopIsNull(contractNumber);
 
         //Pour chaque operation on l'a met à jour avec le shop
         for(Operation operation: operationList){

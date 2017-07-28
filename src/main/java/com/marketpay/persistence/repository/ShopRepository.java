@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Created by antony on 06/07/17.
  */
-public interface ShopRepository extends OptionalCRUDRepository<Shop, Long> {
+public interface ShopRepository extends OptionalCRUDRepository<Shop, Long>, ShopRepositoryCustom {
     List<Shop> findByIdBu(long idBu);
-    Optional<Shop> findByContractNumber(String contractNumber);
+    Optional<Shop> findByCodeAl(String codeAl);
 }
