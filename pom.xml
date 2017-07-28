@@ -13,6 +13,14 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/front</directory>
+            </resource>
+        </resources>
+    </build>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>

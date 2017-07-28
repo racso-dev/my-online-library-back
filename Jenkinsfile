@@ -10,7 +10,7 @@ node ('web') {
         gitlabBuilds(builds: ['Build ReactJS', 'Build Jar', 'Add git tag', 'SonarQube analysis', 'Artifacts', 'Uploading build to S3']) {
             stage 'Build ReactJS'
             gitlabCommitStatus('Build ReactJS') {
-                dir('src/main/resources') {
+                dir('src/main/front') {
                     git branch: 'master', credentialsId: 'gitlab-key', url: 'git@git.steamulo.com:carrefour-banque/market-pay-webapp.git'
                     def helper = new CommonHelper()
                     withEnv(helper.buildEnvNvm('v6.10.0')) {
