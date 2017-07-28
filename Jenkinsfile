@@ -17,7 +17,6 @@ node ('web') {
                         sh "npm install"
                         sh "npm run build"
                     }
-                    # only keep build results
                     sh "find ./ -mindepth 1 -name build -prune -o -exec rm -rf {} \;"
                     sh "printf \"Infos maven :\n Version : ${pom.version}\n\nInfos Git :\n Commit : ${gitCommit}\n Url : ${gitUrl}\n Branch : ${env.BRANCH_NAME}\n\nInfos sur le build :\n Build number : $BUILD_NUMBER\n Build tag : $BUILD_TAG\" > build/project_version.txt"
                 }
