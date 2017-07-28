@@ -32,7 +32,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void getFinancingDateTest() {
-        String financingDate = parsingN43Job.getFinaningDate(FIRSTLINE_N43_FILE);
+        String financingDate = parsingN43Job.getFundingDate(FIRSTLINE_N43_FILE);
         assertEquals("060617", financingDate);
     }
 

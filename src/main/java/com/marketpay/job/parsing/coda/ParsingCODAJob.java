@@ -70,11 +70,10 @@ public class ParsingCODAJob extends ParsingJob {
 
         if(block.size() > 3) {
             String centralisationLine2 = block.get(3);
-            String foundingDate = getFundingDate(centralisationLine2);
-            codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
+            String fundingDate = getFundingDate(centralisationLine2);
+            codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, fundingDate));
         }
 
-        System.out.println(" Save block" + jobHistory.getStatus());
         codaBlock.setContent(String.join("\\n", block));
         codaBlock.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
         blockRepository.save(codaBlock);

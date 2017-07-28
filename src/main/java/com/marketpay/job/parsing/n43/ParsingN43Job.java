@@ -58,15 +58,15 @@ public class ParsingN43Job extends ParsingJob {
         try {
             String line;
             List<Operation> operationList= new ArrayList<>();
-            LocalDate foundingDate = null;
+            LocalDate fundingDate = null;
             while ((line = buffer.readLine()) != null) {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
-                    String foundingDateString = getFinaningDate(line);
-                    foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
+                    String foundingDateString = getFundingDate(line);
+                    fundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
                 } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT, 0) != null) {
                     Operation newOperation = new Operation();
-                    if (foundingDate != null) {
-                        newOperation.setFundingDate(foundingDate);
+                    if (fundingDate != null) {
+                        newOperation.setFundingDate(fundingDate);
                     }
 
                     newOperation.setOperationType(getOperationType(line));
@@ -117,7 +117,7 @@ public class ParsingN43Job extends ParsingJob {
         }
     }
 
-    public String getFinaningDate(String line) {
+    public String getFundingDate(String line) {
         return matchFromRegex(line, FINANCING_DATE_REGEX, 1);
     }
 
