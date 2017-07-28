@@ -1,5 +1,6 @@
 package com.marketpay.job.parsing.coda;
 
+import com.marketpay.exception.FundingDateException;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.persistence.entity.*;
 import com.marketpay.persistence.repository.*;
@@ -70,15 +71,16 @@ public class ParsingCODAJob extends ParsingJob {
 
         if(block.size() > 3) {
             String centralisationLine2 = block.get(3);
-            String fundingDate = getFundingDate(centralisationLine2);
-            codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, fundingDate));
+            try{
+                codaBlock.setFundingDate(getFundingDate(centralisationLine2));
+            } catch (FundingDateException fundingError) {
+                fundingError.printStackTrace();
+            }
         }
 
         codaBlock.setContent(String.join("\\n", block));
         codaBlock.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
         blockRepository.save(codaBlock);
-
-
     }
 
     /**
@@ -92,8 +94,7 @@ public class ParsingCODAJob extends ParsingJob {
             String centralisationLine1 = block.get(2);
 
             // Récupération de la date de création
-            String foundingDateString = getFundingDate(centralisationLine1);
-            LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
+            LocalDate foundingDate =  getFundingDate(centralisationLine1);
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
@@ -174,8 +175,14 @@ public class ParsingCODAJob extends ParsingJob {
      * @param centralisationLine
      * @return
      */
-    public String getFundingDate(String centralisationLine) {
-       return centralisationLine.substring(115, 121);
+    public LocalDate getFundingDate(String centralisationLine) throws FundingDateException {
+        try {
+            String fundingDateString = centralisationLine.substring(115, 121);
+            LocalDate fundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  fundingDateString);
+            return fundingDate;
+        } catch (Exception e) {
+            throw new FundingDateException(e.getMessage(), e.getCause(), centralisationLine);
+        }
     }
 
     /**

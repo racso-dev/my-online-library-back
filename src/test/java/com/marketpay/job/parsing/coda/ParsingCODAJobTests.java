@@ -106,7 +106,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
-        } catch (Exception e) {
+        } catch (IOException e) {
             // Si le fichier de parsing est mauvais il peut throws une exception
         } finally {
             int status = jobHistory.getStatus();
