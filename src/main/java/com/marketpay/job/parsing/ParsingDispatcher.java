@@ -64,7 +64,7 @@ public class ParsingDispatcher {
                 jobHistory.setFiletype(JOB_TYPE.N43.getCode());
                 parsingN43.parsing(filePath, jobHistory);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("Une erreur est survenue lors du traitement du fichier " + filePath, e);
             //On met à jour le jobHistory avec l'erreur et on le sauvegarde
             saveJobHistory(jobHistory, e);

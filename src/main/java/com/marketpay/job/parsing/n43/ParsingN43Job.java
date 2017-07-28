@@ -27,7 +27,7 @@ public class ParsingN43Job extends ParsingJob {
 
     // Identifié sur les lignes commençant par 11
     private final String BU_LINE_INFORMATION = "11";
-    private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format JJMMAA
+    private final String FINANCING_DATE_REGEX = "^.{22}(\\d{6})"; // Groupe 1 format JJMMAA
 
     // Identifié sur les lignes commençant par 22
     private final String TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT = "^22.{20}12\\d{3}";
@@ -38,7 +38,7 @@ public class ParsingN43Job extends ParsingJob {
     private final String GROSS_AMOUNT_REGEX = "^.{22}12\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISION_REGEX = "^.{22}17\\d{3}\\d{1}(\\d{14})"; // Groupe 1
 
-    private final int UNPAID_OPERATION = 127;
+    private final int AGREGEA_OPERATION_TYPE = 125;
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingN43Job.class);
 
@@ -58,15 +58,15 @@ public class ParsingN43Job extends ParsingJob {
         try {
             String line;
             List<Operation> operationList= new ArrayList<>();
-            LocalDate foundingDate = null;
+            LocalDate fundingDate = null;
             while ((line = buffer.readLine()) != null) {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
-                    String foundingDateString = getFinaningDate(line);
-                    foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
+                    String foundingDateString = getFundingDate(line);
+                    fundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
                 } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT, 0) != null) {
                     Operation newOperation = new Operation();
-                    if (foundingDate != null) {
-                        newOperation.setFundingDate(foundingDate);
+                    if (fundingDate != null) {
+                        newOperation.setFundingDate(fundingDate);
                     }
 
                     newOperation.setOperationType(getOperationType(line));
@@ -96,7 +96,7 @@ public class ParsingN43Job extends ParsingJob {
                     Operation lastOperation = operationList.get(lastIndex);
                     Operation operation = operationList.get(lastIndex);
                     Integer commission = getCommission(line);
-                    operation.setNetAmount(operation.getGrossAmount() + commission);
+                    operation.setNetAmount(operation.getGrossAmount() - commission);
                     operationList.remove(lastOperation);
                     operationList.add(operation);
                 }
@@ -117,7 +117,7 @@ public class ParsingN43Job extends ParsingJob {
         }
     }
 
-    public String getFinaningDate(String line) {
+    public String getFundingDate(String line) {
         return matchFromRegex(line, FINANCING_DATE_REGEX, 1);
     }
 
@@ -156,7 +156,7 @@ public class ParsingN43Job extends ParsingJob {
      * @return Bool
      */
     public Boolean shouldCombine(Operation firstTransaction, Operation secondTransaction) {
-        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != UNPAID_OPERATION) {
+        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() == AGREGEA_OPERATION_TYPE && firstTransaction.getContractNumber() == secondTransaction.getContractNumber()) {
             return true;
         }
         return false;

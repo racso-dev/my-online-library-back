@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping(value = "/api/parsing")
+@RequestMapping(value = "/parsing")
 public class ParsingController extends MarketPayController {
 
     @Autowired

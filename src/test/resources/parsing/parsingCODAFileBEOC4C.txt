@@ -1,4 +1,4 @@
-0000001061700005        46390589  JAGI  concept BVBA        KREDBEBB   0675354481  00000                                       2
+000000"0005        46390589  JAGI  concept BVBA        KREDBEBB   0675354481  00000                                       2
 10009735047736314 EUR BE   0030000        0000000000000000310517JAGI  concept BVBA                                           009
 2100010000                     1000000001573190310517001170000VIREMENT  BE94735047736314CENTRALISATION FINANCIERE  01061700901 0
 2300010000310152348185                                                                                                       0 0

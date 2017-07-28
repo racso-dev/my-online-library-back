@@ -1,5 +1,6 @@
 package com.marketpay.job.parsing.coda;
 
+import com.marketpay.exception.FundingDateException;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.persistence.entity.*;
 import com.marketpay.persistence.repository.*;
@@ -63,21 +64,23 @@ public class ParsingCODAJob extends ParsingJob {
         //On sauvegarde le block en erreur dans la table block avec un status d'erreur
         Block codaBlock = new Block();
 
-        if(block.size() > 3) {
-            String centralisationLine1 = block.get(2);
-            String foundingDate = getFoundingDate(centralisationLine1);
-            codaBlock.setFundingDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDate));
-        }
-
-        codaBlock.setContent(String.join("\\n", block));
-        codaBlock.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
-        blockRepository.save(codaBlock);
-
         // On met à jour le status du job et la liste d'erreur
         jobHistory.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
         jobHistory.addError(e.getMessage());
         jobHistoryRepository.save(jobHistory);
 
+        if(block.size() > 3) {
+            String centralisationLine2 = block.get(3);
+            try{
+                codaBlock.setFundingDate(getFundingDate(centralisationLine2));
+            } catch (FundingDateException fundingError) {
+                fundingError.printStackTrace();
+            }
+        }
+
+        codaBlock.setContent(String.join("\\n", block));
+        codaBlock.setStatus(JOB_STATUS.BLOCK_FAIL.getCode());
+        blockRepository.save(codaBlock);
     }
 
     /**
@@ -91,8 +94,7 @@ public class ParsingCODAJob extends ParsingJob {
             String centralisationLine1 = block.get(2);
 
             // Récupération de la date de création
-            String foundingDateString = getFoundingDate(centralisationLine1);
-            LocalDate foundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  foundingDateString);
+            LocalDate foundingDate =  getFundingDate(centralisationLine1);
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
@@ -173,8 +175,14 @@ public class ParsingCODAJob extends ParsingJob {
      * @param centralisationLine
      * @return
      */
-    public String getFoundingDate(String centralisationLine) {
-       return centralisationLine.substring(47, 53);
+    public LocalDate getFundingDate(String centralisationLine) throws FundingDateException {
+        try {
+            String fundingDateString = centralisationLine.substring(115, 121);
+            LocalDate fundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  fundingDateString);
+            return fundingDate;
+        } catch (Exception e) {
+            throw new FundingDateException(e.getMessage(), e.getCause(), centralisationLine);
+        }
     }
 
     /**
