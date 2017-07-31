@@ -118,6 +118,7 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     public String getFundingDate(String line) {
+        //TODO CHEKROUN TRY CATCH ERROR
         return matchFromRegex(line, FINANCING_DATE_REGEX, 1);
     }
 
