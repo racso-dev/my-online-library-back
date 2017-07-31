@@ -1,22 +1,21 @@
 package com.marketpay.api.operation;
 
+import com.marketpay.annotation.Profile;
 import com.marketpay.api.MarketPayController;
+import com.marketpay.api.RequestContext;
 import com.marketpay.api.operation.response.OperationListResponse;
-import com.marketpay.persistence.entity.User;
-import com.marketpay.persistence.repository.ShopRepository;
-import com.marketpay.persistence.repository.UserRepository;
+import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.operation.OperationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by tchekroun on 10/07/2017.
@@ -25,47 +24,30 @@ import java.util.Optional;
 @RequestMapping(value = "/api/operation")
 public class OperationController extends MarketPayController {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(OperationController.class);
+
     @Autowired
     private OperationService operationService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ShopRepository shopRepository;
 
     /**
      * Renvoie la liste des opérations associé à un utilisateur à un instant T
      * @param localDate : Date des opérations
+     * @param idShop
      * @return OperationListResponse
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
+    @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
     public @ResponseBody
     OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop, HttpServletResponse response) {
         OperationListResponse operationListResponse = new OperationListResponse();
 
-        //On récupère le user connecté
-        Optional<User> userOpt = userRepository.findByLogin((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if(!userOpt.isPresent()){
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            return operationListResponse;
-        }
+        //On récupère la liste des shop associé au user
+        List<Long> shopIdList = RequestContext.get().getIdShopList();
 
-        List<Long> shopIdList = new ArrayList<>();
-        if(userOpt.get().getIdShop() != null){
-            shopIdList.add(userOpt.get().getIdShop());
-        } else if(userOpt.get().getIdBu() != null) {
-            //On récupère les shop de la BU
-            shopRepository.findByIdBu(userOpt.get().getIdBu()).forEach(shop -> {
-                shopIdList.add(shop.getId());
-            });
-        } else {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            return operationListResponse;
-        }
-
+        //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         if( idShop != null) {
             if( !shopIdList.contains(idShop) ) {
+                //TODO ETI MarketPayException
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return operationListResponse;
             } else {
@@ -74,7 +56,9 @@ public class OperationController extends MarketPayController {
             }
         }
 
+        //Appel au service
         operationListResponse.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
+        LOGGER.info("Récupération de " + operationListResponse.getOperationList().size() + " pour la fundingDate " + localDate.toString() + " et le user " + RequestContext.get().getUser().getId());
 
         return operationListResponse;
     }
