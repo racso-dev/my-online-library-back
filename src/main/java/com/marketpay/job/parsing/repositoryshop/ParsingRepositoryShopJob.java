@@ -63,6 +63,8 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             ShopCsvResource shopCsv;
             newShop = 0;
             newBU = 0;
+            //On utilise un repère de ligne pour savoir quelle ligne du fichier est concernée dans les cas d'erreur
+            //On commence à 2 car on saute le header
             int line = 2;
             while ((shopCsv = csvBeanReader.read(ShopCsvResource.class, header)) != null) {
                 //Pour chaque ligne on met à jour la table shop et business_unit
