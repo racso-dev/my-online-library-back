@@ -76,14 +76,14 @@ node ('web') {
                         }
                         slackSend channel: '#marketpay', color: 'good', message: 'API déployée avec succès : http://marketpay-int.steamulo.org/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
                     } catch (e) {
-                        slackSend channel: '#marketpay', color: 'danger', message: 'Erreur lors du déploiment de l'API voir : http://ci.steamulo.com/job/Market%20Pay/job/API/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
+                        slackSend channel: '#marketpay', color: 'danger', message: 'Erreur lors du déploiment de l\'API voir : http://ci.steamulo.com/job/Market%20Pay/job/API/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
                         throw e
                     }
                 }
             }
         }
     } catch (e) {
-        slackSend channel: '#marketpay', color: 'danger', message: 'Erreur lors du build de l'API, voir : http://ci.steamulo.com/job/Market%20Pay/job/API/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
+        slackSend channel: '#marketpay', color: 'danger', message: 'Erreur lors du build de l\'API, voir : http://ci.steamulo.com/job/Market%20Pay/job/API/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
         throw e
     } finally {
         cleanWs notFailBuild: true
