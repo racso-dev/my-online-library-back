@@ -7,7 +7,7 @@ node ('web') {
         def pom = readMavenPom file: 'pom.xml'
         def gitCommit = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
-        gitlabBuilds(builds: ['Build Jar', 'Add git tag', 'SonarQube analysis', 'Uploading build to S3']) {
+        gitlabBuilds(builds: ['Build Jar', 'Add git tag', 'SonarQube analysis', 'Uploading build to S3', 'Deploying']) {
             stage 'Build Jar'
             gitlabCommitStatus('Build Jar') {
                 dir('src/main/resources') {
@@ -60,7 +60,31 @@ node ('web') {
                     }
                 }
             }
+            if ("${env.BRANCH_NAME}" == "integration") {
+                stage 'Deploying'
+                gitlabCommitStatus('Deploying') {
+                    git branch: 'stable', credentialsId: 'gitlab-key', url: 'git@git.steamulo.com:carrefour-banque/market-pay-ansible.git'
+                    sshagent (credentials: ['gitlab-key']) {
+                        sh "ansible-galaxy install -p ./roles -r ./roles/requirements.yml"
+                    }
+                    withCredentials([[$class: 'StringBinding', credentialsId: 'vault-marketpay', variable: 'TOKEN']]) {
+                        sh 'echo $TOKEN > .market_pay_vault_pass.txt'
+                    }
+                    try {
+                        sshagent(['ssh-key']) {
+                            sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -l mpay-int-front -i hosts/hosts-int -t configuration,deploy -u market-pay-api -e \"{'ansible_become': false, 'version_to_deploy_api':'${pom.version}'}\" mpay-install.yml"
+                        }
+                        slackSend channel: '#marketpay', color: 'good', message: 'API déployée avec succès : http://marketpay-int.steamulo.org/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
+                    } catch (e) {
+                        slackSend channel: '#marketpay', color: 'danger', message: 'Erreur lors du déploiment de l'API voir : http://ci.steamulo.com/job/Market%20Pay/job/API/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
+                        throw e
+                    }
+                }
+            }
         }
+    } catch (e) {
+        slackSend channel: '#marketpay', color: 'danger', message: 'Erreur lors du build de l'API, voir : http://ci.steamulo.com/job/Market%20Pay/job/API/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
+        throw e
     } finally {
         cleanWs notFailBuild: true
     }
