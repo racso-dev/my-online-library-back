@@ -1,4 +1,4 @@
-properties [[gitLabConnection('jenkins')], [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '10', numToKeepStr: '5']]]
+properties([gitLabConnection('jenkins'), buildDiscarder(logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '10', daysToKeepStr: '10', numToKeepStr: '5'))])
 import com.steamulo.CommonHelper
 node ('web') {
     try {
