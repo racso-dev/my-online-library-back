@@ -63,9 +63,15 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             ShopCsvResource shopCsv;
             newShop = 0;
             newBU = 0;
+            int line = 2;
             while ((shopCsv = csvBeanReader.read(ShopCsvResource.class, header)) != null) {
                 //Pour chaque ligne on met à jour la table shop et business_unit
-                updateShopAndBU(shopCsv, location);
+                try {
+                    updateShopAndBU(shopCsv, location, filePath, line);
+                } catch (EntityNotFoundException | ParsingException e) {
+                    errorBlock(e, null, jobHistory);
+                }
+                line++;
             }
 
             LOGGER.info("Ajout de " + newBU + " BU et de " + newShop + " shop");
@@ -85,7 +91,10 @@ public class ParsingRepositoryShopJob extends ParsingJob {
      * @param location
      * @throws EntityNotFoundException
      */
-    private void updateShopAndBU(ShopCsvResource shopCsv, LOCATION location) throws EntityNotFoundException {
+    private void updateShopAndBU(ShopCsvResource shopCsv, LOCATION location, String filePath, int line) throws EntityNotFoundException, ParsingException {
+        //On fait les vérifications
+        checkShopCsv(shopCsv, filePath, line);
+
         //On récupère le shop s'il existe déjà
         Optional<Shop> shopOpt = shopRepository.findByCodeAl(shopCsv.getCode_AL());
 
@@ -93,6 +102,8 @@ public class ParsingRepositoryShopJob extends ParsingJob {
         if(shopOpt.isPresent()){
             //Mise à jour shop
             shopOpt.get().setName(shopCsv.getNom_AL());
+            shopOpt.get().setAtica(shopCsv.getATICA());
+            shopOpt.get().setGln(shopCsv.getGLN());
             shopRepository.save(shopOpt.get());
 
             //On met à jour les shopContractNumber associé
@@ -137,6 +148,11 @@ public class ParsingRepositoryShopJob extends ParsingJob {
                 newBU++;
             }
 
+            //On vérifie que le contractNumber n'existe pas déjà
+            if(shopContractNumberRepository.findByContractNumber(shopCsv.getNum_Contrat()).isPresent()){
+                throw new ParsingException("Le contract number " + shopCsv.getNum_Contrat() + " existe déjà pour un autre shop que " + shopCsv.getCode_AL(), filePath, "referentiel");
+            }
+
             //On créé le shop et son shopContractNumber
             Shop shop = new Shop();
             shop.setIdBu(businessUnit.getId());
@@ -145,8 +161,6 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             shop.setGln(shopCsv.getGLN());
             shop.setName(shopCsv.getNom_AL());
             shop = shopRepository.save(shop);
-
-            //TODO ETI check shopContractNumber not exist
 
             ShopContractNumber shopContractNumber = new ShopContractNumber();
             shopContractNumber.setIdShop(shop.getId());
@@ -159,6 +173,27 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             updateOperationShop(shop, shopCsv.getNum_Contrat());
         }
 
+    }
+
+    /**
+     * Method de vérification d'une ligne du csv
+     * @param shopCsv
+     * @param filePath
+     * @param line
+     * @throws ParsingException
+     */
+    private void checkShopCsv(ShopCsvResource shopCsv, String filePath, int line) throws ParsingException {
+        if(shopCsv.getCode_AL() == null){
+            throw new ParsingException("CodeAL null at line " + line, filePath, "referentiel");
+        }
+
+        if(shopCsv.getNum_Contrat() == null){
+            throw new ParsingException("ContractNumber null at line " + line, filePath, "referentiel");
+        }
+
+        if(shopCsv.getCode_BU() == null){
+            throw new ParsingException("CodeBU null at line " + line, filePath, "referentiel");
+        }
     }
 
     /**
