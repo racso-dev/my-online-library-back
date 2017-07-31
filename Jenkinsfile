@@ -27,11 +27,11 @@ node ('web') {
                     def gitTags = sh(script: 'git ls-remote --tags origin', returnStdout: true)
                     sh 'git config --global user.email "jenkins@steamulo.com"'
                     sh 'git config --global user.name "Jenkins Steamulo"'
-                    if (pom.version.contains("SNAPSHOT") && gitTags.contains(pom.version)) {
-                        sh "git tag -d ${pom.version}"
-                        sh "git push origin :refs/tags/${pom.version}"
+                    if (pom.version.contains("SNAPSHOT")) {
+                        sh "git tag -a ${pom.version}#${BUILD_NUMBER} -m \"Jenkins build #$BUILD_NUMBER\""
+                    } else {
+                        sh "git tag -a ${pom.version} -m \"Jenkins build #$BUILD_NUMBER\""
                     }
-                    sh "git tag -a ${pom.version} -m \"Jenkins build #$BUILD_NUMBER\""
                     sh "git push --tags"
                 }
             }
