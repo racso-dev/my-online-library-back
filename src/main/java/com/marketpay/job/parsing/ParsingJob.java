@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public abstract class ParsingJob {
 
     protected final String DATE_FORMAT_FILE = "ddMMyy";
-
+    protected final String DATE_FORMAT_N43 = "yyMMdd";
 
     /**
      * Fonction générique qui permet de retourner la chaine de caractère matcher par la regex
