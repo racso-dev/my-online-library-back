@@ -72,7 +72,7 @@ node ('web') {
                     }
                     try {
                         sshagent(['ssh-key']) {
-                            sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -l mpay-int-front -i hosts/hosts-int -t configuration,deploy -u market-pay-api -e \"{'ansible_become': false, 'version_to_deploy_api':'${pom.version}'}\" mpay-install.yml"
+                            sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -l mpay-int-front -i hosts/hosts-int -t configuration,deploy -u market-pay-api -e \"{'ansible_become': false, 'version_to_deploy_api':'${pom.version}'}\" mpay_install.yml"
                         }
                         slackSend channel: '#marketpay', color: 'good', message: 'API déployée avec succès : http://marketpay-int.steamulo.org/', teamDomain: 'steamulo', token: 'yanddPUfDw5vvIAu9PYaviom'
                     } catch (e) {
