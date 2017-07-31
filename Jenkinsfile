@@ -1,4 +1,4 @@
-properties([gitLabConnection('jenkins')])
+properties [[gitLabConnection('jenkins')], [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '10', numToKeepStr: '5']]]
 import com.steamulo.CommonHelper
 node ('web') {
     try {
@@ -7,22 +7,12 @@ node ('web') {
         def pom = readMavenPom file: 'pom.xml'
         def gitCommit = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
-        gitlabBuilds(builds: ['Build ReactJS', 'Build Jar', 'Add git tag', 'SonarQube analysis', 'Artifacts', 'Uploading build to S3']) {
-            stage 'Build ReactJS'
-            gitlabCommitStatus('Build ReactJS') {
-                dir('src/main/front') {
-                    git branch: 'master', credentialsId: 'gitlab-key', url: 'git@git.steamulo.com:carrefour-banque/market-pay-webapp.git'
-                    def helper = new CommonHelper()
-                    withEnv(helper.buildEnvNvm('v6.10.0')) {
-                        sh "npm install"
-                        sh "npm run build"
-                    }
-                    sh "find . -mindepth 1 -name build -prune -o -exec rm -rf {} +"
-                    sh "printf \"Infos maven :\n Version : ${pom.version}\n\nInfos Git :\n Commit : ${gitCommit}\n Url : ${gitUrl}\n Branch : ${env.BRANCH_NAME}\n\nInfos sur le build :\n Build number : $BUILD_NUMBER\n Build tag : $BUILD_TAG\" > build/project_version.txt"
-                }
-            }
+        gitlabBuilds(builds: ['Build Jar', 'Add git tag', 'SonarQube analysis', 'Uploading build to S3']) {
             stage 'Build Jar'
             gitlabCommitStatus('Build Jar') {
+                dir('src/main/resources') {
+                    sh "printf \"Infos maven :\n Version : ${pom.version}\n\nInfos Git :\n Commit : ${gitCommit}\n Url : ${gitUrl}\n Branch : ${env.BRANCH_NAME}\n\nInfos sur le build :\n Build number : $BUILD_NUMBER\n Build tag : $BUILD_TAG\" > project_version.txt"
+                }
                 withMaven(
                     maven: 'mvn 3.3.3',
                     mavenSettingsConfig: 'steamulo-maven-settings',
@@ -66,7 +56,7 @@ node ('web') {
                     region: "eu-west-1"
                 ) {
                     dir('target') {
-                        s3Upload(file: "market-pay-api-${pom.version}.jar", bucket: "delivery.steamulo.org", path: "market-pay/market-pay-${pom.version}.jar")
+                        s3Upload(file: "market-pay-api-${pom.version}.jar", bucket: "delivery.steamulo.org", path: "market-pay/market-pay-api-${pom.version}.jar")
                     }
                 }
             }
