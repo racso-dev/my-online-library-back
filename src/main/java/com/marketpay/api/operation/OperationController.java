@@ -36,8 +36,6 @@ public class OperationController extends MarketPayController {
     @Autowired
     private ShopRepository shopRepository;
 
-    @Autowired
-    private BlockRepository blockRepository;
 
     /**
      * Renvoie la liste des opérations associé à un utilisateur à un instant T
@@ -86,9 +84,9 @@ public class OperationController extends MarketPayController {
 
     @RequestMapping(value = "/block", method = RequestMethod.GET)
     public @ResponseBody
-    Block getCodaBlock(@RequestParam(value = "idBu") String idBu, @RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
+    String getCodaBlock(@RequestParam(value = "idBu") Long idBu, @RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
         //TODO ETI remove id_bu from request param
-        return blockRepository.findBlockByIdBuAndFundingDate(Long.parseLong(idBu), fundingDate);
+        return operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, idBu);
 
     }
 }
