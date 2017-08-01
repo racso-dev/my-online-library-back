@@ -1,8 +1,10 @@
 package com.marketpay.api.operation;
 
 import com.marketpay.api.MarketPayController;
+import com.marketpay.api.operation.response.OperationCodaBlockResponse;
 import com.marketpay.api.operation.response.OperationListResponse;
 import com.marketpay.persistence.entity.Block;
+import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.BlockRepository;
 import com.marketpay.persistence.repository.ShopRepository;
@@ -84,9 +86,11 @@ public class OperationController extends MarketPayController {
 
     @RequestMapping(value = "/block", method = RequestMethod.GET)
     public @ResponseBody
-    String getCodaBlock(@RequestParam(value = "idBu") Long idBu, @RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
+    OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "idBu") Long idBu, @RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
         //TODO ETI remove id_bu from request param
-        return operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, idBu);
+        OperationCodaBlockResponse operationCodaBlockResponse = new OperationCodaBlockResponse();
+        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, idBu));
+        return operationCodaBlockResponse;
 
     }
 }
