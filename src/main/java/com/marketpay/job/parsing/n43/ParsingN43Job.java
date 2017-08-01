@@ -74,7 +74,7 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setGrossAmount(getGrossAmount(line));
                     newOperation.setNetAmount(newOperation.getGrossAmount());
                     String dateString = getTransactionDate(line);
-                    newOperation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, dateString));
+                    newOperation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, dateString));
                     newOperation.setSens(getSens(line));
                     Optional<Shop> shopOpt = shopRepository.findByContractNumber(newOperation.getContractNumber());
                     if(shopOpt.isPresent()) {
@@ -118,6 +118,7 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     public String getFundingDate(String line) {
+        //TODO CHEKROUN TRY CATCH ERROR
         return matchFromRegex(line, FINANCING_DATE_REGEX, 1);
     }
 

@@ -2,8 +2,14 @@ package com.marketpay.job.parsing.coda;
 
 import com.marketpay.exception.FundingDateException;
 import com.marketpay.job.parsing.ParsingJob;
-import com.marketpay.persistence.entity.*;
-import com.marketpay.persistence.repository.*;
+import com.marketpay.persistence.entity.Block;
+import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.persistence.entity.Operation;
+import com.marketpay.persistence.entity.Shop;
+import com.marketpay.persistence.repository.BlockRepository;
+import com.marketpay.persistence.repository.JobHistoryRepository;
+import com.marketpay.persistence.repository.OperationRepository;
+import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
 import org.slf4j.Logger;
