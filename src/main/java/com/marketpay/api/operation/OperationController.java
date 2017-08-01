@@ -88,7 +88,6 @@ public class OperationController extends MarketPayController {
     public @ResponseBody
     Block getCodaBlock(@RequestParam(value = "idBu") String idBu, @RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
         //TODO ETI remove id_bu from request param
-        System.out.println("idBu = " + idBu);
         return blockRepository.findBlockByIdBuAndFundingDate(Long.parseLong(idBu), fundingDate);
 
     }
