@@ -2,7 +2,9 @@ package com.marketpay.api.operation;
 
 import com.marketpay.api.MarketPayController;
 import com.marketpay.api.operation.response.OperationListResponse;
+import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.User;
+import com.marketpay.persistence.repository.BlockRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.services.operation.OperationService;
@@ -33,6 +35,9 @@ public class OperationController extends MarketPayController {
 
     @Autowired
     private ShopRepository shopRepository;
+
+    @Autowired
+    private BlockRepository blockRepository;
 
     /**
      * Renvoie la liste des opérations associé à un utilisateur à un instant T
@@ -77,5 +82,13 @@ public class OperationController extends MarketPayController {
         operationListResponse.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
 
         return operationListResponse;
+    }
+
+    @RequestMapping(value = "/block", method = RequestMethod.GET)
+    public @ResponseBody
+    Block getCodaBlock(@RequestParam(value = "idBu") String idBu, @RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
+        //TODO ETI remove id_bu from request param
+        return blockRepository.findBlockByIdBuAndFundingDate(Long.parseLong(idBu), fundingDate);
+
     }
 }

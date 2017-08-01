@@ -1,11 +1,11 @@
-CREATE TABLE `marketpay`.`business_unit` (
+CREATE TABLE  `business_unit` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `location` VARCHAR(2) NOT NULL,
   PRIMARY KEY (`id`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `marketpay`.`store` (
+CREATE TABLE  `store` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `id_bu` BIGINT(20) NOT NULL,
   `contract_number` VARCHAR(45) NOT NULL,
@@ -15,12 +15,12 @@ CREATE TABLE `marketpay`.`store` (
   INDEX `id_bu_idx` (`id_bu` ASC),
   CONSTRAINT `id_bu_store`
     FOREIGN KEY (`id_bu`)
-    REFERENCES `marketpay`.`business_unit` (`id`)
+    REFERENCES  `business_unit` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `marketpay`.`user` (
+CREATE TABLE  `user` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `profile` INT NOT NULL,
   `email` VARCHAR(45) NOT NULL,
@@ -33,13 +33,13 @@ CREATE TABLE `marketpay`.`user` (
   INDEX `id_store_idx` (`id_store` ASC),
   CONSTRAINT `id_bu_user`
     FOREIGN KEY (`id_bu`)
-    REFERENCES `marketpay`.`business_unit` (`id`),
+    REFERENCES  `business_unit` (`id`),
   CONSTRAINT `id_store_user`
     FOREIGN KEY (`id_store`)
-    REFERENCES `marketpay`.`store` (`contract_number`))
+    REFERENCES  `store` (`contract_number`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `marketpay`.`operation` (
+CREATE TABLE  `operation` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME NOT NULL,
   `trade_date` DATETIME NOT NULL,
@@ -54,10 +54,10 @@ CREATE TABLE `marketpay`.`operation` (
   INDEX `funding_date_contract_number_idx` (`funding_date` ASC, `contract_number` ASC),
   CONSTRAINT `id_store_operation`
     FOREIGN KEY (`id_store`)
-    REFERENCES `marketpay`.`store` (`id`))
+    REFERENCES  `store` (`id`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `marketpay`.`block` (
+CREATE TABLE  `block` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `funding_date` DATETIME NOT NULL,
   `content` LONGTEXT NOT NULL,
@@ -67,5 +67,5 @@ CREATE TABLE `marketpay`.`block` (
   INDEX `id_bu_idx` (`id_bu` ASC),
   CONSTRAINT `id_bu_block`
     FOREIGN KEY (`id_bu`)
-    REFERENCES `marketpay`.`business_unit` (`id`))
+    REFERENCES  `business_unit` (`id`))
   ENGINE=InnoDB DEFAULT CHARSET=utf8;
