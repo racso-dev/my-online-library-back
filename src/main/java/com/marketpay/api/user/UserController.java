@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by etienne on 26/07/17.
  */
 @RestController
-@RequestMapping(value = "/api/user")
+@RequestMapping(value = "/user")
 public class UserController extends MarketPayController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);

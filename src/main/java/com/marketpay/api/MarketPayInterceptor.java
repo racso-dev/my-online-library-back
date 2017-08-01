@@ -30,7 +30,7 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
     private final String DEV_PROFILE = "dev";
 
     private final String LOGIN_URI = "/login";
-    private final String SWAGGER_URI = "/swagger-ui";
+    private final String SWAGGER_URI = "/swagger";
     private final String MANAGE_URI = "/manage";
     private final String ERROR_URI = "/error";
     private final String CONFIGURATION_URI = "/configuration";

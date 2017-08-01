@@ -32,16 +32,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //TODO ETI
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .csrf().disable().authorizeRequests()
-            .antMatchers("/").permitAll()
-            .antMatchers("/manage/**").permitAll()
-            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/login").permitAll()
-            //.antMatchers("/api/**").permitAll()
-            .antMatchers("/api/**").authenticated()
-            .antMatchers("/parsing").permitAll()
+                .antMatchers("/manage/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers("/parsing").permitAll()
+                .antMatchers("/swagger**").permitAll()
+                .antMatchers("/swagger/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/configuration/**").permitAll()
+                .antMatchers("/error").permitAll()
+                .anyRequest().authenticated()
             .and()
             // We filter the api/login requests
             .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)

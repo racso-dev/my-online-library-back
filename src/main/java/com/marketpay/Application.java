@@ -33,7 +33,7 @@ public class Application {
     }
 
     private static void initFlyway(ApplicationContext applicationContext) {
-        MyFlyway.init(applicationContext);
+        MyFlyway.initFlyway(applicationContext);
     }
 
 }

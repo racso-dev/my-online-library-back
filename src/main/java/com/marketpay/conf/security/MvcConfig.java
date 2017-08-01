@@ -22,4 +22,5 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public MarketPayInterceptor getMarketPayInterceptor() {
         return new MarketPayInterceptor();
     }
+
 }

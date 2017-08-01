@@ -21,7 +21,7 @@ import java.util.List;
  * Created by tchekroun on 10/07/2017.
  */
 @RestController
-@RequestMapping(value = "/api/operation")
+@RequestMapping(value = "/operation")
 public class OperationController extends MarketPayController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(OperationController.class);
