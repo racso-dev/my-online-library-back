@@ -19,7 +19,7 @@ public class MyFlyway {
     private static final String DEV_PROFILE = "dev";
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
-
+    private static final String CLASS_PATH = "classpath:";
     private static final String DB_INIT = "db/init";
     private static final String DB_DELTA = "db/delta";
     private static final String DB_DEV = "db/dev";
@@ -64,7 +64,7 @@ public class MyFlyway {
      * @throws IOException
      */
     private void safeMigrate(String folder) throws IOException {
-        if (context.getClassLoader().getResource(folder) == null) {
+        if (!context.getResource(CLASS_PATH + folder).exists()) {
             logger.warn("Le dossier renseigné pour Flyway n'existe pas / est vide");
             return;
         }
@@ -104,7 +104,7 @@ public class MyFlyway {
         flyway.setBaselineOnMigrate(false);
         flyway.setValidateOnMigrate(false);
         flyway.setOutOfOrder(true);
-        flyway.setLocations("filesystem:" + context.getClassLoader().getResource(folder).getPath());
+        flyway.setLocations(CLASS_PATH + folder);
         //si on a des migration donc des installation de dump à faire
         if (flyway.info().pending().length > 0) {
             flyway.migrate();
