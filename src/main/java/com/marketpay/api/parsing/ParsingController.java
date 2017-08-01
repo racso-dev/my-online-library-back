@@ -1,6 +1,7 @@
 package com.marketpay.api.parsing;
 
 import com.marketpay.annotation.Dev;
+import com.marketpay.annotation.NotAuthenticated;
 import com.marketpay.annotation.Profile;
 import com.marketpay.api.MarketPayController;
 import com.marketpay.job.parsing.ParsingDispatcher;
@@ -22,12 +23,11 @@ public class ParsingController extends MarketPayController {
     private ParsingDispatcher parsingDispatcher;
 
     @Dev
-    @Profile({})
+    @NotAuthenticated()
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public @ResponseBody void parsingFileAtPath(@RequestParam(value = "filepath") String filepath, HttpServletResponse response) {
+    public @ResponseBody void parsingFileAtPath(@RequestParam(value = "filepath") String filepath) {
         LOGGER.info("Parsing du fichier " + filepath);
         parsingDispatcher.parsingFile(filepath);
-        response.setStatus(HttpStatus.OK.value());
     }
 
 }

@@ -1,7 +1,9 @@
 package com.marketpay.api;
 
 import com.marketpay.annotation.Dev;
+import com.marketpay.annotation.NotAuthenticated;
 import com.marketpay.annotation.Profile;
+import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserRepository;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -52,21 +55,19 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
 
         // On ne passe pas par l'interceptor pour certaines uri
         if (!uri.equals(LOGIN_URI) && !uri.startsWith(MANAGE_URI) && !uri.startsWith(SWAGGER_URI) && !uri.equals(ERROR_URI) && !uri.startsWith(CONFIGURATION_URI)) {
+            HandlerMethod methodHandler = (HandlerMethod) handler;
 
             //On récupère l'identité du user via son login
             String login = null;
-            if(SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null) {
+            NotAuthenticated notAuthenticated = methodHandler.getMethodAnnotation(NotAuthenticated.class);
+            if(notAuthenticated == null && SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null) {
                 login = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             }
-
-
-            HandlerMethod methodHandler = (HandlerMethod) handler;
 
             // Les controllers @Dev ne sont autorisés que si on est en mode dev
             Dev devController = methodHandler.getMethodAnnotation(Dev.class);
             if (devController != null && !Arrays.asList(applicationContext.getEnvironment().getActiveProfiles()).contains(DEV_PROFILE)) {
-                LOGGER.error("Le service " + uri + " n'est pas accessible en mode non dev");
-                //TODO ETI throw MarketPayException
+                throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Le service " + uri + " n'est pas accessible en mode non dev");
             }
 
             //On récupère le user connecté
@@ -74,7 +75,7 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
             if(login != null){
                 userOpt = userRepository.findByLogin(login);
                 if(!userOpt.isPresent()){
-                    //TODO ETI throw MarketPayException
+                    throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "User introuvable en base pour le login " + login + " du user connecté");
                 }
             }
 
@@ -83,17 +84,17 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
             if(userOpt.isPresent()){
                 userProfile = USER_PROFILE.getByCode(userOpt.get().getProfile());
                 if(userProfile == null){
-                    //TODO ETI throw MarketPayException
+                    throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "Profile " + userOpt.get().getProfile() + " inconnu");
                 }
             }
 
             //On check ses droits d'accès à l'uri
             Profile profile = methodHandler.getMethodAnnotation(Profile.class);
-            if(profile == null){
-                //TODO ETI throw MarketPayException
+            if(notAuthenticated == null && profile == null){
+                throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "Aucune sécurité sur le profile d'accès est implémentée pour le service " + uri);
             }
             if(userProfile != null){
-                checkProfile(profile, userProfile);
+                checkProfile(profile, userProfile, uri);
             }
 
             //On récupère la liste des shop associés au user et la BU
@@ -128,8 +129,6 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         // Traitement requête terminé, supprimer le contexte
         RequestContext.clear();
-        //TODO ETI
-//        ErrorHandler.resetErrorHandler();
         super.afterCompletion(request, response, handler, ex);
     }
 
@@ -138,14 +137,14 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
      * @param profile
      * @param userProfile
      */
-    private void checkProfile(Profile profile, USER_PROFILE userProfile) {
+    private void checkProfile(Profile profile, USER_PROFILE userProfile, String uri) throws MarketPayException {
         //Si profile ne contient pas de USER_PROFILE, il n'y a pas de droit d'accès particulier
         //Donc on laisse passer
         //Si profile contient userProfile c'est OK, on laisse passer
         List<USER_PROFILE> profileList = Arrays.asList(profile.value());
         if(!profileList.isEmpty() && !profileList.contains(userProfile)){
             //Si profile ne contient pas userProfile alors on est pas autorisé, on STOP
-            //TODO ETI throw MarketPayException
+            throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Le service " + uri + " n'est pas accessible au profile " + userProfile.getCode());
         }
     }
 }

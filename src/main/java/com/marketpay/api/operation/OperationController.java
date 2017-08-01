@@ -4,6 +4,7 @@ import com.marketpay.annotation.Profile;
 import com.marketpay.api.MarketPayController;
 import com.marketpay.api.RequestContext;
 import com.marketpay.api.operation.response.OperationListResponse;
+import com.marketpay.exception.MarketPayException;
 import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.operation.OperationService;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class OperationController extends MarketPayController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
     public @ResponseBody
-    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop, HttpServletResponse response) {
+    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop) throws MarketPayException {
         OperationListResponse operationListResponse = new OperationListResponse();
 
         //On récupère la liste des shop associé au user
@@ -47,9 +48,7 @@ public class OperationController extends MarketPayController {
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         if( idShop != null) {
             if( !shopIdList.contains(idShop) ) {
-                //TODO ETI MarketPayException
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                return operationListResponse;
+                throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Le user " + RequestContext.get().getUser().getId() + " n'a pas accès au shop " + idShop);
             } else {
                 shopIdList.clear();
                 shopIdList.add(idShop);
