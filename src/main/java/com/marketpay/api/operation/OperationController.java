@@ -3,9 +3,16 @@ package com.marketpay.api.operation;
 import com.marketpay.annotation.Profile;
 import com.marketpay.api.MarketPayController;
 import com.marketpay.api.RequestContext;
+import com.marketpay.api.operation.response.OperationCodaBlockResponse;
 import com.marketpay.api.operation.response.OperationListResponse;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.references.USER_PROFILE;
+import com.marketpay.persistence.entity.Block;
+import com.marketpay.persistence.entity.Operation;
+import com.marketpay.persistence.entity.User;
+import com.marketpay.persistence.repository.BlockRepository;
+import com.marketpay.persistence.repository.ShopRepository;
+import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.services.operation.OperationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,5 +67,20 @@ public class OperationController extends MarketPayController {
         LOGGER.info("Récupération de " + operationListResponse.getOperationList().size() + " pour la fundingDate " + localDate.toString() + " et le user " + RequestContext.get().getUser().getId());
 
         return operationListResponse;
+    }
+
+    /**
+     * WS de récupération d'un block CODA
+     * @param fundingDate
+     * @return
+     */
+    @RequestMapping(value = "/block", method = RequestMethod.GET)
+    @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
+    public @ResponseBody
+    OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
+        OperationCodaBlockResponse operationCodaBlockResponse = new OperationCodaBlockResponse();
+        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, RequestContext.get().getIdBu()));
+        return operationCodaBlockResponse;
+
     }
 }
