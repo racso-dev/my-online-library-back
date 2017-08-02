@@ -13,22 +13,35 @@ public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
-    private long profile;
+    private int profile;
     private String email;
     private String login;
     private String password;
     private Long idBu;
     private Long idShop;
 
+    public User(User user) {
+        this.id = user.getId();
+        this.profile = user.getProfile();
+        this.email = user.getEmail();
+        this.login = user.getLogin();
+        this.password = user.getPassword();
+        this.idBu = user.getIdBu();
+        this.idShop = user.getIdShop();
+    }
+
+    public User() {
+    }
+
     public Long getId() {
         return id;
     }
 
-    public long getProfile() {
+    public int getProfile() {
         return profile;
     }
 
-    public void setProfile(long profile) {
+    public void setProfile(int profile) {
         this.profile = profile;
     }
 

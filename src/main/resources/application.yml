@@ -8,11 +8,6 @@ management:
     enabled: false
 
 database:
-  driver:
-  url:
-  user:
-  password:
-  packageName:
   flyway: true
 
 jwt:
@@ -20,3 +15,13 @@ jwt:
 
 security:
   sessions: stateless
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /swagger/api-docs
+
+#On n'utilise pas le flyway auto de spring boot
+flyway:
+  enabled: false

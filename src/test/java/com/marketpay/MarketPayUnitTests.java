@@ -51,7 +51,6 @@ public class MarketPayUnitTests {
     public void createBusinessReturnMock() {
         BusinessUnit businessUnit = new BusinessUnit();
         businessUnit.setId(12l);
-        //TODO ETI
     }
 
     public void createOperationReturnMock() {
