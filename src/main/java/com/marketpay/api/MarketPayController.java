@@ -3,7 +3,6 @@ package com.marketpay.api;
 import com.marketpay.exception.MarketPayException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +30,7 @@ public class MarketPayController {
     public String handleException(HttpServletRequest req, HttpServletResponse response, Throwable t) {
         response.setContentType("application/json");
 
-        // Statut http
-        HttpStatus status;
+        //On traite l'exception set on set le status de la response en conséquence
         if (t instanceof MarketPayException) {
             //Si cas d'erreur fonctionnel, mauvaise request, unauthorized, ...
             response.setStatus(((MarketPayException) t).getHttpStatus().value());

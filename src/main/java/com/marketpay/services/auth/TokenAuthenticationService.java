@@ -1,6 +1,8 @@
 package com.marketpay.services.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketpay.exception.MarketPayException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,20 +25,20 @@ import static java.util.Collections.emptyList;
 @Component
 public class TokenAuthenticationService {
 
-    private final long EXPIRATIONTIME = 86_400_000; // 1 day
+    private final long EXPIRATIONTIME = 14_400_000; // 4h
     @Value("${jwt.secret}")
     private String SECRET;
     private final String COOKIE_NAME = "sid";
 
     public void addAuthentication(HttpServletRequest req, HttpServletResponse res, String username) throws IOException {
         String JWT = Jwts.builder()
-            .setPayload("{\"sub\":\"" + username +"\", \"profile\":\"test\", \"exp\":"+new Date(System.currentTimeMillis() + EXPIRATIONTIME).getTime()+"}")
-            //.setSubject(username)
-            //.setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
+//            .setPayload("{\"sub\":\"" + username +"\", \"exp\":\""+new Date(System.currentTimeMillis() + EXPIRATIONTIME).getTime()+"\"}")
+            .setSubject(username)
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
             .signWith(SignatureAlgorithm.HS512, SECRET)
             .compact();
-            res.setContentType("application/json");
 
+        res.setContentType("application/json");
         ObjectMapper mapper = new ObjectMapper();
         res.getWriter().write(mapper.writeValueAsString(new TokenResponse(JWT)));
     }
