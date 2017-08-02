@@ -31,10 +31,18 @@ public class OperationService {
         return operationRepository.findOperationsByIdShopInAndFundingDate(shopIdList, localDate);
     }
 
+    /**
+     * Service de récupération des block CODA
+     * @param fundingDate
+     * @param idBu
+     * @return
+     */
     public String getCodaBlockFromIdBuAndFundingDate(LocalDate fundingDate, Long idBu) {
+        //On récupère les block CODA
         List<Block> codaBlockList = blockRepository.findBlockByIdBuAndFundingDate(idBu, fundingDate);
-        String fileContent = "";
 
+        //On les concatène
+        String fileContent = "";
         for(Block block: codaBlockList) {
             fileContent += block.getContent();
         }

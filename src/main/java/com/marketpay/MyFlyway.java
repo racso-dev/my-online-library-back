@@ -15,13 +15,11 @@ import java.util.Arrays;
 /**
  * Created by antony on 03/07/17.
  */
-@Component
 public class MyFlyway {
     private static final String DEV_PROFILE = "dev";
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
-
-    private static final String FILE_SRC_MAIN_RESOURCES = "file:src/main/resources/";
+    private static final String CLASS_PATH = "classpath:";
     private static final String DB_INIT = "db/init";
     private static final String DB_DELTA = "db/delta";
     private static final String DB_DEV = "db/dev";
@@ -30,7 +28,7 @@ public class MyFlyway {
     private final SpringDatasource springDatasource;
     private DBConfig dbConfig;
 
-    public static void init(ApplicationContext applicationContext) {
+    public static void initFlyway(ApplicationContext applicationContext) {
         new MyFlyway(applicationContext);
     }
 
@@ -66,7 +64,7 @@ public class MyFlyway {
      * @throws IOException
      */
     private void safeMigrate(String folder) throws IOException {
-        if (!context.getResource(FILE_SRC_MAIN_RESOURCES + folder).exists() || context.getResource(FILE_SRC_MAIN_RESOURCES + folder).contentLength() == 0) {
+        if (!context.getResource(CLASS_PATH + folder).exists()) {
             logger.warn("Le dossier renseigné pour Flyway n'existe pas / est vide");
             return;
         }
@@ -106,7 +104,7 @@ public class MyFlyway {
         flyway.setBaselineOnMigrate(false);
         flyway.setValidateOnMigrate(false);
         flyway.setOutOfOrder(true);
-        flyway.setLocations("filesystem:" + context.getResource(FILE_SRC_MAIN_RESOURCES + folder).getFile());
+        flyway.setLocations(CLASS_PATH + folder);
         //si on a des migration donc des installation de dump à faire
         if (flyway.info().pending().length > 0) {
             flyway.migrate();
