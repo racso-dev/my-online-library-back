@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import sun.rmi.runtime.Log;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -92,9 +94,11 @@ public class OperationController extends MarketPayController {
 
             LOGGER.debug("Get document ");
              PDDocument pdDocument = operationService.getPdfFileFromTable(fundingDate, shopIdList, RequestContext.get().getLanguage());
-             pdDocument.save("ceciestuntest.pdf");
-             pdDocument.save(response.getOutputStream());
-             pdDocument.close();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            pdDocument.save(outputStream);
+            pdDocument.close();
+            response.getOutputStream().write(outputStream.toByteArray());
+            LOGGER.debug("test");
         } catch (IOException e) {
             e.printStackTrace();
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

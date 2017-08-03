@@ -3,6 +3,7 @@ package com.marketpay.services.operation;
 import be.quodlibet.boxable.BaseTable;
 import be.quodlibet.boxable.Cell;
 import be.quodlibet.boxable.Row;
+import be.quodlibet.boxable.image.Image;
 import be.quodlibet.boxable.line.LineStyle;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.CARD_TYPE;
@@ -12,16 +13,18 @@ import com.marketpay.references.OPERATION_TYPE;
 import com.marketpay.utils.I18nUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 @Component
 public class PdfOperationService {
@@ -106,6 +109,14 @@ public class PdfOperationService {
             // On crée le tableau
             BaseTable baseTable  = new BaseTable(yStart , yStartNewPage, bottomMargin, tableWidth, xStart, mainDocument, myPage, true, true);
 
+            PDPageContentStream contentStream = new PDPageContentStream(mainDocument, myPage);
+
+            // Ajout de l'image dans le coin en haut à gauche du pdf
+            Image image = new Image(ImageIO.read(applicationContext.getResource("classpath:img/cornerLogoMP-transparent.png").getFile()));
+            image = image.scaleByWidth(100);
+            image.draw(mainDocument, contentStream, 0, 600);
+            contentStream.close();
+            
             Color headerColor = HEADER_COLOR;
 
             // Si c'est pas la première page le header est moins foncé
