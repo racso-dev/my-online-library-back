@@ -98,4 +98,15 @@ public class UserService {
         return LocalDate.now();
     }
 
+    /**
+     * Service de récupération des shop user pour une list d'idShop
+     * @param idBu
+     * @param idShopList
+     * @return
+     */
+    public List<String> getShopUserList(long idBu, List<Long> idShopList) {
+        //TODO ETI
+        return null;
+    }
+
 }
