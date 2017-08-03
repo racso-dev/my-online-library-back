@@ -49,7 +49,7 @@ public class UserController extends MarketPayController {
     @Profile({USER_PROFILE.ADMIN_USER, USER_PROFILE.USER_MANAGER})
     @RequestMapping(value = "/shop", method = RequestMethod.GET)
     public @ResponseBody ShopUserListResponse getShopUserList(@RequestParam(value = "idBu", required = false) Long idBu) {
-        //TODO ETI
+        //TODO KEVIN
         return null;
     }
 

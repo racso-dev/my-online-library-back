@@ -2,7 +2,6 @@ package com.marketpay.api;
 
 import com.marketpay.persistence.entity.User;
 import com.marketpay.references.LANGUAGE;
-import com.marketpay.references.LOCATION;
 import com.marketpay.references.USER_PROFILE;
 
 import java.util.List;

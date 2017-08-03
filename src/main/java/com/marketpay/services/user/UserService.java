@@ -8,6 +8,8 @@ import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.BusinessUnitRepository;
 import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
+import com.marketpay.persistence.repository.UserRepository;
+import com.marketpay.services.user.resource.ShopUserResource;
 import com.marketpay.services.user.resource.UserInformationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,9 @@ public class UserService {
 
     @Autowired
     private OperationRepository operationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Service de récupération d'un userInformation à partir d'un user
@@ -99,13 +104,13 @@ public class UserService {
     }
 
     /**
-     * Service de récupération des shop user pour une list d'idShop
+     * Service de récupération des shop user pour une BU
      * @param idBu
-     * @param idShopList
      * @return
      */
-    public List<String> getShopUserList(long idBu, List<Long> idShopList) {
-        //TODO ETI
+    public List<ShopUserResource> getShopUserList(long idBu) {
+        //TODO KEVIN
+
         return null;
     }
 
