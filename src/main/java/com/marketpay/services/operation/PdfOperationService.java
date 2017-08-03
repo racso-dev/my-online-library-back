@@ -184,7 +184,7 @@ public class PdfOperationService {
             row.createCell(8, rowValue);
 
             String sensProperties = OPERATION_SENS.getByCode(operation.getSens()).getValue();
-            row.createCell(8, i18nUtils.getMessage(sensProperties, null, language);
+            row.createCell(8, i18nUtils.getMessage(sensProperties, null, language));
 
             row.createCell(8, getFormattedNumber(operation.getGrossAmount()));
             row.createCell(8, getFormattedNumber((operation.getGrossAmount() - operation.getNetAmount())));
