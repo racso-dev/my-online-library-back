@@ -1,37 +1,36 @@
-package com.marketpay.persistence.entity;
+package com.marketpay.services.user.resource;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.marketpay.persistence.entity.User;
 
-@Entity
-public class User {
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+public class UserResource {
+
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     private int profile;
     private String email;
-    private String login;
-    private String password;
+    private String lastName;
+    private String firstName;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long idBu;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long idShop;
 
-    public User(User user) {
+    public UserResource(User user) {
         this.id = user.getId();
         this.profile = user.getProfile();
         this.email = user.getEmail();
-        this.login = user.getLogin();
-        this.password = user.getPassword();
         this.idBu = user.getIdBu();
         this.idShop = user.getIdShop();
     }
 
-    public User() {
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public int getProfile() {
@@ -50,20 +49,20 @@ public class User {
         this.email = email;
     }
 
-    public String getLogin() {
-        return login;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getPassword() {
-        return password;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public Long getIdBu() {
@@ -81,4 +80,5 @@ public class User {
     public void setIdShop(Long idShop) {
         this.idShop = idShop;
     }
+
 }

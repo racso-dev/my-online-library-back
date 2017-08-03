@@ -1,10 +1,26 @@
 package com.marketpay.api.user.response;
 
-/**
- * Created by etienne on 03/08/17.
- */
+import com.marketpay.services.user.resource.ShopUserResource;
+
+import java.util.List;
+
 public class ShopUserListResponse {
 
-    //TODO ETI
+    private List<ShopUserResource> shopUserResourceList;
+
+    public ShopUserListResponse() {
+    }
+
+    public ShopUserListResponse(List<ShopUserResource> shopUserResourceList) {
+        this.shopUserResourceList = shopUserResourceList;
+    }
+
+    public List<ShopUserResource> getShopUserResourceList() {
+        return shopUserResourceList;
+    }
+
+    public void setShopUserResourceList(List<ShopUserResource> shopUserResourceList) {
+        this.shopUserResourceList = shopUserResourceList;
+    }
 
 }
