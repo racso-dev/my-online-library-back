@@ -4,6 +4,7 @@ import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.repository.BlockRepository;
 import com.marketpay.persistence.repository.OperationRepository;
+import com.marketpay.references.LANGUAGE;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,9 @@ public class OperationService {
 
     @Autowired
     private BlockRepository blockRepository;
+
+    @Autowired
+    private PdfOperationService pdfOperationService;
 
     private final Logger LOGGER = LoggerFactory.getLogger(OperationService.class);
 
@@ -55,10 +59,10 @@ public class OperationService {
         return fileContent;
     }
 
-    public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList) {
+    public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList, LANGUAGE language) {
         List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
-        PdfOperationService pdfOperationService = new PdfOperationService(operationList);
-        return pdfOperationService.getPdfDocument();
+        pdfOperationService.setOperationList(operationList);
+        return pdfOperationService.getPdfDocument(language);
     }
 
 

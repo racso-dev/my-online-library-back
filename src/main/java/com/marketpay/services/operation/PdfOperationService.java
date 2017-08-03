@@ -6,18 +6,24 @@ import be.quodlibet.boxable.Row;
 import be.quodlibet.boxable.line.LineStyle;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.CARD_TYPE;
+import com.marketpay.references.LANGUAGE;
 import com.marketpay.references.OPERATION_SENS;
 import com.marketpay.references.OPERATION_TYPE;
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.marketpay.utils.I18nUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
+@Component
 public class PdfOperationService {
     private final int MAX_LINE = 10;
     private final Color HEADER_COLOR =  new Color(17, 169, 157);
@@ -34,15 +40,28 @@ public class PdfOperationService {
     private List<Operation> operationList;
     private PDDocument mainDocument;
 
-    public PdfOperationService(List<Operation> operationList) {
-        this.operationList = operationList;
-        this.mainDocument = new PDDocument();
+    @Autowired
+    private I18nUtils i18nUtils;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    public PdfOperationService() {
     }
 
+    public void setOperationList(List<Operation> operationList) {
+        this.operationList = operationList;
+    }
 
-    public PDDocument getPdfDocument() {
+    /**
+     * Crée le pdf et retourne le fichier
+     * @param language: Utiliser pour la traduction i18n
+     * @return : un document
+     */
+    public PDDocument getPdfDocument(LANGUAGE language) {
+        this.mainDocument = new PDDocument();
         // Si la liste est vide on renvoit directement le document
-        if(operationList.isEmpty()) {
+        if(operationList == null || operationList.isEmpty()) {
             return mainDocument;
         }
 
@@ -54,7 +73,7 @@ public class PdfOperationService {
                 endIndex = operationList.size();
             }
             List<Operation> subList = operationList.subList(startIndex, endIndex);
-            createTable(subList, i == 0, endIndex == operationList.size());
+            createTable(subList, i == 0, endIndex == operationList.size(), language);
         }
 
         return mainDocument;
@@ -65,14 +84,22 @@ public class PdfOperationService {
      * @param operationList : 10 éléments max
      * @param isFirstPage : Permet de changer la couleur en fonction de si c'est la première page ou non
      * @param isFinalPage : Permet d'ajouter la ligne final avec le total
+     * @param language : utilisé pour i18n
      */
-    private void createTable(List<Operation> operationList, Boolean isFirstPage, Boolean isFinalPage) {
+    private void createTable(List<Operation> operationList, Boolean isFirstPage, Boolean isFinalPage, LANGUAGE language) {
 
         // On crée la page
         PDPage myPage = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth()));
         Boolean isCoda = operationList.get(0).getCardType() != null;
 
-        List<String> headerList = Arrays.asList("Contract number", "Store", "Trade date" , isCoda ? "Card type" : "Operation type", "Sens", "Gross amount €", "Commission €", "Net amount €");
+        List<String> headerList = Arrays.asList(i18nUtils.getMessage("pdfOperationService.contractNumber", null, language),
+            i18nUtils.getMessage("pdfOperationService.shop", null , language),
+            i18nUtils.getMessage("pdfOperationService.tradeDate", null, language),
+            isCoda ? i18nUtils.getMessage("pdfOperationService.cardType", null, language) : i18nUtils.getMessage("pdfOperationService.operationType", null, language),
+            i18nUtils.getMessage("pdfOperationService.sens", null, language),
+            i18nUtils.getMessage("pdfOperationService.grossAmount", null, language),
+            i18nUtils.getMessage("pdfOperationService.commission", null, language),
+            i18nUtils.getMessage("pdfOperationService.netAmount", null, language));
 
 
         try {
@@ -99,7 +126,7 @@ public class PdfOperationService {
 
             baseTable.addHeaderRow(headerRow);
 
-            addTableBody(baseTable, isCoda);
+            addTableBody(baseTable, isCoda, language);
 
             if(isFinalPage) {
                 addTableFooter(baseTable);
@@ -134,8 +161,9 @@ public class PdfOperationService {
      * Crée chacune des lignes du tableau
      * @param table : Tableau sur lequel on rajoute le body
      * @param isCoda: Permet de savoir le type de tableau
+     * @param language : utilisé pour la traduction i18n
      */
-    private void addTableBody(BaseTable table, Boolean isCoda) {
+    private void addTableBody(BaseTable table, Boolean isCoda, LANGUAGE language) {
         Boolean shouldColor = false;
 
         // On crée chacune des lignes
@@ -154,7 +182,9 @@ public class PdfOperationService {
             }
 
             row.createCell(8, rowValue);
-            row.createCell(8, OPERATION_SENS.getByCode(operation.getSens()).getValue());
+
+            String sensProperties = OPERATION_SENS.getByCode(operation.getSens()).getValue();
+            row.createCell(8, i18nUtils.getMessage(sensProperties, null, language);
 
             row.createCell(8, getFormattedNumber(operation.getGrossAmount()));
             row.createCell(8, getFormattedNumber((operation.getGrossAmount() - operation.getNetAmount())));

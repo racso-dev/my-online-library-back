@@ -91,7 +91,7 @@ public class OperationController extends MarketPayController {
         try {
 
             LOGGER.debug("Get document ");
-             PDDocument pdDocument = operationService.getPdfFileFromTable(fundingDate, shopIdList);
+             PDDocument pdDocument = operationService.getPdfFileFromTable(fundingDate, shopIdList, RequestContext.get().getLanguage());
              pdDocument.save("ceciestuntest.pdf");
              pdDocument.save(response.getOutputStream());
              pdDocument.close();
