@@ -1,9 +1,9 @@
 package com.marketpay.api;
 
 import com.marketpay.persistence.entity.User;
+import com.marketpay.references.LANGUAGE;
+import com.marketpay.references.LOCATION;
 import com.marketpay.references.USER_PROFILE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -11,8 +11,6 @@ import java.util.List;
  * Created by etienne on 31/07/17.
  */
 public class RequestContext {
-
-    private final Logger LOGGER = LoggerFactory.getLogger(RequestContext.class);
 
     //Uri de la request
     private String uri;
@@ -28,6 +26,9 @@ public class RequestContext {
 
     //User
     private User user;
+
+    //Language de la request
+    private LANGUAGE language;
 
     //Déclaration du context
     private static ThreadLocal<RequestContext> mpContext = new ThreadLocal<RequestContext>();
@@ -94,4 +95,13 @@ public class RequestContext {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public LANGUAGE getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(LANGUAGE language) {
+        this.language = language;
+    }
+
 }
