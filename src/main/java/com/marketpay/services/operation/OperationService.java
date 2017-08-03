@@ -1,18 +1,22 @@
 package com.marketpay.services.operation;
 
 import com.marketpay.persistence.entity.Block;
+import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Operation;
+import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.repository.BlockRepository;
+import com.marketpay.persistence.repository.BusinessUnitRepository;
 import com.marketpay.persistence.repository.OperationRepository;
+import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.LANGUAGE;
+import com.marketpay.utils.I18nUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by tchekroun on 10/07/2017.
@@ -28,7 +32,14 @@ public class OperationService {
     @Autowired
     private PdfOperationService pdfOperationService;
 
-    private final Logger LOGGER = LoggerFactory.getLogger(OperationService.class);
+    @Autowired
+    private BusinessUnitRepository businessUnitRepository;
+
+    @Autowired
+    private ShopRepository shopRepository;
+
+    @Autowired
+    private I18nUtils i18nUtils;
 
     /**
      * Permet de récupérer la liste d'opération effectué dans x magasins à un instant T
@@ -62,7 +73,24 @@ public class OperationService {
     public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList, LANGUAGE language) {
         List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
         pdfOperationService.setOperationList(operationList);
-        return pdfOperationService.getPdfDocument(language);
+        String shopName = i18nUtils.getMessage("pdfOperationService.allShop", null, language);
+        String buName = "";
+
+        Optional<Shop> shopOptional = shopRepository.findById(shopIdList.get(0));
+        if(shopOptional.isPresent()) {
+            // Si on n'a qu'un seul shop on récupère son nom
+            if(shopIdList.size() == 1) {
+                shopName = shopOptional.get().getName();
+            }
+
+            // On récupère la BU
+            Optional<BusinessUnit> businessUnitOptional = businessUnitRepository.findById(shopOptional.get().getIdBu());
+            if(businessUnitOptional.isPresent()) {
+                buName = businessUnitOptional.get().getName();
+            }
+        }
+
+        return pdfOperationService.getPdfDocument(language, buName, shopName);
     }
 
 

@@ -15,6 +15,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,7 @@ public class PdfOperationService {
      * @param language: Utiliser pour la traduction i18n
      * @return : un document
      */
-    public PDDocument getPdfDocument(LANGUAGE language) {
+    public PDDocument getPdfDocument(LANGUAGE language, String buName, String shopName) {
         this.mainDocument = new PDDocument();
         // Si la liste est vide on renvoit directement le document
         if(operationList == null || operationList.isEmpty()) {
@@ -76,7 +77,7 @@ public class PdfOperationService {
                 endIndex = operationList.size();
             }
             List<Operation> subList = operationList.subList(startIndex, endIndex);
-            createTable(subList, i == 0, endIndex == operationList.size(), language);
+            createTable(subList, i == 0, endIndex == operationList.size(), language, buName, shopName);
         }
 
         return mainDocument;
@@ -89,7 +90,7 @@ public class PdfOperationService {
      * @param isFinalPage : Permet d'ajouter la ligne final avec le total
      * @param language : utilisé pour i18n
      */
-    private void createTable(List<Operation> operationList, Boolean isFirstPage, Boolean isFinalPage, LANGUAGE language) {
+    private void createTable(List<Operation> operationList, Boolean isFirstPage, Boolean isFinalPage, LANGUAGE language, String buName, String shopName) {
 
         // On crée la page
         PDPage myPage = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth()));
@@ -111,12 +112,32 @@ public class PdfOperationService {
 
             PDPageContentStream contentStream = new PDPageContentStream(mainDocument, myPage);
 
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 20);
+            contentStream.moveTextPositionByAmount(350, 500);
+            contentStream.drawString(i18nUtils.getMessage("pdfOperationService.title", null, language));
+
+
+            contentStream.endText();
+
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
+            contentStream.moveTextPositionByAmount(100, 430);
+            // On met la BU
+            String textToDraw =  "  " + i18nUtils.getMessage("pdfOperationService.bu", null, language) + " : " + buName;
+            // On ajoute le shop
+            textToDraw += "                " + i18nUtils.getMessage("pdfOperationService.shop", null, language) + " : " + shopName;
+            // On ajoute la funding date
+            textToDraw += "                  " + i18nUtils.getMessage("pdfOperationService.fundingDate", null, language) + " : " +  operationList.get(0).getFundingDate();
+            contentStream.drawString(textToDraw);
+            contentStream.endText();
+
             // Ajout de l'image dans le coin en haut à gauche du pdf
             Image image = new Image(ImageIO.read(applicationContext.getResource("classpath:img/cornerLogoMP-transparent.png").getFile()));
-            image = image.scaleByWidth(100);
+            image = image.scaleByWidth(140);
             image.draw(mainDocument, contentStream, 0, 600);
             contentStream.close();
-            
+
             Color headerColor = HEADER_COLOR;
 
             // Si c'est pas la première page le header est moins foncé
