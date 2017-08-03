@@ -4,6 +4,9 @@ import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.repository.BlockRepository;
 import com.marketpay.persistence.repository.OperationRepository;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +23,8 @@ public class OperationService {
 
     @Autowired
     private BlockRepository blockRepository;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(OperationService.class);
 
     /**
      * Permet de récupérer la liste d'opération effectué dans x magasins à un instant T
@@ -49,5 +54,13 @@ public class OperationService {
 
         return fileContent;
     }
+
+    public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList) {
+        List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+        PdfOperationService pdfOperationService = new PdfOperationService(operationList);
+        return pdfOperationService.getPdfDocument();
+    }
+
+
 
 }

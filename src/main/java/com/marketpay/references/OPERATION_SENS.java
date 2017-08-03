@@ -21,6 +21,10 @@ public enum OPERATION_SENS {
         return null;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     public int getCode() {
         return this.code;
     }
