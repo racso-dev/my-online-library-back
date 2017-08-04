@@ -21,6 +21,8 @@ public class UserResource {
         this.id = user.getId();
         this.profile = user.getProfile();
         this.email = user.getEmail();
+        this.lastName = user.getLastName();
+        this.firstName = user.getFirstName();
         this.idBu = user.getIdBu();
         this.idShop = user.getIdShop();
     }
