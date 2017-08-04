@@ -1,19 +1,27 @@
 package com.marketpay.references;
 
+import java.util.Locale;
+
 /**
  * Created by etienne on 03/08/17.
  */
 public enum LANGUAGE {
 
-    FR("fr"),
-    EN("en"),
-    NL("nl"),
-    ES("es");
+    FR("fr", Locale.FRENCH),
+    EN("en", Locale.ENGLISH),
+    NL("nl", new Locale("nl", "BE")),
+    ES("es", new Locale("es", "ES"));
 
     private String code;
+    private Locale locale;
 
-    LANGUAGE(String code) {
+    LANGUAGE(String code, Locale locale) {
         this.code = code;
+        this.locale = locale;
+    }
+
+    public Locale getLocale() {
+        return locale;
     }
 
     public String getCode() {
