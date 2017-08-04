@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
+import javax.validation.constraints.Max;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class PdfOperationService {
             return mainDocument;
         }
 
-        for(int i = 0; i < operationList.size() / MAX_LINE; i++) {
+        for(int i = 0; i * MAX_LINE < operationList.size(); i++) {
             int startIndex = i * MAX_LINE;
             int endIndex = startIndex + MAX_LINE;
             // Si on arrive a la fin de la liste
@@ -117,7 +118,6 @@ public class PdfOperationService {
             contentStream.moveTextPositionByAmount(350, 500);
             contentStream.drawString(i18nUtils.getMessage("pdfOperationService.title", null, language));
 
-
             contentStream.endText();
 
             contentStream.beginText();
@@ -158,7 +158,7 @@ public class PdfOperationService {
 
             baseTable.addHeaderRow(headerRow);
 
-            addTableBody(baseTable, isCoda, language);
+            addTableBody(baseTable, isCoda, language, operationList);
 
             if(isFinalPage) {
                 addTableFooter(baseTable);
@@ -195,7 +195,7 @@ public class PdfOperationService {
      * @param isCoda: Permet de savoir le type de tableau
      * @param language : utilisé pour la traduction i18n
      */
-    private void addTableBody(BaseTable table, Boolean isCoda, LANGUAGE language) {
+    private void addTableBody(BaseTable table, Boolean isCoda, LANGUAGE language, List<Operation> operationList) {
         Boolean shouldColor = false;
 
         // On crée chacune des lignes
