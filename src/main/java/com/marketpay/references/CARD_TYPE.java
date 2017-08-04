@@ -1,10 +1,10 @@
 package com.marketpay.references;
 
 public enum CARD_TYPE {
-    MAE("MAE", "Maestro"),
-    MC( "MC ", "Master Card"),
-    VIS("VIS", "Visa"),
-    BCM("BCM", "Bancontact");
+    MAE("MAE", "pdfOperationService.mae"),
+    MC( "MC ", "pdfOperationService.mc"),
+    VIS("VIS", "pdfOperationService.vis"),
+    BCM("BCM", "pdfOperationService.bcm");
 
 
     private String code;

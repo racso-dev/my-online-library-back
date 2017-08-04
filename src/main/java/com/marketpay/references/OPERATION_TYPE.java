@@ -1,9 +1,9 @@
 package com.marketpay.references;
 
 public enum OPERATION_TYPE {
-    VENTAS(125, "Ventas / Devoluciones"),
-    RECLAM( 126, "Reclamación"),
-    BOLETA(127, "Cargo Boleta");
+    VENTAS(125, "pdfOperationService.ventas"),
+    RECLAM( 126, "pdfOperationService.reclamacion"),
+    BOLETA(127, "pdfOperationService.cargo");
 
     private int code;
     private String value;

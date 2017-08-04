@@ -208,9 +208,11 @@ public class PdfOperationService {
             String rowValue;
             // Si c'est un coda on prend le type de carte sinon le type d'opération
             if(isCoda) {
-                rowValue = CARD_TYPE.getByCode(operation.getCardType()).getValue();
+                String cardTypeValue = CARD_TYPE.getByCode(operation.getCardType()).getValue();
+                rowValue = i18nUtils.getMessage(cardTypeValue, null, language);
             } else {
-                rowValue = OPERATION_TYPE.getByCode(operation.getOperationType()).getValue();
+                String operationTypeValue = OPERATION_TYPE.getByCode(operation.getOperationType()).getValue();
+                rowValue = i18nUtils.getMessage(operationTypeValue, null, language);
             }
 
             row.createCell(8, rowValue);

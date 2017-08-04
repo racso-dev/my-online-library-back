@@ -15,13 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sun.rmi.runtime.Log;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +30,7 @@ import java.util.List;
 public class OperationController extends MarketPayController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(OperationController.class);
+    private final String FILENAME_PREFIX_PDF = "Operation_";
 
     @Autowired
     private OperationService operationService;
@@ -80,28 +79,26 @@ public class OperationController extends MarketPayController {
      * @param response
      * @throws MarketPayException
      */
-    @RequestMapping(value = "test", method = RequestMethod.GET)
+    @RequestMapping(value = "/pdf", method = RequestMethod.GET)
     @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
     public void getPdfFile(@RequestParam(value= "idShop", required = false) Long idShop, @RequestParam(value = "fundingDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate, HttpServletResponse response) throws MarketPayException {
 
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         List<Long> shopIdList = getAuthoriseShop(idShop);
 
+        String filename = FILENAME_PREFIX_PDF + fundingDate + ".pdf";
         response.setContentType("application/pdf");
         response.setHeader("Content-Transfer-Encoding", "binary");
-        response.setHeader("Content-Disposition", "attachment; filename=test.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
         try {
 
-            LOGGER.debug("Get document ");
-             PDDocument pdDocument = operationService.getPdfFileFromTable(fundingDate, shopIdList, RequestContext.get().getLanguage());
+            PDDocument pdDocument = operationService.getPdfFileFromTable(fundingDate, shopIdList, RequestContext.get().getLanguage());
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             pdDocument.save(outputStream);
             pdDocument.close();
             response.getOutputStream().write(outputStream.toByteArray());
-            LOGGER.debug("test");
         } catch (IOException e) {
-            e.printStackTrace();
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur est survenue lors de la création du fichier pdf");
         }
 
     }

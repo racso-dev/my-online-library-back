@@ -70,13 +70,20 @@ public class OperationService {
         return fileContent;
     }
 
+    /**
+     * Crée un fichier pdf apartir d'une funding date, shopId & language
+     * @param fundingDate : Date de financement
+     * @param shopIdList : Liste des shops dont on veut récupérer les opérations
+     * @param language : utilisé pour la traduction i18n
+     * @return
+     */
     public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList, LANGUAGE language) {
         List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
         pdfOperationService.setOperationList(operationList);
         String shopName = i18nUtils.getMessage("pdfOperationService.allShop", null, language);
         String buName = "";
 
-        Optional<Shop> shopOptional = shopRepository.findById(shopIdList.get(0));
+        Optional<Shop> shopOptional = shopRepository.findOne(shopIdList.get(0));
         if(shopOptional.isPresent()) {
             // Si on n'a qu'un seul shop on récupère son nom
             if(shopIdList.size() == 1) {
@@ -84,7 +91,7 @@ public class OperationService {
             }
 
             // On récupère la BU
-            Optional<BusinessUnit> businessUnitOptional = businessUnitRepository.findById(shopOptional.get().getIdBu());
+            Optional<BusinessUnit> businessUnitOptional = businessUnitRepository.findOne(shopOptional.get().getIdBu());
             if(businessUnitOptional.isPresent()) {
                 buName = businessUnitOptional.get().getName();
             }
