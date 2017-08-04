@@ -25,3 +25,9 @@ springfox:
 #On n'utilise pas le flyway auto de spring boot
 flyway:
   enabled: false
+
+sftp:
+  host: toto.com
+  port: 2222
+  user: toto
+  password: toto
