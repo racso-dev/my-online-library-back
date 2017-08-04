@@ -17,11 +17,13 @@ public class UserInformationResource {
     private List<Shop> shopList;
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate lastFundingDate;
+    private int profile;
 
-    public UserInformationResource(BusinessUnit businessUnit, List<Shop> shopList, LocalDate lastFundingDate) {
+    public UserInformationResource(BusinessUnit businessUnit,List<Shop> shopList, LocalDate lastFundingDate, int profile) {
         this.businessUnit = businessUnit;
         this.shopList = shopList;
         this.lastFundingDate = lastFundingDate;
+        this.profile = profile;
     }
 
     public UserInformationResource() {
@@ -50,4 +52,13 @@ public class UserInformationResource {
     public void setLastFundingDate(LocalDate lastFundingDate) {
         this.lastFundingDate = lastFundingDate;
     }
+
+    public int getProfile() {
+        return profile;
+    }
+
+    public void setProfile(int profile) {
+        this.profile = profile;
+    }
+
 }
