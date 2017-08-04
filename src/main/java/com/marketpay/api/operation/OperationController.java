@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,12 +54,22 @@ public class OperationController extends MarketPayController {
         List<Long> shopIdList = getAuthoriseShop(idShop);
 
         List<Operation> operationList;
+        List<LocalDate> financementDateList = new ArrayList();
+
         if (createDate != null) {
             operationList = operationService.getOperationFromShopIdListAndLocalDateAndCreateDate(localDate, shopIdList, createDate);
+            financementDateList.add(createDate);
         } else {
             operationList = operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList);
+            operationList.forEach(operation -> {
+                LocalDate financementDate = operation.getCreateDate();
+                if(!financementDateList.contains(financementDate)) {
+                    financementDateList.add(financementDate);
+                }
+            });
         }
-        //Appel au service
+
+        operationListResponse.setFinancementDateList(financementDateList);
         operationListResponse.setOperationList(operationList);
         LOGGER.info("Récupération de " + operationListResponse.getOperationList().size() + " pour la fundingDate " + localDate.toString() + " et le user " + RequestContext.get().getUser().getId());
 
@@ -75,6 +86,7 @@ public class OperationController extends MarketPayController {
     public @ResponseBody
     OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
         OperationCodaBlockResponse operationCodaBlockResponse = new OperationCodaBlockResponse();
+        // TODO: CHEKROUN Check le multi financement
         operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, RequestContext.get().getIdBu()));
         return operationCodaBlockResponse;
 
