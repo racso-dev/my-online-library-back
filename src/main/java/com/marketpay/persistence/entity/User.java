@@ -16,6 +16,8 @@ public class User {
     private String password;
     private Long idBu;
     private Long idShop;
+    private String lastName;
+    private String firstName;
 
     public User(User user) {
         this.id = user.getId();
@@ -25,6 +27,8 @@ public class User {
         this.password = user.getPassword();
         this.idBu = user.getIdBu();
         this.idShop = user.getIdShop();
+        this.lastName = user.getLastName();
+        this.firstName = user.getFirstName();
     }
 
     public User() {
@@ -80,5 +84,21 @@ public class User {
 
     public void setIdShop(Long idShop) {
         this.idShop = idShop;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 }
