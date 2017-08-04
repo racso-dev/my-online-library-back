@@ -92,16 +92,12 @@ public class UserService {
      */
     private LocalDate getLastFundingDateForShopList(List<Shop> shopList) {
         //On construit une liste d'idShop
-        List<Long> idShopList = shopList.stream().map(shop -> shop.getId()).collect(Collectors.toList());
+        List<Long> idShopList = shopList.stream().map(Shop::getId).collect(Collectors.toList());
 
         //On récupère l'operation avec la dernière fundindDate pour cette liste de shop
         Optional<Operation> operationOpt = operationRepository.findFirstByIdShopInOrderByFundingDateDesc(idShopList);
 
-        if(operationOpt.isPresent()){
-            return operationOpt.get().getFundingDate();
-        }
-
-        return LocalDate.now();
+        return operationOpt.isPresent() ? operationOpt.get().getFundingDate() : LocalDate.now();
     }
 
     /**
@@ -114,14 +110,9 @@ public class UserService {
         List<ShopUserResource> shopUserResourceList = new ArrayList<>();
 
         // On récupère tous les shops pour la BU donnée
-        List<Shop> shopList = shopRepository.findByIdBu(idBu);
-
-        for (Shop shop : shopList) {
-            // On récupềre tous les utilisateurs du shop donné
+        shopRepository.findByIdBu(idBu).forEach(shop -> {
+            // On récupère tous les utilisateurs du shop donné
             List<User> userList = userRepository.findByIdShop(shop.getId());
-
-            // Puis on les convertit en utilisateur que l'on peut retourner (sans les mots de passe)
-            List<UserResource> userResourceList = generateUserResourceListFromUserList(userList);
 
             // On créer et on remplit notre shopUserResource
             ShopUserResource shopUserResource = new ShopUserResource();
@@ -129,10 +120,10 @@ public class UserService {
             shopUserResource.setIdBu(shop.getIdBu());
             shopUserResource.setName(shop.getName());
             shopUserResource.setCodeAl(shop.getCodeAl());
-            shopUserResource.setUserList(userResourceList);
+            shopUserResource.setUserList(generateUserResourceListFromUserList(userList));
 
             shopUserResourceList.add(shopUserResource);
-        }
+        });
 
         return shopUserResourceList;
     }
@@ -143,14 +134,9 @@ public class UserService {
      * @return la liste géneré de UserResource
      */
     private List<UserResource> generateUserResourceListFromUserList(List<User> userList) {
-        List<UserResource> userResourceList = new ArrayList<>();
-
-        for (User user : userList) {
-            UserResource userResource = new UserResource(user);
-            userResourceList.add(userResource);
-        }
-
-        return userResourceList;
+        return userList.stream()
+            .map(UserResource::new)
+            .collect(Collectors.toList());
     }
 
 }

@@ -49,20 +49,18 @@ public class UserController extends MarketPayController {
 
         long idBuForRequest;
         // MarketPayException
-        if (RequestContext.get().getUserProfile() == USER_PROFILE.ADMIN_USER) {
+        if (RequestContext.get().getUserProfile().equals(USER_PROFILE.ADMIN_USER)) {
             if (idBu != null) {
                 idBuForRequest = idBu;
             } else {
-                throw new MarketPayException(HttpStatus.BAD_REQUEST, "Un administrateur doit avoir une BU");
+                throw new MarketPayException(HttpStatus.BAD_REQUEST, "L'idBu est obligatoire lorsque c'est le user admin qui fait la request");
             }
         } else {
             idBuForRequest = RequestContext.get().getIdBu();
         }
 
         LOGGER.info("Récupération de la liste de shop associé avec ces utilisateurs pour la BU " + RequestContext.get().getIdBu());
-        List<ShopUserResource> shopUserResourceList = userService.getShopUserList(idBuForRequest);
-
-        return new ShopUserListResponse(shopUserResourceList);
+        return new ShopUserListResponse(userService.getShopUserList(idBuForRequest));
     }
 
 }

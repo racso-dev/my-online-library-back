@@ -19,7 +19,7 @@ public class UserInformationResource {
     private LocalDate lastFundingDate;
     private int profile;
 
-    public UserInformationResource(BusinessUnit businessUnit,List<Shop> shopList, LocalDate lastFundingDate, int profile) {
+    public UserInformationResource(BusinessUnit businessUnit, List<Shop> shopList, LocalDate lastFundingDate, int profile) {
         this.businessUnit = businessUnit;
         this.shopList = shopList;
         this.lastFundingDate = lastFundingDate;
