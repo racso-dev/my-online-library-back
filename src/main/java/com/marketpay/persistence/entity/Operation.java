@@ -20,6 +20,9 @@ public class Operation {
     @Convert(converter = LocalDateAttributeConverter.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate tradeDate;
+    @Convert(converter = LocalDateAttributeConverter.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate createDate;
     private String cardType;
     private Integer operationType;
     private int sens;
@@ -28,6 +31,14 @@ public class Operation {
     private String contractNumber;
     private String nameShop;
     private Long idShop;
+
+    public LocalDate getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDate createDate) {
+        this.createDate = createDate;
+    }
 
     public Integer getOperationType() {
         return operationType;

@@ -12,6 +12,7 @@ import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
+import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ public class ParsingCODAJob extends ParsingJob {
         List<String> block = new ArrayList<>();
         String line;
         Pattern endBlockPattern = Pattern.compile(ENDBLOCK_REGEX);
+
         while ((line = buffer.readLine()) != null) {
             block.add(line);
             Matcher matcher = endBlockPattern.matcher(line);
@@ -98,15 +100,18 @@ public class ParsingCODAJob extends ParsingJob {
 
         try {
             String centralisationLine1 = block.get(2);
+            String destinationLine = block.get(0);
 
-            // Récupération de la date de création
+            // Récupération de la date de financement
             LocalDate foundingDate =  getFundingDate(centralisationLine1);
+
+            LocalDate createDate = getCreateDate(destinationLine);
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
             codaBlock.setFundingDate(foundingDate);
             codaBlock.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
-
+            codaBlock.setCreateDate(createDate);
             blockRepository.save(codaBlock);
 
             Long idBu = null;
@@ -117,6 +122,7 @@ public class ParsingCODAJob extends ParsingJob {
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
                     operation.setFundingDate(foundingDate);
+                    operation.setCreateDate(createDate);
                     Optional<Shop> shopOpt = shopRepository.findByContractNumber(operation.getContractNumber());
                     if(shopOpt.isPresent()) {
                         idBu = shopOpt.get().getIdBu();
@@ -188,6 +194,16 @@ public class ParsingCODAJob extends ParsingJob {
             return fundingDate;
         } catch (Exception e) {
             throw new FundingDateException(e.getMessage(), e.getCause(), centralisationLine);
+        }
+    }
+
+    public LocalDate getCreateDate(String destinationLine) throws FundingDateException {
+        try {
+            String createDateString = destinationLine.substring(5, 11);
+            LocalDate createDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  createDateString);
+            return createDate;
+        } catch (Exception e) {
+            throw new FundingDateException(e.getMessage(), e.getCause(), destinationLine);
         }
     }
 
