@@ -1,12 +1,9 @@
 package com.marketpay.services.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.marketpay.exception.MarketPayException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import com.marketpay.api.auth.response.TokenResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security
     .authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,24 +22,29 @@ import static java.util.Collections.emptyList;
 @Component
 public class TokenAuthenticationService {
 
-    private final long EXPIRATIONTIME = 14_400_000; // 4h
+    private final long EXPIRATIONTIME = 300_000; // 5min
     @Value("${jwt.secret}")
     private String SECRET;
     private final String COOKIE_NAME = "sid";
 
+    /**
+     * Service d'ajout d'une authentification
+     * @param req
+     * @param res
+     * @param username
+     * @throws IOException
+     */
     public void addAuthentication(HttpServletRequest req, HttpServletResponse res, String username) throws IOException {
-        String JWT = Jwts.builder()
-//            .setPayload("{\"sub\":\"" + username +"\", \"exp\":\""+new Date(System.currentTimeMillis() + EXPIRATIONTIME).getTime()+"\"}")
-            .setSubject(username)
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
-            .signWith(SignatureAlgorithm.HS512, SECRET)
-            .compact();
-
         res.setContentType("application/json");
         ObjectMapper mapper = new ObjectMapper();
-        res.getWriter().write(mapper.writeValueAsString(new TokenResponse(JWT)));
+        res.getWriter().write(mapper.writeValueAsString(new TokenResponse(newToken(username))));
     }
 
+    /**
+     * Service de récupération de l'authentification à partir d'une request
+     * @param request
+     * @return
+     */
     public Authentication getAuthentication(HttpServletRequest request) {
         if( request.getCookies() != null ) {
             for (Cookie cookie : request.getCookies()) {
@@ -66,4 +68,19 @@ public class TokenAuthenticationService {
         }
         return null;
     }
+
+    /**
+     * Méthod qui créé un nouveau token
+     * @param username
+     * @return
+     */
+    public String newToken(String username) {
+        return Jwts.builder()
+//            .setPayload("{\"sub\":\"" + username +"\", \"exp\":\""+new Date(System.currentTimeMillis() + EXPIRATIONTIME).getTime()+"\"}")
+            .setSubject(username)
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
+            .signWith(SignatureAlgorithm.HS512, SECRET)
+            .compact();
+    }
+
 }
