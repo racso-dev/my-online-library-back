@@ -44,6 +44,9 @@ public class UserService {
     public UserInformationResource getUserInformation(User user) throws EntityNotFoundException {
         UserInformationResource resource = new UserInformationResource();
 
+        // On set le user profile
+        resource.setProfile(user.getProfile());
+
         if(user.getIdBu() != null){
             //C'est un super user on récupère sa BU
             //On récupère la bu associée au user
