@@ -7,3 +7,7 @@ spring:
     url: jdbc:mysql://localhost/marketpay
     username: root
     password: root
+
+sftp:
+  pathIncomming: /home/etienne/workspaceMarketPay/incomming
+  pathArchive: /home/etienne/workspaceMarketPay/archive

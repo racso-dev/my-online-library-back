@@ -10,41 +10,23 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "sftp")
 public class SFTPConfig {
 
-    private String host;
-    private int port;
-    private String user;
-    private String password;
+    private String pathIncomming;
 
-    public String getHost() {
-        return host;
+    private String pathArchive;
+
+    public String getPathIncomming() {
+        return pathIncomming;
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public void setPathIncomming(String pathIncomming) {
+        this.pathIncomming = pathIncomming;
     }
 
-    public int getPort() {
-        return port;
+    public String getPathArchive() {
+        return pathArchive;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPathArchive(String pathArchive) {
+        this.pathArchive = pathArchive;
     }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 }
