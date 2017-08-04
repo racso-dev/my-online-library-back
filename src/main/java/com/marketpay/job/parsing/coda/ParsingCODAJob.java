@@ -197,6 +197,12 @@ public class ParsingCODAJob extends ParsingJob {
         }
     }
 
+    /**
+     * Récupére la date de création du fichier
+     * @param destinationLine
+     * @return
+     * @throws FundingDateException
+     */
     public LocalDate getCreateDate(String destinationLine) throws FundingDateException {
         try {
             String createDateString = destinationLine.substring(5, 11);

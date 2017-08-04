@@ -2,8 +2,6 @@ package com.marketpay.persistence.repository;
 
 import com.marketpay.persistence.OptionalCRUDRepository;
 import com.marketpay.persistence.entity.Operation;
-import org.apache.tomcat.jni.Local;
-import sun.util.resources.LocaleData;
 
 import java.time.LocalDate;
 import java.util.List;
