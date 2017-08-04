@@ -32,6 +32,17 @@ public class OperationService {
     }
 
     /**
+     * Récupération des opération effectué dans x magasin à un instant T pour un financement Y
+     * @param localDate : Date de financement
+     * @param shopIdList : Liste d'id des magasins
+     * @param createDate : Date de création du fichier ( cas plusieurs financement )
+     * @return List d'opération
+     */
+    public List<Operation> getOperationFromShopIdListAndLocalDateAndCreateDate(LocalDate localDate, List<Long> shopIdList, LocalDate createDate) {
+        return operationRepository.findByCreateDateAndIdShopInAndFundingDate(createDate, shopIdList, localDate);
+    }
+
+    /**
      * Service de récupération des block CODA
      * @param fundingDate
      * @param idBu

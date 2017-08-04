@@ -6,13 +6,8 @@ import com.marketpay.api.RequestContext;
 import com.marketpay.api.operation.response.OperationCodaBlockResponse;
 import com.marketpay.api.operation.response.OperationListResponse;
 import com.marketpay.exception.MarketPayException;
-import com.marketpay.references.USER_PROFILE;
-import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.Operation;
-import com.marketpay.persistence.entity.User;
-import com.marketpay.persistence.repository.BlockRepository;
-import com.marketpay.persistence.repository.ShopRepository;
-import com.marketpay.persistence.repository.UserRepository;
+import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.operation.OperationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -46,7 +40,8 @@ public class OperationController extends MarketPayController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
     public @ResponseBody
-    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop) throws MarketPayException {
+    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop,
+                                                 @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate) throws MarketPayException {
         OperationListResponse operationListResponse = new OperationListResponse();
 
         //On récupère la liste des shop associé au user
@@ -62,8 +57,14 @@ public class OperationController extends MarketPayController {
             }
         }
 
+        List<Operation> operationList;
+        if (createDate != null) {
+            operationList = operationService.getOperationFromShopIdListAndLocalDateAndCreateDate(localDate, shopIdList, createDate);
+        } else {
+            operationList = operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList);
+        }
         //Appel au service
-        operationListResponse.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
+        operationListResponse.setOperationList(operationList);
         LOGGER.info("Récupération de " + operationListResponse.getOperationList().size() + " pour la fundingDate " + localDate.toString() + " et le user " + RequestContext.get().getUser().getId());
 
         return operationListResponse;
