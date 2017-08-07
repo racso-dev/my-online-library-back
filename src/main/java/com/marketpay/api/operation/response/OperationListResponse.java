@@ -1,6 +1,8 @@
 package com.marketpay.api.operation.response;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.marketpay.persistence.entity.Operation;
+import com.marketpay.utils.serializer.LocalDateListSerializer;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.List;
  */
 public class OperationListResponse {
     private List<Operation> operationList;
+    @JsonSerialize(using = LocalDateListSerializer.class)
     private List<LocalDate> financementDateList;
 
     public List<LocalDate> getFinancementDateList() {
