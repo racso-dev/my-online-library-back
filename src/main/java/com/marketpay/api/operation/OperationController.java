@@ -42,7 +42,7 @@ public class OperationController extends MarketPayController {
      * @return OperationListResponse
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
+    @Profile({})
     public @ResponseBody
     OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop) throws MarketPayException {
         OperationListResponse operationListResponse = new OperationListResponse();
@@ -63,7 +63,7 @@ public class OperationController extends MarketPayController {
      * @return
      */
     @RequestMapping(value = "/block", method = RequestMethod.GET)
-    @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
+    @Profile({})
     public @ResponseBody
     OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
         OperationCodaBlockResponse operationCodaBlockResponse = new OperationCodaBlockResponse();
@@ -80,7 +80,7 @@ public class OperationController extends MarketPayController {
      * @throws MarketPayException
      */
     @RequestMapping(value = "/pdf", method = RequestMethod.GET)
-    @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
+    @Profile({})
     public void getPdfFile(@RequestParam(value= "idShop", required = false) Long idShop, @RequestParam(value = "fundingDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate, HttpServletResponse response) throws MarketPayException {
 
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
