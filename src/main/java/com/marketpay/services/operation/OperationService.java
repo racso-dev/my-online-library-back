@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by tchekroun on 10/07/2017.
@@ -140,6 +141,29 @@ public class OperationService {
         return pdfOperationService.getPdfDocument(language, buName, shopName);
     }
 
+    /**
+     * Service de récupération de la dernière fundingDate des operations des shop donnés
+     * @param idBu
+     * @param idShop
+     * @return
+     */
+    public LocalDate getLastFundingDateForBuOrShop(Long idBu, Long idShop) {
+        //On construit la liste des idShop
+        List<Long> idShopList = new ArrayList<>();
+        if(idShop != null){
+            idShopList.add(idShop);
+        } else if(idBu != null) {
+            //On récupère la liste des shop de la BU
+            idShopList = shopRepository.findByIdBu(idBu).stream().map(Shop::getId).collect(Collectors.toList());
+        }
 
+        //On récupère l'operation avec la dernière fundindDate pour cette liste de shop
+        Optional<Operation> operationOpt = operationRepository.findFirstByIdShopInOrderByFundingDateDesc(idShopList);
+
+        if(operationOpt.isPresent()){
+            return operationOpt.get().getFundingDate();
+        }
+        return LocalDate.now();
+    }
 
 }
