@@ -76,7 +76,6 @@ public class TokenAuthenticationService {
      */
     public String newToken(String username) {
         return Jwts.builder()
-//            .setPayload("{\"sub\":\"" + username +"\", \"exp\":\""+new Date(System.currentTimeMillis() + EXPIRATIONTIME).getTime()+"\"}")
             .setSubject(username)
             .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
             .signWith(SignatureAlgorithm.HS512, SECRET)
