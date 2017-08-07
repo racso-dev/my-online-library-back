@@ -91,15 +91,20 @@ public class OperationService {
      * Service de récupération des block CODA
      * @param fundingDate
      * @param idBu
+     * @param createDate : Cas du multi financement
      * @return
      */
-    public String getCodaBlockFromIdBuAndFundingDate(LocalDate fundingDate, Long idBu) {
+    public String getCodaBlockFromIdBuAndFundingDate(LocalDate fundingDate, Long idBu, LocalDate createDate) {
         //On récupère les block CODA
         List<Block> codaBlockList = blockRepository.findBlockByIdBuAndFundingDate(idBu, fundingDate);
 
         //On les concatène
         String fileContent = "";
         for(Block block: codaBlockList) {
+            // Si on spécifie une date de financement & qu'elle ne correspond pas au block on passe au block suivant
+            if(createDate != null && createDate.compareTo(block.getCreateDate()) != 0) {
+                continue;
+            }
             fileContent += block.getContent();
         }
 

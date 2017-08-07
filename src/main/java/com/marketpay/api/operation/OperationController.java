@@ -62,10 +62,11 @@ public class OperationController extends MarketPayController {
     @RequestMapping(value = "/block", method = RequestMethod.GET)
     @Profile({USER_PROFILE.SUPER_USER, USER_PROFILE.USER, USER_PROFILE.USER_MANAGER})
     public @ResponseBody
-    OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
+    OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate,
+                                            @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate) {
         OperationCodaBlockResponse operationCodaBlockResponse = new OperationCodaBlockResponse();
-        // TODO: CHEKROUN Check le multi financement
-        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, RequestContext.get().getIdBu()));
+
+        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, RequestContext.get().getIdBu(), createDate));
         return operationCodaBlockResponse;
 
     }
