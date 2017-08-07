@@ -1,8 +1,8 @@
 package com.marketpay.references;
 
 public enum OPERATION_SENS {
-    CREDIT(0, "Crédit"),
-    DEBIT(1, "Débit");
+    CREDIT(0, "pdfOperationService.credit"),
+    DEBIT(1, "pdfOperationService.debit");
 
     private int code;
     private String value;
@@ -19,6 +19,10 @@ public enum OPERATION_SENS {
             }
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
     }
 
     public int getCode() {
