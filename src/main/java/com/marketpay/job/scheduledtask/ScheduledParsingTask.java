@@ -1,4 +1,4 @@
-package com.marketpay.job.scheduledsftp;
+package com.marketpay.job.scheduledtask;
 
 import com.marketpay.conf.SFTPConfig;
 import org.slf4j.Logger;
