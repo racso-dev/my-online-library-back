@@ -1,5 +1,6 @@
 package com.marketpay.services.operation;
 
+import com.marketpay.api.operation.response.OperationListResponse;
 import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Operation;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,18 +54,56 @@ public class OperationService {
     }
 
     /**
+     * Permet de récupérer la liste des opérations ainsi que la liste des financements
+     * @param fundingDate : Date de financement
+     * @param shopIdList : Liste des shop concernés
+     * @param createDate : Date de création du fichier
+     * @return OperationListResponse
+     */
+    public OperationListResponse getOperationListResponseFromShopIdListAndLocalDateAndCreateDate(LocalDate fundingDate, List<Long> shopIdList, LocalDate createDate) {
+        List<LocalDate> financementDateList = new ArrayList();
+
+        // Correspond à la liste retourner par le WS
+        List<Operation> returnOperationList = new ArrayList();
+
+        List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+
+        if(createDate == null) {
+            returnOperationList = operationList;
+        }
+
+        for(Operation operation: operationList) {
+            LocalDate financementDate = operation.getCreateDate();
+            if(!financementDateList.contains(financementDate)) {
+                financementDateList.add(financementDate);
+            }
+            if(createDate != null && createDate.compareTo(operation.getCreateDate()) == 0) {
+                returnOperationList.add(operation);
+            }
+        }
+
+        return new OperationListResponse(returnOperationList, financementDateList);
+
+    }
+
+    /**
      * Service de récupération des block CODA
      * @param fundingDate
      * @param idBu
+     * @param createDate : Cas du multi financement
      * @return
      */
-    public String getCodaBlockFromIdBuAndFundingDate(LocalDate fundingDate, Long idBu) {
+    public String getCodaBlockFromIdBuAndFundingDate(LocalDate fundingDate, Long idBu, LocalDate createDate) {
         //On récupère les block CODA
         List<Block> codaBlockList = blockRepository.findBlockByIdBuAndFundingDate(idBu, fundingDate);
 
         //On les concatène
         String fileContent = "";
         for(Block block: codaBlockList) {
+            // Si on spécifie une date de financement & qu'elle ne correspond pas au block on passe au block suivant
+            if(createDate != null && createDate.compareTo(block.getCreateDate()) != 0) {
+                continue;
+            }
             fileContent += block.getContent();
         }
 

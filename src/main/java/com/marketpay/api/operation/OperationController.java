@@ -6,6 +6,7 @@ import com.marketpay.api.RequestContext;
 import com.marketpay.api.operation.response.OperationCodaBlockResponse;
 import com.marketpay.api.operation.response.OperationListResponse;
 import com.marketpay.exception.MarketPayException;
+import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.operation.OperationService;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,17 +46,12 @@ public class OperationController extends MarketPayController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     @Profile({})
     public @ResponseBody
-    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop) throws MarketPayException {
-        OperationListResponse operationListResponse = new OperationListResponse();
+    OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop,
+                                                 @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate) throws MarketPayException {
 
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         List<Long> shopIdList = getAuthoriseShop(idShop);
-
-        //Appel au service
-        operationListResponse.setOperationList(operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList));
-        LOGGER.info("Récupération de " + operationListResponse.getOperationList().size() + " pour la fundingDate " + localDate.toString() + " et le user " + RequestContext.get().getUser().getId());
-
-        return operationListResponse;
+        return operationService.getOperationListResponseFromShopIdListAndLocalDateAndCreateDate(localDate, shopIdList, createDate);
     }
 
     /**
@@ -65,9 +62,11 @@ public class OperationController extends MarketPayController {
     @RequestMapping(value = "/block", method = RequestMethod.GET)
     @Profile({})
     public @ResponseBody
-    OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate) {
+    OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate,
+                                            @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate) {
         OperationCodaBlockResponse operationCodaBlockResponse = new OperationCodaBlockResponse();
-        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, RequestContext.get().getIdBu()));
+
+        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, RequestContext.get().getIdBu(), createDate));
         return operationCodaBlockResponse;
 
     }

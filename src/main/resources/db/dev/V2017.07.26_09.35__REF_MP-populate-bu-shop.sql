@@ -4,7 +4,7 @@ INSERT INTO business_unit VALUES (1,'C.C.CARREFOUR','ES','ES010','A28425270'),
                                  (3,'CARREFOUR BELGIUM SA','BE','BE010','BE0448826918'),
                                  (4,'SPRL','BE','BE946','BE0539931494');
 
-INSERT INTO shop VALUES (1,1,'S.S. DE LOS REYES','0055',NULL,NULL),
+INSERT INTO shop VALUES (1,1,'S.S. DE LOS REYES','0056',NULL,NULL),
                         (2,1,'CARREFOUR AUGUS','0040',NULL,'40'),
                         (3,1,'CARREFOUR CALZA','0045',NULL,'45'),
                         (4,1,'CARREFOUR PONTE','0051',NULL,'000E'),
