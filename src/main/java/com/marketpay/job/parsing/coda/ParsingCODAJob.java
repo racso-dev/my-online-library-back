@@ -112,7 +112,7 @@ public class ParsingCODAJob extends ParsingJob {
             codaBlock.setFundingDate(foundingDate);
             codaBlock.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
             codaBlock.setCreateDate(createDate);
-            blockRepository.save(codaBlock);
+            codaBlock = blockRepository.save(codaBlock);
 
             Long idBu = null;
 
@@ -131,6 +131,7 @@ public class ParsingCODAJob extends ParsingJob {
                     } else {
                         jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_SHOP.getCode());
                     }
+                    operation.setIdBlock(codaBlock.getId());
                     operationRepository.save(operation);
                 }
             }

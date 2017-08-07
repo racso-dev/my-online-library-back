@@ -16,6 +16,7 @@ import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,6 +47,9 @@ public class ParsingRepositoryShopJob extends ParsingJob {
 
     @Autowired
     private ShopContractNumberRepository shopContractNumberRepository;
+
+    @Autowired
+    private BlockRepository blockRepository;
 
     @Override
     public void parsing(String filePath, JobHistory jobHistory) throws IOException {
@@ -234,11 +238,21 @@ public class ParsingRepositoryShopJob extends ParsingJob {
         for(Operation operation: operationList){
             operation.setIdShop(shop.getId());
             operation.setNameShop(shop.getName());
+            udpateBlock(shop, operation.getIdBlock());
             operationRepository.save(operation);
         }
 
         if(!operationList.isEmpty()) {
             LOGGER.info("Mise à jour de " + operationList.size() + " operation avec le shop " + shop.getId());
+        }
+    }
+
+    private void udpateBlock(Shop shop, Long idBlock) {
+        Optional<Block> blockOptional = blockRepository.findBlockByIdAndIdBuNull(idBlock);
+
+        if(blockOptional.isPresent()) {
+            Block block = blockOptional.get();
+            block.setIdBu(shop.getIdBu());
         }
     }
 

@@ -31,6 +31,19 @@ public class Operation {
     private String contractNumber;
     private String nameShop;
     private Long idShop;
+    private Long idBlock;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getIdBlock() {
+        return idBlock;
+    }
+
+    public void setIdBlock(Long idBlock) {
+        this.idBlock = idBlock;
+    }
 
     public LocalDate getCreateDate() {
         return createDate;
