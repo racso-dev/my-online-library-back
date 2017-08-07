@@ -1,7 +1,11 @@
 package com.marketpay.utils;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class DateUtils {
 
@@ -14,5 +18,23 @@ public class DateUtils {
     public static LocalDate convertStringToLocalDate(String format, String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         return LocalDate.parse(dateString, formatter);
+    }
+
+    /**
+     * Retourne une localDateTime à partir d'un instant en millisecondes
+     * @param millis
+     * @return
+     */
+    public static LocalDateTime getLocalDateTimeFromInstantMillis(long millis) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());
+    }
+
+    /**
+     * Convertie une localDateTime en Date
+     * @param localDateTime
+     * @return
+     */
+    public static Date toDateFromLocalDateTime(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

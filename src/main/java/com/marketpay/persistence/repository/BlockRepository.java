@@ -12,4 +12,5 @@ import java.util.Optional;
  */
 public interface BlockRepository extends OptionalCRUDRepository<Block, Long> {
     List<Block> findBlockByIdBuAndFundingDate(Long id_bu, LocalDate fundingDate);
+    Optional<Block> findBlockByIdAndIdBuNull(Long id);
 }

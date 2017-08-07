@@ -2,7 +2,6 @@ package com.marketpay.api;
 
 import com.marketpay.persistence.entity.User;
 import com.marketpay.references.LANGUAGE;
-import com.marketpay.references.LOCATION;
 import com.marketpay.references.USER_PROFILE;
 
 import java.util.List;
@@ -29,6 +28,9 @@ public class RequestContext {
 
     //Language de la request
     private LANGUAGE language;
+
+    //Token
+    private String token;
 
     //Déclaration du context
     private static ThreadLocal<RequestContext> mpContext = new ThreadLocal<RequestContext>();
@@ -104,4 +106,11 @@ public class RequestContext {
         this.language = language;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
