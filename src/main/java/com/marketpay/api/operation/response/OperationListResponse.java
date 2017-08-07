@@ -15,6 +15,13 @@ public class OperationListResponse {
     @JsonSerialize(using = LocalDateListSerializer.class)
     private List<LocalDate> financementDateList;
 
+    public OperationListResponse() {}
+
+    public OperationListResponse(List<Operation> operationList, List<LocalDate> financementDateList) {
+        this.operationList = operationList;
+        this.financementDateList = financementDateList;
+    }
+
     public List<LocalDate> getFinancementDateList() {
         return financementDateList;
     }

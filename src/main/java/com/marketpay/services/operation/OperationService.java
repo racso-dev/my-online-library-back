@@ -1,5 +1,6 @@
 package com.marketpay.services.operation;
 
+import com.marketpay.api.operation.response.OperationListResponse;
 import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Operation;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,14 +54,37 @@ public class OperationService {
     }
 
     /**
-     * Récupération des opération effectué dans x magasin à un instant T pour un financement Y
-     * @param localDate : Date de financement
-     * @param shopIdList : Liste d'id des magasins
-     * @param createDate : Date de création du fichier ( cas plusieurs financement )
-     * @return List d'opération
+     * Permet de récupérer la liste des opérations ainsi que la liste des financements
+     * @param fundingDate : Date de financement
+     * @param shopIdList : Liste des shop concernés
+     * @param createDate : Date de création du fichier
+     * @return OperationListResponse
      */
-    public List<Operation> getOperationFromShopIdListAndLocalDateAndCreateDate(LocalDate localDate, List<Long> shopIdList, LocalDate createDate) {
-        return operationRepository.findByCreateDateAndIdShopInAndFundingDate(createDate, shopIdList, localDate);
+    public OperationListResponse getOperationListResponseFromShopIdListAndLocalDateAndCreateDate(LocalDate fundingDate, List<Long> shopIdList, LocalDate createDate) {
+        List<Operation> operationList;
+        List<LocalDate> financementDateList = new ArrayList();
+
+        // Correspond à la liste retourner par le WS
+        List<Operation> returnOperationList = new ArrayList();
+
+        operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+
+        if(createDate == null) {
+            returnOperationList = operationList;
+        }
+
+        for(Operation operation: operationList) {
+            LocalDate financementDate = operation.getCreateDate();
+            if(!financementDateList.contains(financementDate)) {
+                financementDateList.add(financementDate);
+            }
+            if(createDate != null && createDate.compareTo(operation.getCreateDate()) == 0) {
+                returnOperationList.add(operation);
+            }
+        }
+
+        return new OperationListResponse(returnOperationList, financementDateList);
+
     }
 
     /**

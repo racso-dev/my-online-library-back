@@ -48,32 +48,10 @@ public class OperationController extends MarketPayController {
     public @ResponseBody
     OperationListResponse getOperationListByDate(@RequestParam(value = "localDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate, @RequestParam(value="idShop", required = false) Long idShop,
                                                  @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate) throws MarketPayException {
-        OperationListResponse operationListResponse = new OperationListResponse();
 
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         List<Long> shopIdList = getAuthoriseShop(idShop);
-
-        List<Operation> operationList;
-        List<LocalDate> financementDateList = new ArrayList();
-
-        if (createDate != null) {
-            operationList = operationService.getOperationFromShopIdListAndLocalDateAndCreateDate(localDate, shopIdList, createDate);
-            financementDateList.add(createDate);
-        } else {
-            operationList = operationService.getOperationFromShopIdListAndLocalDate(localDate, shopIdList);
-            operationList.forEach(operation -> {
-                LocalDate financementDate = operation.getCreateDate();
-                if(!financementDateList.contains(financementDate)) {
-                    financementDateList.add(financementDate);
-                }
-            });
-        }
-
-        operationListResponse.setFinancementDateList(financementDateList);
-        operationListResponse.setOperationList(operationList);
-        LOGGER.info("Récupération de " + operationListResponse.getOperationList().size() + " pour la fundingDate " + localDate.toString() + " et le user " + RequestContext.get().getUser().getId());
-
-        return operationListResponse;
+        return operationService.getOperationListResponseFromShopIdListAndLocalDateAndCreateDate(localDate, shopIdList, createDate);
     }
 
     /**
