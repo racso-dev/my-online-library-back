@@ -41,6 +41,8 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
     private final String CONFIGURATION_URI = "/configuration";
     private final String COOKIE_LANGUAGE = "marketPayLanguage";
 
+    private final String COOKIE_NAME_TOKEN = "sid";
+
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -131,6 +133,17 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
             context.setIdBu(idBu);
             context.setIdShopList(idShopList);
             context.setLanguage(language);
+
+            //On récupère le token
+            String token = null;
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(COOKIE_NAME_TOKEN)) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+            context.setToken(token);
+
             RequestContext.set(context);
         }
 

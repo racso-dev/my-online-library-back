@@ -21,11 +21,13 @@ public class AuthController extends MarketPayInterceptor {
     @Autowired
     private TokenAuthenticationService tokenAuthenticationService;
 
+    /**
+     * WS de déconnexion
+     */
     @Profile({})
-    @RequestMapping(value = "/renew", method = RequestMethod.GET)
-    public @ResponseBody TokenResponse renewToken() {
-        //Renouvellement de token
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public void logout() {
         //Si on rentre dans le controller c'est qu'on a pas été rejeté donc le token est encore valide
-        return new TokenResponse(tokenAuthenticationService.newToken(RequestContext.get().getUser().getLogin()));
+        tokenAuthenticationService.logout(RequestContext.get().getToken());
     }
 }

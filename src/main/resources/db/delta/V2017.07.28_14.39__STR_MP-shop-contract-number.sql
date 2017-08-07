@@ -10,7 +10,8 @@ CREATE TABLE  `shop_contract_number` (
     FOREIGN KEY (`id_shop`)
     REFERENCES  `shop` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION)
+  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE  `shop`
 DROP COLUMN `contract_number`,
