@@ -101,7 +101,10 @@ public class UserService {
         //On récupère l'operation avec la dernière fundindDate pour cette liste de shop
         Optional<Operation> operationOpt = operationRepository.findFirstByIdShopInOrderByFundingDateDesc(idShopList);
 
-        return operationOpt.isPresent() ? operationOpt.get().getFundingDate() : LocalDate.now();
+        if(operationOpt.isPresent()){
+            return operationOpt.get().getFundingDate();
+        }
+        return LocalDate.now();
     }
 
 
