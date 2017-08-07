@@ -96,7 +96,7 @@ public class UserService {
      */
     private LocalDate getLastFundingDateForShopList(List<Shop> shopList) {
         //On construit une liste d'idShop
-        List<Long> idShopList = shopList.stream().map(Shop::getId).collect(Collectors.toList());
+        List<Long> idShopList = shopList.stream().map(shop -> shop.getId()).collect(Collectors.toList());
 
         //On récupère l'operation avec la dernière fundindDate pour cette liste de shop
         Optional<Operation> operationOpt = operationRepository.findFirstByIdShopInOrderByFundingDateDesc(idShopList);
