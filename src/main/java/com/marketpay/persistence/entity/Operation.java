@@ -33,10 +33,6 @@ public class Operation {
     private Long idShop;
     private Long idBlock;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getIdBlock() {
         return idBlock;
     }

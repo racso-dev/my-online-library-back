@@ -61,13 +61,12 @@ public class OperationService {
      * @return OperationListResponse
      */
     public OperationListResponse getOperationListResponseFromShopIdListAndLocalDateAndCreateDate(LocalDate fundingDate, List<Long> shopIdList, LocalDate createDate) {
-        List<Operation> operationList;
         List<LocalDate> financementDateList = new ArrayList();
 
         // Correspond à la liste retourner par le WS
         List<Operation> returnOperationList = new ArrayList();
 
-        operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+        List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
 
         if(createDate == null) {
             returnOperationList = operationList;

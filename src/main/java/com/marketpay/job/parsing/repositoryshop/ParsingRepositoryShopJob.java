@@ -250,10 +250,9 @@ public class ParsingRepositoryShopJob extends ParsingJob {
     private void udpateBlock(Shop shop, Long idBlock) {
         Optional<Block> blockOptional = blockRepository.findBlockByIdAndIdBuNull(idBlock);
 
-        if(blockOptional.isPresent()) {
-            Block block = blockOptional.get();
+        blockOptional.ifPresent(block -> {
             block.setIdBu(shop.getIdBu());
-        }
+        });
     }
 
     @Override
