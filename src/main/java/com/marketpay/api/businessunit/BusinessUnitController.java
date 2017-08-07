@@ -24,7 +24,7 @@ public class BusinessUnitController extends MarketPayController {
     private BusinessUnitService businessUnitService;
 
     /**
-     * WS de récupération des BU pour l'administrateur
+     * WS de récupération de toutes les BU pour l'administrateur
      * @return
      */
     @Profile({USER_PROFILE.ADMIN_USER})

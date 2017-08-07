@@ -1,26 +1,23 @@
 package com.marketpay.api.user.response;
 
+import com.marketpay.services.user.resource.ShopUserListResource;
 import com.marketpay.services.user.resource.ShopUserResource;
 
 import java.util.List;
 
 public class ShopUserListResponse {
 
-    private List<ShopUserResource> shopUserResourceList;
+    private ShopUserListResource shopUserResourceList;
 
-    public ShopUserListResponse() {
-    }
-
-    public ShopUserListResponse(List<ShopUserResource> shopUserResourceList) {
+    public ShopUserListResponse(ShopUserListResource shopUserResourceList) {
         this.shopUserResourceList = shopUserResourceList;
     }
 
-    public List<ShopUserResource> getShopUserResourceList() {
+    public ShopUserListResource getShopUserResourceList() {
         return shopUserResourceList;
     }
 
-    public void setShopUserResourceList(List<ShopUserResource> shopUserResourceList) {
+    public void setShopUserResourceList(ShopUserListResource shopUserResourceList) {
         this.shopUserResourceList = shopUserResourceList;
     }
-
 }

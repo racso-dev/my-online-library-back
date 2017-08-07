@@ -2,6 +2,7 @@ package com.marketpay.services.user.resource;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.marketpay.persistence.entity.Shop;
 
 import java.util.List;
 
@@ -14,6 +15,14 @@ public class ShopUserResource {
     private String name;
     private String codeAl;
     private List<UserResource> userList;
+
+    public ShopUserResource(Shop shop, List<UserResource> userResourceList) {
+        this.idShop = shop.getId();
+        this.idBu = shop.getIdBu();
+        this.name = shop.getName();
+        this.codeAl = shop.getCodeAl();
+        this.userList = userResourceList;
+    }
 
     public long getIdShop() {
         return idShop;

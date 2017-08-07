@@ -1,6 +1,8 @@
 package com.marketpay.services.user;
 
+import com.marketpay.api.user.response.ShopUserListResponse;
 import com.marketpay.exception.EntityNotFoundException;
+import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.entity.Shop;
@@ -9,6 +11,8 @@ import com.marketpay.persistence.repository.BusinessUnitRepository;
 import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserRepository;
+import com.marketpay.references.USER_PROFILE;
+import com.marketpay.services.user.resource.ShopUserListResource;
 import com.marketpay.services.user.resource.ShopUserResource;
 import com.marketpay.services.user.resource.UserInformationResource;
 import com.marketpay.services.user.resource.UserResource;
@@ -100,32 +104,47 @@ public class UserService {
         return operationOpt.isPresent() ? operationOpt.get().getFundingDate() : LocalDate.now();
     }
 
+
     /**
      * Service de récupération des shop user pour une BU
      * @param idBu
      * @return une liste de shop avec les utilisateurs associé
      */
-    public List<ShopUserResource> getShopUserList(long idBu) {
-        // On initialise la liste qui sera retourné
-        List<ShopUserResource> shopUserResourceList = new ArrayList<>();
+    public ShopUserListResource getShopUserList(Long idBu, Long idShop) throws MarketPayException {
+        // On initialise les listes qui seront retournées
+        ShopUserListResource resource = new ShopUserListResource();
+        resource.setShopUserList(new ArrayList<>());
 
-        // On récupère tous les shops pour la BU donnée
-        shopRepository.findByIdBu(idBu).forEach(shop -> {
+        List<Integer> profileList = new ArrayList<>();
+        profileList.add(USER_PROFILE.USER.getCode());
+        profileList.add(USER_PROFILE.USER_MANAGER.getCode());
+
+        if (idBu != null) {
+            // On récupère tous les shops pour la BU donnée
+            shopRepository.findByIdBu(idBu).forEach(shop -> {
+                // On récupère tous les utilisateurs du shop donné qui ont le profile user ou userManager
+                List<User> userList = userRepository.findByIdShopAndProfileIn(shop.getId(), profileList);
+
+                // On créer et on remplit notre shopUserResource
+                resource.getShopUserList().add(new ShopUserResource(shop, generateUserResourceListFromUserList(userList)));
+            });
+
+            //On récupère les superUser de la BU
+            List<User> superUserList = userRepository.findByIdBuAndProfile(idBu, USER_PROFILE.SUPER_USER.getCode());
+            resource.setSuperUserList(generateUserResourceListFromUserList(superUserList));
+
+        } else if (idShop != null) {
+            Shop shop = shopRepository.findOne(idShop).orElseThrow(() ->
+                new EntityNotFoundException(idShop, "shop")
+            );
             // On récupère tous les utilisateurs du shop donné
-            List<User> userList = userRepository.findByIdShop(shop.getId());
+            List<User> userList = userRepository.findByIdShopAndProfileIn(idShop, profileList);
 
             // On créer et on remplit notre shopUserResource
-            ShopUserResource shopUserResource = new ShopUserResource();
-            shopUserResource.setIdShop(shop.getId());
-            shopUserResource.setIdBu(shop.getIdBu());
-            shopUserResource.setName(shop.getName());
-            shopUserResource.setCodeAl(shop.getCodeAl());
-            shopUserResource.setUserList(generateUserResourceListFromUserList(userList));
+            resource.getShopUserList().add(new ShopUserResource(shop, generateUserResourceListFromUserList(userList)));
+        }
 
-            shopUserResourceList.add(shopUserResource);
-        });
-
-        return shopUserResourceList;
+        return resource;
     }
 
     /**
