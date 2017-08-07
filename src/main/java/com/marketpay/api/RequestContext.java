@@ -30,6 +30,9 @@ public class RequestContext {
     //Language de la request
     private LANGUAGE language;
 
+    //Token
+    private String token;
+
     //Déclaration du context
     private static ThreadLocal<RequestContext> mpContext = new ThreadLocal<RequestContext>();
 
@@ -104,4 +107,11 @@ public class RequestContext {
         this.language = language;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

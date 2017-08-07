@@ -1,5 +1,6 @@
 package com.marketpay.filter.security;
 
+import com.marketpay.exception.MarketPayException;
 import com.marketpay.services.auth.TokenAuthenticationService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -39,7 +40,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException e) {
+        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | MarketPayException e) {
             //Si le token est expiré on retourne un unauthorized
             LOGGER.info("Authentication Unauthorized : " + e.getMessage());
             ((HttpServletResponse) response).setStatus(HttpStatus.UNAUTHORIZED.value());
