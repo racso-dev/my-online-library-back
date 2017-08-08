@@ -144,7 +144,7 @@ public class OperationController extends MarketPayController {
 
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         if( idShop != null) {
-            if( !shopIdList.contains(idShop) ) {
+            if( !shopIdList.contains(idShop) && !USER_PROFILE.ADMIN_USER.equals(RequestContext.get().getUserProfile()) ) {
                 throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Le user " + RequestContext.get().getUser().getId() + " n'a pas accès au shop " + idShop);
             } else {
                 shopIdList.clear();

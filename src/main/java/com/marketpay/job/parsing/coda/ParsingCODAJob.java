@@ -50,19 +50,34 @@ public class ParsingCODAJob extends ParsingJob {
      */
     @Override
     public void parsing(String filePath, JobHistory jobHistory) throws IOException {
-        FileReader input = new FileReader(filePath);
-        BufferedReader buffer = new BufferedReader(input);
-        List<String> block = new ArrayList<>();
-        String line;
-        Pattern endBlockPattern = Pattern.compile(ENDBLOCK_REGEX);
+        FileReader input = null;
+        BufferedReader buffer = null;
 
-        while ((line = buffer.readLine()) != null) {
-            block.add(line);
-            Matcher matcher = endBlockPattern.matcher(line);
-            if (matcher.find()) {
-                parsingCodaBlock(block, jobHistory);
-                // Ecrasement de la liste
-                block.clear();
+        try {
+            input = new FileReader(filePath);
+            buffer = new BufferedReader(input);
+            List<String> block = new ArrayList<>();
+            String line;
+            Pattern endBlockPattern = Pattern.compile(ENDBLOCK_REGEX);
+
+            while ((line = buffer.readLine()) != null) {
+                block.add(line);
+                Matcher matcher = endBlockPattern.matcher(line);
+                if (matcher.find()) {
+                    parsingCodaBlock(block, jobHistory);
+                    // Ecrasement de la liste
+                    block.clear();
+                }
+            }
+        } catch (IOException e) {
+            //On fait suivre l'exception, permet juste de s'assurer de bien fermer le buffer et le reader
+            throw e;
+        } finally {
+            if (buffer != null) {
+                buffer.close();
+            }
+            if (input != null) {
+                input.close();
             }
         }
     }
