@@ -48,7 +48,9 @@ public class UserService {
     public UserInformationResource getUserInformation(User user) throws EntityNotFoundException {
         UserInformationResource resource = new UserInformationResource();
 
-        // On set le user profile
+        // On set le user
+        resource.setLastName(user.getLastName());
+        resource.setFirstName(user.getFirstName());
         resource.setProfile(user.getProfile());
 
         if(user.getIdBu() != null){
@@ -59,18 +61,13 @@ public class UserService {
             );
             resource.setBusinessUnit(businessUnit);
 
-            //On récupère les shop associés
-            resource.setShopList(shopRepository.findByIdBu(businessUnit.getId()));
-
         } else if(user.getIdShop() != null) {
-            //C'est un user simple
+            //C'est un user simple ou un manager
             //On récupère le shop associé au user
             Shop shop = shopRepository.findOne(user.getIdShop()).orElseThrow(() ->
                 new EntityNotFoundException(user.getIdShop(), "shop")
             );
-            List<Shop> shopList = new ArrayList<>();
-            shopList.add(shop);
-            resource.setShopList(shopList);
+            resource.setShop(shop);
 
             //On récupère la BU associé au shop
             BusinessUnit businessUnit = businessUnitRepository.findOne(shop.getIdBu()).orElseThrow(() ->
@@ -83,29 +80,10 @@ public class UserService {
             return resource;
         }
 
-        //On récupère la dernière fundingDate des operations associé au user
-        resource.setLastFundingDate(getLastFundingDateForShopList(resource.getShopList()));
-
         return resource;
     }
 
-    /**
-     * Service de récupération de la dernière fundingDate des operations des shop donnés
-     * @param shopList
-     * @return
-     */
-    private LocalDate getLastFundingDateForShopList(List<Shop> shopList) {
-        //On construit une liste d'idShop
-        List<Long> idShopList = shopList.stream().map(shop -> shop.getId()).collect(Collectors.toList());
 
-        //On récupère l'operation avec la dernière fundindDate pour cette liste de shop
-        Optional<Operation> operationOpt = operationRepository.findFirstByIdShopInOrderByFundingDateDesc(idShopList);
-
-        if(operationOpt.isPresent()){
-            return operationOpt.get().getFundingDate();
-        }
-        return LocalDate.now();
-    }
 
 
     /**

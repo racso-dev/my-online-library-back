@@ -1,12 +1,7 @@
 package com.marketpay.services.user.resource;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Shop;
-import com.marketpay.utils.serializer.LocalDateSerializer;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Created by etienne on 25/07/17.
@@ -14,17 +9,10 @@ import java.util.List;
 public class UserInformationResource {
 
     private BusinessUnit businessUnit;
-    private List<Shop> shopList;
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate lastFundingDate;
+    private Shop shop;
     private int profile;
-
-    public UserInformationResource(BusinessUnit businessUnit, List<Shop> shopList, LocalDate lastFundingDate, int profile) {
-        this.businessUnit = businessUnit;
-        this.shopList = shopList;
-        this.lastFundingDate = lastFundingDate;
-        this.profile = profile;
-    }
+    private String lastName;
+    private String firstName;
 
     public UserInformationResource() {
     }
@@ -37,20 +25,12 @@ public class UserInformationResource {
         this.businessUnit = businessUnit;
     }
 
-    public List<Shop> getShopList() {
-        return shopList;
+    public Shop getShop() {
+        return shop;
     }
 
-    public void setShopList(List<Shop> shopList) {
-        this.shopList = shopList;
-    }
-
-    public LocalDate getLastFundingDate() {
-        return lastFundingDate;
-    }
-
-    public void setLastFundingDate(LocalDate lastFundingDate) {
-        this.lastFundingDate = lastFundingDate;
+    public void setShop(Shop shop) {
+        this.shop = shop;
     }
 
     public int getProfile() {
@@ -61,4 +41,19 @@ public class UserInformationResource {
         this.profile = profile;
     }
 
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 }
