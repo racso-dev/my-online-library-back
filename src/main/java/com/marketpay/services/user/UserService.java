@@ -1,10 +1,8 @@
 package com.marketpay.services.user;
 
-import com.marketpay.api.user.response.ShopUserListResponse;
 import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.BusinessUnit;
-import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.BusinessUnitRepository;
@@ -16,10 +14,12 @@ import com.marketpay.services.user.resource.ShopUserListResource;
 import com.marketpay.services.user.resource.ShopUserResource;
 import com.marketpay.services.user.resource.UserInformationResource;
 import com.marketpay.services.user.resource.UserResource;
+import com.marketpay.utils.MailUtils;
+import com.marketpay.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +33,6 @@ public class UserService {
 
     @Autowired
     private ShopRepository shopRepository;
-
-    @Autowired
-    private OperationRepository operationRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -139,4 +136,90 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Service de création d'un user, accessible uniquement par l'admin ou un userManager
+     * @return
+     * @throws MarketPayException
+     */
+    public Long createUser(USER_PROFILE userProfileRequester, UserResource userResource) throws MarketPayException {
+        //On créé le user
+        User user = new User();
+        user.setFirstName(userResource.getFirstName());
+        user.setLastName(userResource.getLastName());
+        user.setProfile(userResource.getProfile());
+
+        //En fonction du profile du requester on n'a pas les mêmes droits de création
+        if(USER_PROFILE.ADMIN_USER.equals(userProfileRequester)){
+            //On est admin donc on vérifie que la bu et le shop est renseigné en fonction du profile voulu
+            if(USER_PROFILE.ADMIN_USER.getCode() == userResource.getProfile()){
+                //On veut créer un admin donc on ne lui associe pas de BU et de SHOP
+                if(userResource.getIdBu() != null || userResource.getIdShop() != null){
+                    throw new MarketPayException(HttpStatus.BAD_REQUEST, "idBu ou idShop présent pour créer un user admin");
+                }
+            } else if(USER_PROFILE.SUPER_USER.getCode() == userResource.getProfile()) {
+                //On veut créer un superUser donc on lui associe une bu mais pas de shop
+                if(userResource.getIdBu() == null || userResource.getIdShop() != null){
+                    throw new MarketPayException(HttpStatus.BAD_REQUEST, "idBu null ou idShop présent pour créer un user super");
+                }
+
+                //On vérifie que la bu existe bien
+                businessUnitRepository.findOne(userResource.getIdBu()).orElseThrow(() ->
+                    new EntityNotFoundException(userResource.getIdBu(), "businessUnit")
+                );
+
+                user.setIdBu(userResource.getIdBu());
+            } else {
+                //On veut créer un userManager ou un user donc on lui associe un shop
+                if(userResource.getIdBu() != null ||userResource.getIdShop() == null){
+                    throw new MarketPayException(HttpStatus.BAD_REQUEST, "idBu présent ou idShop null pour créer un user ou user manager");
+                }
+
+                //On vérifie que le shop existe bien
+                shopRepository.findOne(userResource.getIdShop()).orElseThrow(() ->
+                    new EntityNotFoundException(userResource.getIdShop(), "shop")
+                );
+
+                user.setIdShop(userResource.getIdShop());
+            }
+        } else if(USER_PROFILE.USER_MANAGER.equals(userProfileRequester)) {
+            //On est userManager donc on set le bon idShop et on vérifie le profile du user à créer
+            if(USER_PROFILE.ADMIN_USER.getCode() == userResource.getProfile() || USER_PROFILE.SUPER_USER.getCode() == userResource.getProfile()){
+                throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Pas autorisé à créer un superUser ou un adminUser");
+            }
+
+            user.setIdShop(userResource.getIdShop());
+        } else {
+            throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Pas autorisé à créer un user");
+        }
+
+        //On vérifie que le login n'existe pas déjà
+        Optional<User> uLogin = userRepository.findByLogin(userResource.getLogin());
+        if(uLogin.isPresent()){
+            throw new MarketPayException(HttpStatus.IM_USED, "Login déjà utilisé", "login");
+        }
+        user.setLogin(userResource.getLogin());
+
+        //On vérifie l'email
+        if(!MailUtils.checkValidEmail(userResource.getEmail())){
+            throw new MarketPayException(HttpStatus.BAD_REQUEST, "invalid email " + userResource.getEmail());
+        }
+        //On vérifie que l'email n'existe pas déjà
+        Optional<User> uEmail = userRepository.findUserByEmail(userResource.getEmail());
+        if(uEmail.isPresent()){
+            throw new MarketPayException(HttpStatus.IM_USED, "Email déjà utilisé", "email");
+        }
+        user.setEmail(userResource.getEmail());
+
+        //On set le password avec une valeur aléatoire
+        //Le mot de passe sera changé à la premier authentification
+        user.setPassword(RandomUtils.getRandowString(40));
+
+        //Tout est OK on sauvegarde le user
+        user = userRepository.save(user);
+
+        //On envoi le mail de création du user
+        //TODO ETI
+
+        return user.getId();
+    }
 }

@@ -8,10 +8,17 @@ import org.springframework.http.HttpStatus;
 public class MarketPayException extends Exception {
 
     private HttpStatus httpStatus;
+    private String errorCode;
 
     public MarketPayException(HttpStatus httpStatus, String message) {
         super(message);
         this.httpStatus = httpStatus;
+    }
+
+    public MarketPayException(HttpStatus httpStatus, String message, String errorCode) {
+        super(message);
+        this.httpStatus = httpStatus;
+        this.errorCode = errorCode;
     }
 
     public MarketPayException(HttpStatus httpStatus, String message, Throwable cause) {
@@ -23,7 +30,8 @@ public class MarketPayException extends Exception {
         return httpStatus;
     }
 
-    public void setHttpStatus(HttpStatus httpStatus) {
-        this.httpStatus = httpStatus;
+    public String getErrorCode() {
+        return errorCode;
     }
+
 }
