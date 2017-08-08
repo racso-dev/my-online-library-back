@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +73,7 @@ public class TokenAuthenticationService {
             for (Cookie cookie : request.getCookies()) {
                 if (cookie.getName().equals(COOKIE_NAME)) {
                     String token = cookie.getValue();
-                    if (token != null) {
+                    if (!StringUtils.isEmpty(token)) {
                         // parse the token.
                         String user = Jwts.parser()
                             .setSigningKey(SECRET)
