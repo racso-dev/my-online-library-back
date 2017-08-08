@@ -15,10 +15,20 @@ public class Block {
     private long id;
     @Convert(converter = LocalDateAttributeConverter.class)
     private LocalDate fundingDate;
+    @Convert(converter = LocalDateAttributeConverter.class)
+    private LocalDate createDate;
     @Lob
     private String content;
     private int status;
     private Long idBu;
+
+    public LocalDate getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDate createDate) {
+        this.createDate = createDate;
+    }
 
     public LocalDate getFundingDate() {
         return fundingDate;

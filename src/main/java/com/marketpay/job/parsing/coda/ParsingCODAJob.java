@@ -12,6 +12,7 @@ import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
+import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,18 +50,34 @@ public class ParsingCODAJob extends ParsingJob {
      */
     @Override
     public void parsing(String filePath, JobHistory jobHistory) throws IOException {
-        FileReader input = new FileReader(filePath);
-        BufferedReader buffer = new BufferedReader(input);
-        List<String> block = new ArrayList<>();
-        String line;
-        Pattern endBlockPattern = Pattern.compile(ENDBLOCK_REGEX);
-        while ((line = buffer.readLine()) != null) {
-            block.add(line);
-            Matcher matcher = endBlockPattern.matcher(line);
-            if (matcher.find()) {
-                parsingCodaBlock(block, jobHistory);
-                // Ecrasement de la liste
-                block.clear();
+        FileReader input = null;
+        BufferedReader buffer = null;
+
+        try {
+            input = new FileReader(filePath);
+            buffer = new BufferedReader(input);
+            List<String> block = new ArrayList<>();
+            String line;
+            Pattern endBlockPattern = Pattern.compile(ENDBLOCK_REGEX);
+
+            while ((line = buffer.readLine()) != null) {
+                block.add(line);
+                Matcher matcher = endBlockPattern.matcher(line);
+                if (matcher.find()) {
+                    parsingCodaBlock(block, jobHistory);
+                    // Ecrasement de la liste
+                    block.clear();
+                }
+            }
+        } catch (IOException e) {
+            //On fait suivre l'exception, permet juste de s'assurer de bien fermer le buffer et le reader
+            throw e;
+        } finally {
+            if (buffer != null) {
+                buffer.close();
+            }
+            if (input != null) {
+                input.close();
             }
         }
     }
@@ -98,16 +115,19 @@ public class ParsingCODAJob extends ParsingJob {
 
         try {
             String centralisationLine1 = block.get(2);
+            String destinationLine = block.get(0);
 
-            // Récupération de la date de création
+            // Récupération de la date de financement
             LocalDate foundingDate =  getFundingDate(centralisationLine1);
+
+            LocalDate createDate = getCreateDate(destinationLine);
 
             Block codaBlock = new Block();
             codaBlock.setContent(String.join("\\n", block));
             codaBlock.setFundingDate(foundingDate);
             codaBlock.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
-
-            blockRepository.save(codaBlock);
+            codaBlock.setCreateDate(createDate);
+            codaBlock = blockRepository.save(codaBlock);
 
             Long idBu = null;
 
@@ -117,6 +137,7 @@ public class ParsingCODAJob extends ParsingJob {
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
                     operation.setFundingDate(foundingDate);
+                    operation.setCreateDate(createDate);
                     Optional<Shop> shopOpt = shopRepository.findByContractNumber(operation.getContractNumber());
                     if(shopOpt.isPresent()) {
                         idBu = shopOpt.get().getIdBu();
@@ -125,6 +146,7 @@ public class ParsingCODAJob extends ParsingJob {
                     } else {
                         jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_SHOP.getCode());
                     }
+                    operation.setIdBlock(codaBlock.getId());
                     operationRepository.save(operation);
                 }
             }
@@ -188,6 +210,22 @@ public class ParsingCODAJob extends ParsingJob {
             return fundingDate;
         } catch (Exception e) {
             throw new FundingDateException(e.getMessage(), e.getCause(), centralisationLine);
+        }
+    }
+
+    /**
+     * Récupére la date de création du fichier
+     * @param destinationLine
+     * @return
+     * @throws FundingDateException
+     */
+    public LocalDate getCreateDate(String destinationLine) throws FundingDateException {
+        try {
+            String createDateString = destinationLine.substring(5, 11);
+            LocalDate createDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE,  createDateString);
+            return createDate;
+        } catch (Exception e) {
+            throw new FundingDateException(e.getMessage(), e.getCause(), destinationLine);
         }
     }
 

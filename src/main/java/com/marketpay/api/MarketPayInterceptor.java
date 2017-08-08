@@ -7,6 +7,7 @@ import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserRepository;
+import com.marketpay.references.LANGUAGE;
 import com.marketpay.references.USER_PROFILE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -37,6 +39,9 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
     private final String MANAGE_URI = "/manage";
     private final String ERROR_URI = "/error";
     private final String CONFIGURATION_URI = "/configuration";
+    private final String COOKIE_LANGUAGE = "marketPayLanguage";
+
+    private final String COOKIE_NAME_TOKEN = "sid";
 
 
     @Autowired
@@ -112,6 +117,14 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
                 }
             }
 
+            //On récupère la langue en cookie si elle est présente, sinon on prend l'anglais par défaut
+            LANGUAGE language = LANGUAGE.EN;
+            for(Cookie cookie :request.getCookies()){
+                if(cookie.getName().equals(COOKIE_LANGUAGE)){
+                    language = LANGUAGE.getByCode(cookie.getValue());
+                }
+            }
+
             //On créé le RequestContext
             RequestContext context = new RequestContext();
             context.setUri(uri);
@@ -119,6 +132,18 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
             context.setUser(userOpt.orElse(null));
             context.setIdBu(idBu);
             context.setIdShopList(idShopList);
+            context.setLanguage(language);
+
+            //On récupère le token
+            String token = null;
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(COOKIE_NAME_TOKEN)) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+            context.setToken(token);
+
             RequestContext.set(context);
         }
 

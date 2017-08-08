@@ -12,6 +12,7 @@ database:
 
 jwt:
   secret: UnEXV9#C;-q)xa2$=q4?um2[;L-~Hj(6SWw!cW~5f,yLzHv
+  expiration: 300000
 
 security:
   sessions: stateless
@@ -25,3 +26,7 @@ springfox:
 #On n'utilise pas le flyway auto de spring boot
 flyway:
   enabled: false
+
+#Intervale de temps entre l'execution de la scheduled task
+scheduledTask:
+  fixedRate: 120000

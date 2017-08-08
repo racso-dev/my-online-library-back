@@ -1,5 +1,6 @@
 package com.marketpay.job.parsing.n43;
 
+import com.marketpay.exception.FundingDateException;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
@@ -57,7 +58,7 @@ public class ParsingN43Job extends ParsingJob {
 
         try {
             String line;
-            List<Operation> operationList= new ArrayList<>();
+            List<Operation> operationList = new ArrayList<>();
             LocalDate fundingDate = null;
             while ((line = buffer.readLine()) != null) {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
@@ -77,7 +78,7 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, dateString));
                     newOperation.setSens(getSens(line));
                     Optional<Shop> shopOpt = shopRepository.findByContractNumber(newOperation.getContractNumber());
-                    if(shopOpt.isPresent()) {
+                    if (shopOpt.isPresent()) {
                         newOperation.setNameShop(shopOpt.get().getName());
                         newOperation.setIdShop(shopOpt.get().getId());
                     }
@@ -91,7 +92,7 @@ public class ParsingN43Job extends ParsingJob {
                         }
                     }
                     operationList.add(newOperation);
-                } else if(matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_COMMISION, 0) != null) {
+                } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_COMMISION, 0) != null) {
                     Integer lastIndex = operationList.size() - 1;
                     Operation lastOperation = operationList.get(lastIndex);
                     Operation operation = operationList.get(lastIndex);
@@ -102,24 +103,25 @@ public class ParsingN43Job extends ParsingJob {
                 }
             }
 
-            for(Operation operation: operationList) {
+            for (Operation operation : operationList) {
                 operationRepository.save(operation);
             }
+        } catch (IOException e) {
+            throw e;
         } catch (Exception e) {
-            if(e instanceof IOException) {
-                throw e;
-            } else {
-                errorBlock(e, null, jobHistory);
-            }
+            errorBlock(e, null, jobHistory);
         } finally {
             buffer.close();
             file.close();
         }
     }
 
-    public String getFundingDate(String line) {
-        //TODO CHEKROUN TRY CATCH ERROR
-        return matchFromRegex(line, FINANCING_DATE_REGEX, 1);
+    public String getFundingDate(String line) throws FundingDateException {
+        try {
+            return matchFromRegex(line, FINANCING_DATE_REGEX, 1);
+        } catch (Exception e) {
+            throw new FundingDateException(e.getMessage(), e.getCause(), line);
+        }
     }
 
     public String getContractNumber(String line) {

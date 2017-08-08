@@ -1,4 +1,4 @@
-package com.marketpay.services.auth;
+package com.marketpay.api.auth.response;
 
 /**
  * Created by etienne on 01/08/17.

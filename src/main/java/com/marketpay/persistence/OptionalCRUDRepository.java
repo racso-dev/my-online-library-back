@@ -4,11 +4,9 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by tchekroun on 10/07/2017.
- */
 @NoRepositoryBean
 public interface OptionalCRUDRepository<T, ID extends Serializable> extends Repository<T, ID> {
 
@@ -20,7 +18,7 @@ public interface OptionalCRUDRepository<T, ID extends Serializable> extends Repo
 
     boolean exists(ID var1);
 
-    Iterable<T> findAll();
+    List<T> findAll();
 
     Iterable<T> findAll(Iterable<ID> var1);
 
