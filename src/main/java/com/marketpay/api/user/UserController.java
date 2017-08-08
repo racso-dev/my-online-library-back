@@ -3,16 +3,20 @@ package com.marketpay.api.user;
 import com.marketpay.annotation.Profile;
 import com.marketpay.api.MarketPayController;
 import com.marketpay.api.RequestContext;
+import com.marketpay.api.response.IdResponse;
 import com.marketpay.api.user.response.ShopUserListResponse;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.user.UserService;
 import com.marketpay.services.user.resource.UserInformationResource;
+import com.marketpay.services.user.resource.UserResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -65,6 +69,19 @@ public class UserController extends MarketPayController {
 
         LOGGER.info("Récupération de la liste de shop associé avec ces utilisateurs pour la BU " + RequestContext.get().getIdBu());
         return new ShopUserListResponse(userService.getShopUserList(idBuForRequest, idShopForRequest));
+    }
+
+    /**
+     * WS de création d'un user
+     * @param userResource
+     * @return
+     */
+    @Profile({USER_PROFILE.ADMIN_USER, USER_PROFILE.USER_MANAGER})
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public @ResponseBody IdResponse createUser(@RequestBody @Valid UserResource userResource) throws MarketPayException {
+        long newIdUser = userService.createUser(RequestContext.get().getUserProfile(), userResource);
+        LOGGER.info("Creation du nouveau user " + newIdUser);
+        return new IdResponse(newIdUser);
     }
 
 }

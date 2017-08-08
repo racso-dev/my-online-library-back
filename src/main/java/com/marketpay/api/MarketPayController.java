@@ -1,5 +1,6 @@
 package com.marketpay.api;
 
+import com.marketpay.api.response.MarketPayErrorResponse;
 import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.BusinessUnit;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * Created by etienne on 03/07/17.
@@ -42,17 +42,24 @@ public class MarketPayController {
      */
     @ResponseBody
     @ExceptionHandler(MarketPayException.class)
-    public String handleException(HttpServletRequest req, HttpServletResponse response, Throwable t) {
+    public MarketPayErrorResponse handleException(HttpServletRequest req, HttpServletResponse response, Throwable t) {
         response.setContentType("application/json");
 
+        String errorCode = null;
         //On traite l'exception set on set le status de la response en conséquence
         if (t instanceof MarketPayException) {
             //Si cas d'erreur fonctionnel, mauvaise request, unauthorized, ...
             response.setStatus(((MarketPayException) t).getHttpStatus().value());
+            errorCode = ((MarketPayException) t).getErrorCode();
             LOGGER.info(t.getMessage(), t.getCause());
         }
 
-        return null;
+        MarketPayErrorResponse respError = null;
+        if(errorCode != null){
+            respError = new MarketPayErrorResponse(errorCode);
+        }
+
+        return respError;
     }
 
     /**
