@@ -201,7 +201,7 @@ public class UserService {
 
         //On vérifie l'email
         if(!MailUtils.checkValidEmail(userResource.getEmail())){
-            throw new MarketPayException(HttpStatus.BAD_REQUEST, "invalid email " + userResource.getEmail());
+            throw new MarketPayException(HttpStatus.BAD_REQUEST, "invalid email " + userResource.getEmail(), "email");
         }
         //On vérifie que l'email n'existe pas déjà
         Optional<User> uEmail = userRepository.findUserByEmail(userResource.getEmail());
