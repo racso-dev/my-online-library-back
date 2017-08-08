@@ -24,11 +24,12 @@ Par exemple
 -Dspring.config.location=classpath:dev/ -Dspring.profiles.active=dev,atran
 ```
 
-Fichier de conf à compléter pour le path du sftp en dev avec par exemple:
+### Fichier de conf à compléter pour le path du sftp en dev avec par exemple:
 ```
 sftp:
   pathIncomming: /home/etienne/workspaceMarketPay/incomming
   pathArchive: /home/etienne/workspaceMarketPay/archive
+```
 
 ## TIPS
 Si le port que vous souhaitez utiliser n'est pas disponible et que vous voulez le libérer :
@@ -48,7 +49,6 @@ Si l'array est vide alors tous les profiles sont autorisé.
 
 L'annotation @Dev permet de dire que le WS, sur lequel est mise @Dev, est accessible uniquement en mode dev.
 C'est à dire que la conf dev est utilisée.
-```
 
 L'annotation @NotAuthenticated permet de dire que le au WS, sur lequel est mise @NotAuthenticated, est accessible sans être authentifié.
 Biensûr cela ne suffit pas à rendre accessible le WS sans authentification, il faut également autoriser la route dans WebSecurityConfig.
