@@ -1,12 +1,13 @@
 package com.marketpay.services.user;
 
+import com.marketpay.api.user.request.EditMyUserRequest;
+import com.marketpay.api.user.request.EditUserRequest;
 import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.BusinessUnitRepository;
-import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.references.USER_PROFILE;
@@ -15,6 +16,7 @@ import com.marketpay.services.user.resource.ShopUserResource;
 import com.marketpay.services.user.resource.UserInformationResource;
 import com.marketpay.services.user.resource.UserResource;
 import com.marketpay.utils.MailUtils;
+import com.marketpay.utils.PasswordUtils;
 import com.marketpay.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -80,9 +82,6 @@ public class UserService {
         return resource;
     }
 
-
-
-
     /**
      * Service de récupération des shop user pour une BU
      * @param idBu
@@ -144,8 +143,6 @@ public class UserService {
     public Long createUser(USER_PROFILE userProfileRequester, UserResource userResource) throws MarketPayException {
         //On créé le user
         User user = new User();
-        user.setFirstName(userResource.getFirstName());
-        user.setLastName(userResource.getLastName());
         user.setProfile(userResource.getProfile());
 
         //En fonction du profile du requester on n'a pas les mêmes droits de création
@@ -192,27 +189,18 @@ public class UserService {
             throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Pas autorisé à créer un user");
         }
 
-        //On vérifie que le login n'existe pas déjà
-        Optional<User> uLogin = userRepository.findByLogin(userResource.getLogin());
-        if(uLogin.isPresent()){
-            throw new MarketPayException(HttpStatus.IM_USED, "Login déjà utilisé", "login");
-        }
-        user.setLogin(userResource.getLogin());
-
-        //On vérifie l'email
-        if(!MailUtils.checkValidEmail(userResource.getEmail())){
-            throw new MarketPayException(HttpStatus.BAD_REQUEST, "invalid email " + userResource.getEmail(), "email");
-        }
-        //On vérifie que l'email n'existe pas déjà
-        Optional<User> uEmail = userRepository.findUserByEmail(userResource.getEmail());
-        if(uEmail.isPresent()){
-            throw new MarketPayException(HttpStatus.IM_USED, "Email déjà utilisé", "email");
-        }
-        user.setEmail(userResource.getEmail());
-
         //On set le password avec une valeur aléatoire
         //Le mot de passe sera changé à la premier authentification
-        user.setPassword(RandomUtils.getRandowString(40));
+        user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(RandomUtils.getRandowString(40)));
+
+        //On set les autres champs: email, login, firstName, lastName
+        //Et si tout est ok on sauvegarde le user
+        EditUserRequest request = new EditMyUserRequest();
+        request.setEmail(userResource.getEmail());
+        request.setLogin(userResource.getLogin());
+        request.setLastName(userResource.getLastName());
+        request.setFirstName(userResource.getFirstName());
+        user = editUserEntity(user, request);
 
         //Tout est OK on sauvegarde le user
         user = userRepository.save(user);
@@ -221,5 +209,137 @@ public class UserService {
         //TODO ETI
 
         return user.getId();
+    }
+
+    /**
+     * Service d'edition d'un user
+     * @param idUser
+     * @param request
+     * @return
+     */
+    public UserResource editUser(long idUser, EditUserRequest request) throws MarketPayException {
+        //On récupère le user
+        User user = getUserEntity(idUser);
+
+        //On met à jour le user
+        user = editUserEntity(user, request);
+
+        return getUserResource(user);
+    }
+
+    /**
+     * Service de récupération d'un user
+     * @param idUser
+     * @return
+     */
+    public UserResource getUser(long idUser) throws EntityNotFoundException {
+        //On récupère le user
+        return getUserResource(getUserEntity(idUser));
+    }
+
+    /**
+     * Method qui retourne un userResource à partir d'un user
+     * @param user
+     * @return
+     * @throws EntityNotFoundException
+     */
+    private UserResource getUserResource(User user) throws EntityNotFoundException {
+        UserResource resource = new UserResource(user);
+
+        //On récupère la BU à laquelle est rattaché le user, si le user est uniquement rattaché à un shop
+        if(user.getIdBu() == null && user.getIdShop() != null){
+            Shop shop = shopRepository.findOne(user.getIdShop()).orElseThrow(() ->
+                new EntityNotFoundException(user.getIdShop(), "shop")
+            );
+
+            resource.setIdBu(shop.getIdBu());
+        }
+
+        return resource;
+    }
+
+    /**
+     * Method de récupération userEntity donné
+     * @param idUser
+     * @return
+     * @throws EntityNotFoundException
+     */
+    private User getUserEntity(long idUser) throws EntityNotFoundException {
+        return userRepository.findOne(idUser).orElseThrow(() ->
+                new EntityNotFoundException(idUser, "user")
+        );
+    }
+
+    /**
+     * Method qui met à jour un userEntity à partir d'une request
+     * @param user
+     * @param request
+     * @return
+     * @throws MarketPayException
+     */
+    private User editUserEntity(User user, EditUserRequest request) throws MarketPayException {
+        //On met à jour le user
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+
+        //On vérifie que le login n'existe pas déjà
+        Optional<User> uLogin = userRepository.findByLogin(request.getLogin());
+        if(uLogin.isPresent() && (user.getId() == null || !user.getId().equals(uLogin.get().getId()))){
+            throw new MarketPayException(HttpStatus.IM_USED, "Login déjà utilisé", "login");
+        }
+        user.setLogin(request.getLogin());
+
+        //On vérifie l'email
+        if(!MailUtils.checkValidEmail(request.getEmail())){
+            throw new MarketPayException(HttpStatus.BAD_REQUEST, "invalid email " + request.getEmail(), "email");
+        }
+        //On vérifie que l'email n'existe pas déjà
+        Optional<User> uEmail = userRepository.findUserByEmail(request.getEmail());
+        if(uEmail.isPresent() && (user.getId() == null || !user.getId().equals(uEmail.get().getId()))){
+            throw new MarketPayException(HttpStatus.IM_USED, "Email déjà utilisé", "email");
+        }
+        user.setEmail(request.getEmail());
+
+        //Tout est OK on sauvegarde le user
+        return userRepository.save(user);
+    }
+
+    /**
+     * Service de suppression d'un user
+     * @param idUserToDelete
+     * @param idUserRequester
+     */
+    public void deleteUser(long idUserToDelete, long idUserRequester) throws MarketPayException {
+        //On ne peut pas supprimer son propre user
+        if(idUserRequester == idUserToDelete){
+            throw new MarketPayException(HttpStatus.BAD_REQUEST, "Impossible de supprimer son propre user");
+        }
+
+        //On récupère le user
+        User user = getUserEntity(idUserToDelete);
+
+        //On supprime le user
+        userRepository.delete(user);
+    }
+
+    /**
+     * Service d'edition du user connecté
+     * @param idUser
+     * @param request
+     * @return
+     */
+    public UserResource editMyUser(long idUser, EditMyUserRequest request) throws MarketPayException {
+        //On récupère le user
+        User user = getUserEntity(idUser);
+
+        //On change le password s'il est renseigné
+        if(request.getPassword() != null){
+            user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getPassword()));
+        }
+
+        //On met à jour le user
+        user = editUserEntity(user, request);
+
+        return getUserResource(user);
     }
 }

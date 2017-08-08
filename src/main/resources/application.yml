@@ -30,3 +30,13 @@ flyway:
 #Intervale de temps entre l'execution de la scheduled task
 scheduledTask:
   fixedRate: 120000
+
+spring:
+  mail:
+    host:
+    port:
+    username:
+    password:
+
+email:
+  filter: steamulo.com
