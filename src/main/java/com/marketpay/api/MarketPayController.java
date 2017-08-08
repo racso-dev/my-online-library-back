@@ -1,7 +1,5 @@
 package com.marketpay.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketpay.api.response.MarketPayErrorResponse;
 import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * Created by etienne on 03/07/17.
