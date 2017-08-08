@@ -1,6 +1,7 @@
 package com.marketpay.job.parsing.n43;
 
 import com.marketpay.MarketPayUnitTests;
+import com.marketpay.exception.FundingDateException;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.references.JOB_STATUS;
@@ -32,8 +33,13 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void getFinancingDateTest() {
-        String financingDate = parsingN43Job.getFundingDate(FIRSTLINE_N43_FILE);
-        assertEquals("060617", financingDate);
+        try {
+            String financingDate = parsingN43Job.getFundingDate(FIRSTLINE_N43_FILE);
+            assertEquals("060617", financingDate);
+        } catch (FundingDateException e) {
+            e.printStackTrace();
+            assertTrue(false);
+        }
     }
 
     @Test

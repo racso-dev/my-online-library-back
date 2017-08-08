@@ -1,5 +1,6 @@
 package com.marketpay.job.parsing;
 
+import com.marketpay.exception.FundingDateException;
 import com.marketpay.persistence.entity.JobHistory;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,7 @@ public abstract class ParsingJob {
      * @param filePath
      * @param jobHistory
      */
-    public abstract void parsing(String filePath, JobHistory jobHistory) throws IOException;
+    public abstract void parsing(String filePath, JobHistory jobHistory) throws IOException, FundingDateException;
 
     /**
      * Gestion des erreurs survenue lors du parsing d'un block

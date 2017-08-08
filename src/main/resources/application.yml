@@ -27,4 +27,6 @@ springfox:
 flyway:
   enabled: false
 
-
+#Intervale de temps entre l'execution de la scheduled task
+scheduledTask:
+  fixedRate: 120000
