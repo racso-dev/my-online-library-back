@@ -251,13 +251,26 @@ public class UserService {
     private UserResource getUserResource(User user) throws EntityNotFoundException {
         UserResource resource = new UserResource(user);
 
+        // On récupère la BU de l'user si l'user est rattaché à la BU
+        if (user.getIdBu() != null) {
+            BusinessUnit businessUnit = businessUnitRepository.findOne(user.getIdBu()).orElseThrow(() ->
+                new EntityNotFoundException(user.getIdBu(), "businessUnit")
+            );
+            resource.setIdBu(user.getIdBu());
+            resource.setNameBu(businessUnit.getName());
+        }
+
         //On récupère la BU à laquelle est rattaché le user, si le user est uniquement rattaché à un shop
-        if(user.getIdBu() == null && user.getIdShop() != null){
+        if(user.getIdShop() != null){
             Shop shop = shopRepository.findOne(user.getIdShop()).orElseThrow(() ->
                 new EntityNotFoundException(user.getIdShop(), "shop")
             );
-
+            BusinessUnit businessUnit = businessUnitRepository.findOne(shop.getIdBu()).orElseThrow(() ->
+                new EntityNotFoundException(shop.getIdBu(), "businessUnit")
+            );
             resource.setIdBu(shop.getIdBu());
+            resource.setNameShop(shop.getName());
+            resource.setNameBu(businessUnit.getName());
         }
 
         return resource;
