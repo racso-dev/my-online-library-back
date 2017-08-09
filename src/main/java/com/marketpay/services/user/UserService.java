@@ -52,6 +52,7 @@ public class UserService {
         UserInformationResource resource = new UserInformationResource();
 
         // On set le user
+        resource.setIdUser(user.getId());
         resource.setLastName(user.getLastName());
         resource.setFirstName(user.getFirstName());
         resource.setProfile(user.getProfile());
