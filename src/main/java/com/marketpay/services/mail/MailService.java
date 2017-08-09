@@ -38,7 +38,7 @@ public class MailService {
 
 
     /**
-     * Ce service permet d'envoyer un mail avec l'expéditeur, une liste de destinataire, sujet + contenu, et une liste de fichiers joints
+     * Ce service permet d'envoyer un mail
      * @param email
      * @return
      */

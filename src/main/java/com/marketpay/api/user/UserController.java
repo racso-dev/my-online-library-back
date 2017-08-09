@@ -104,7 +104,7 @@ public class UserController extends MarketPayController {
 
 
     /**
-     * WS d'edition d'un user
+     * WS d'edition d'un user différent de celui connecté
      * @param editUserRequest
      * @return
      */
@@ -144,7 +144,7 @@ public class UserController extends MarketPayController {
     }
 
     /**
-     * WS d'edition du user connecté
+     * WS d'edition du user connecté par lui même
      * @return
      */
     @Profile({})
