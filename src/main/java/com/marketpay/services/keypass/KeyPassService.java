@@ -72,9 +72,6 @@ public class KeyPassService {
         //On supprime le userKeyPass
         userKeyPassRepository.delete(userKeyPass);
 
-        //On check le password
-        //TODO ETI ou dans la request
-
         //On change le mot de passe
         user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getPassword()));
 
