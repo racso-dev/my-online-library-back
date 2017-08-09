@@ -4,7 +4,10 @@ import com.marketpay.annotation.Profile;
 import com.marketpay.api.MarketPayController;
 import com.marketpay.api.RequestContext;
 import com.marketpay.api.response.IdResponse;
+import com.marketpay.api.user.request.EditMyUserRequest;
+import com.marketpay.api.user.request.EditUserRequest;
 import com.marketpay.api.user.response.ShopUserListResponse;
+import com.marketpay.api.user.response.UserResponse;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.user.UserService;
@@ -72,6 +75,21 @@ public class UserController extends MarketPayController {
     }
 
     /**
+     * WS de récupération d'un user
+     * @param idUser
+     * @return
+     */
+    @Profile({USER_PROFILE.ADMIN_USER, USER_PROFILE.USER_MANAGER})
+    @RequestMapping(value = "/{idUser}", method = RequestMethod.GET)
+    public @ResponseBody UserResponse getUser(@PathVariable(value = "idUser") long idUser) throws MarketPayException {
+        //On vérifie les droits d'accès au user
+        checkAccessUser(idUser);
+
+        LOGGER.info("Récupération du user " + idUser);
+        return new UserResponse(userService.getUser(idUser));
+    }
+
+    /**
      * WS de création d'un user
      * @param userResource
      * @return
@@ -82,6 +100,58 @@ public class UserController extends MarketPayController {
         long newIdUser = userService.createUser(RequestContext.get().getUserProfile(), userResource);
         LOGGER.info("Creation du nouveau user " + newIdUser);
         return new IdResponse(newIdUser);
+    }
+
+
+    /**
+     * WS d'edition d'un user différent de celui connecté
+     * @param editUserRequest
+     * @return
+     */
+    @Profile({USER_PROFILE.ADMIN_USER, USER_PROFILE.USER_MANAGER})
+    @RequestMapping(value = "/{idUser}", method = RequestMethod.POST)
+    public @ResponseBody UserResponse editUser(@RequestBody @Valid EditUserRequest editUserRequest, @PathVariable(value = "idUser") long idUser) throws MarketPayException {
+        //On vérifie les droits d'accès au user
+        checkAccessUser(idUser);
+
+        LOGGER.info("Modification du user " + idUser);
+        return new UserResponse(userService.editUser(idUser, editUserRequest));
+    }
+
+    /**
+     * WS de suppression d'un user
+     * @param idUser
+     */
+    @Profile({USER_PROFILE.ADMIN_USER, USER_PROFILE.USER_MANAGER})
+    @RequestMapping(value = "/{idUser}", method = RequestMethod.DELETE)
+    public void deleteUser(@PathVariable(value = "idUser") long idUser) throws MarketPayException {
+        //On vérifie les droits d'accès au user
+        checkAccessUser(idUser);
+
+        LOGGER.info("Suppression du user " + idUser);
+        userService.deleteUser(idUser, RequestContext.get().getUser().getId());
+    }
+
+    /**
+     * WS de récupération du user connecté
+     * @return
+     */
+    @Profile({})
+    @RequestMapping(value = "/my", method = RequestMethod.GET)
+    public @ResponseBody UserResponse getMyUser() throws MarketPayException {
+        LOGGER.info("Récupération du user connecté " + RequestContext.get().getUser().getId());
+        return new UserResponse(userService.getUser(RequestContext.get().getUser().getId()));
+    }
+
+    /**
+     * WS d'edition du user connecté par lui même
+     * @return
+     */
+    @Profile({})
+    @RequestMapping(value = "/my", method = RequestMethod.POST)
+    public @ResponseBody UserResponse editMyUser(@RequestBody @Valid EditMyUserRequest editMyUserRequest) throws MarketPayException {
+        LOGGER.info("Modification du user connecté " + RequestContext.get().getUser().getId());
+        return new UserResponse(userService.editMyUser(RequestContext.get().getUser().getId(), editMyUserRequest));
     }
 
 }

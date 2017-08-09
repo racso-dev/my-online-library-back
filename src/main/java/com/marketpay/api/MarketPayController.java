@@ -5,8 +5,10 @@ import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Shop;
+import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.BusinessUnitRepository;
 import com.marketpay.persistence.repository.ShopRepository;
+import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.references.USER_PROFILE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,9 @@ public class MarketPayController {
 
     @Autowired
     private ShopRepository shopRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Permet d'attraper les erreurs du serveur lors des appels WS et de retourner la réponse adéquate
@@ -104,4 +109,32 @@ public class MarketPayController {
         }
     }
 
+    /**
+     * Method qui vérifie les droits d'accès à un user qui n'est pas celui connecté
+     * @param idUser
+     * @throws MarketPayException
+     */
+    protected void checkAccessUser(long idUser) throws MarketPayException {
+        //On récupère le user
+        User user = userRepository.findOne(idUser).orElseThrow(() ->
+            new EntityNotFoundException(idUser, "user")
+        );
+
+        //Si on est admin on a le droit d'y accèder, sinon on vérifie
+        if(USER_PROFILE.USER.equals(RequestContext.get().getUserProfile()) || USER_PROFILE.SUPER_USER.equals(RequestContext.get().getUserProfile())){
+            throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Acces au user " + idUser + " UNAUTHORIZED pour le user " + RequestContext.get().getUser().getId());
+        } else if(USER_PROFILE.USER_MANAGER.equals(RequestContext.get().getUserProfile())) {
+            //Un userManager ne peut accèder qu'aux user et userManager de son shop
+            if(USER_PROFILE.USER.getCode() == user.getProfile() || USER_PROFILE.USER_MANAGER.getCode() == user.getProfile()){
+                //On vérifie que le user est rattaché au même shop
+                if(!RequestContext.get().getIdShopList().contains(user.getIdShop())){
+                    throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Acces au user " + idUser + " UNAUTHORIZED pour le user " + RequestContext.get().getUser().getId());
+                }
+            } else {
+                //Le user est un super ou un admin donc on refuse
+                throw new MarketPayException(HttpStatus.UNAUTHORIZED, "Acces au user " + idUser + " UNAUTHORIZED pour le user " + RequestContext.get().getUser().getId());
+            }
+        }
+
+    }
 }

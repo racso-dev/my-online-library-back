@@ -8,6 +8,13 @@ spring:
     username: root
     password: root
 
+  mail:
+      host: etienne-T1700
+      port: 25
+      username:
+      password:
+
 sftp:
   pathIncomming: /home/etienne/workspaceMarketPay/incomming
   pathArchive: /home/etienne/workspaceMarketPay/archive
+
