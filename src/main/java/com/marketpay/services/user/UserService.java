@@ -251,8 +251,13 @@ public class UserService {
             Shop shop = shopRepository.findOne(user.getIdShop()).orElseThrow(() ->
                 new EntityNotFoundException(user.getIdShop(), "shop")
             );
+            BusinessUnit businessUnit = businessUnitRepository.findOne(shop.getIdBu()).orElseThrow(() ->
+                new EntityNotFoundException(shop.getIdBu(), "businessUnit")
+            );
 
             resource.setIdBu(shop.getIdBu());
+            resource.setNameBu(businessUnit.getName());
+            resource.setNameShop(shop.getName());
         }
 
         return resource;

@@ -1,7 +1,5 @@
 package com.marketpay.services.businessunit;
 
-import com.marketpay.exception.EntityNotFoundException;
-import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.repository.BusinessUnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +12,6 @@ public class BusinessUnitService {
 
     @Autowired
     private BusinessUnitRepository businessUnitRepository;
-
-    /**
-     * Retourne une bu
-     * @return
-     */
-    public BusinessUnit getBusinessUnit(long idBu) throws MarketPayException {
-        return businessUnitRepository.findOne(idBu).orElseThrow(() ->
-            new EntityNotFoundException(idBu, "business_unit")
-        );
-    }
 
     /**
      * Retourne la liste de toutes les BU
