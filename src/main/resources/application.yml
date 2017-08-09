@@ -40,3 +40,7 @@ spring:
 
 email:
   filter: steamulo.com
+
+keypass:
+  expirationReset: 60
+  expirationCreate: 2880
