@@ -9,7 +9,7 @@ CREATE TABLE user_key_pass (
   UNIQUE INDEX `key_pass_UNIQUE` (`key_pass` ASC),
   CONSTRAINT `fk_user`
     FOREIGN KEY (`id_user`)
-    REFERENCES `marketpay`.`user` (`id`)
+    REFERENCES user (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
