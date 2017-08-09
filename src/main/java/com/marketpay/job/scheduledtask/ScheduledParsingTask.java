@@ -40,9 +40,9 @@ public class ScheduledParsingTask {
 
         //On récupère le dossier incomming
         File incommingDirectory = new File(sftpConfig.getPathIncomming());
-        if(!incommingDirectory.exists() || !incommingDirectory.isDirectory()){
-            throw new ScheduledTaskException("IncommingDirectory inexistant ou n'est pas un dossier", sftpConfig.getPathIncomming(), sftpConfig.getPathArchive());
-        }
+//        if(!incommingDirectory.exists() || !incommingDirectory.isDirectory()){
+//            throw new ScheduledTaskException("IncommingDirectory inexistant ou n'est pas un dossier", sftpConfig.getPathIncomming(), sftpConfig.getPathArchive());
+//        }
 
         //On regarde s'il y a des fichiers à parser, On récupère donc la liste des fichiers
         List<File> fileToParseList = Arrays.asList(incommingDirectory.listFiles());
