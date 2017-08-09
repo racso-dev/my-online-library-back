@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Created by etienne on 09/08/17.
@@ -47,8 +48,7 @@ public class KeyPassService {
      */
     public String resetPasswordKeyPass(String keyPass, ResetPasswordRequest request) throws MarketPayException {
         //On check le keyPass
-        String keyPassHash = PasswordUtils.PASSWORD_ENCODER.encode(keyPass);
-        UserKeyPass userKeyPass = userKeyPassRepository.findByKeyPass(keyPassHash).orElseThrow(() ->
+        UserKeyPass userKeyPass = userKeyPassRepository.findByKeyPass(keyPass).orElseThrow(() ->
             new MarketPayException(HttpStatus.UNAUTHORIZED, "KeyPass inexistant")
         );
 
@@ -93,6 +93,13 @@ public class KeyPassService {
             new MarketPayException(HttpStatus.BAD_GATEWAY, "Pas de user pour l'email " + email, "email")
         );
 
+        //On vérifie qu'il n'y a pas déjà une demande de resetPassword en cours pour ce user
+        Optional<UserKeyPass> oldUserKeyPassOpt = userKeyPassRepository.findByIdUser(user.getId());
+        //Si c'est le cas on la supprime
+        oldUserKeyPassOpt.ifPresent(oldUserKeyPass -> {
+            userKeyPassRepository.delete(oldUserKeyPass);
+        });
+
         //On génère le keyPass
         String keyPass = RandomUtils.getRandowString(30);
 
@@ -108,12 +115,13 @@ public class KeyPassService {
         //On créé le userKeyPass
         UserKeyPass userKeyPass = new UserKeyPass();
         userKeyPass.setIdUser(user.getId());
-        userKeyPass.setKeyPass(PasswordUtils.PASSWORD_ENCODER.encode(keyPass));
+        userKeyPass.setKeyPass(keyPass);
         userKeyPass.setExpirationDateTime(expirationDateTime);
         userKeyPassRepository.save(userKeyPass);
 
         //On envoi le mail
         //TODO ETI
+        System.err.println(keyPass);
     }
 
 }
