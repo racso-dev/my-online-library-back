@@ -1,5 +1,7 @@
 package com.marketpay.services.user.resource;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Shop;
 
@@ -10,6 +12,8 @@ public class UserInformationResource {
 
     private BusinessUnit businessUnit;
     private Shop shop;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private long idUser;
     private int profile;
     private String lastName;
     private String firstName;
@@ -31,6 +35,14 @@ public class UserInformationResource {
 
     public void setShop(Shop shop) {
         this.shop = shop;
+    }
+
+    public long getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(long idUser) {
+        this.idUser = idUser;
     }
 
     public int getProfile() {
