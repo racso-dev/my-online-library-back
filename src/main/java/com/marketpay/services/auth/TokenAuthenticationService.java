@@ -44,12 +44,27 @@ public class TokenAuthenticationService {
      * Service d'ajout d'une authentification
      * @param req
      * @param res
-     * @param username
+     * @param login
      * @throws IOException
      */
-    public void addAuthentication(HttpServletRequest req, HttpServletResponse res, String username) throws IOException {
+    public void addAuthentication(HttpServletRequest req, HttpServletResponse res, String login) throws IOException {
+        //On connecte le user
+        String newToken = connectUser(login);
+
+        //On renvoit le token
+        res.setContentType("application/json");
+        ObjectMapper mapper = new ObjectMapper();
+        res.getWriter().write(mapper.writeValueAsString(new TokenResponse(newToken)));
+    }
+
+    /**
+     * Service de connection d'un user
+     * @param login
+     * @return
+     */
+    public String connectUser(String login) {
         //On génère le nouveau token
-        String newToken = newToken(username);
+        String newToken = newToken(login);
 
         //On ajoute le token en BDD avec la bonne date d'expiration
         UserToken userToken = new UserToken();
@@ -57,10 +72,7 @@ public class TokenAuthenticationService {
         userToken.setToken(newToken);
         userTokenRepository.save(userToken);
 
-        //On renvoit le token
-        res.setContentType("application/json");
-        ObjectMapper mapper = new ObjectMapper();
-        res.getWriter().write(mapper.writeValueAsString(new TokenResponse(newToken)));
+        return newToken;
     }
 
     /**

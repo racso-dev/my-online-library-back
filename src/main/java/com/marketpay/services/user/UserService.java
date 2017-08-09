@@ -11,6 +11,7 @@ import com.marketpay.persistence.repository.BusinessUnitRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.references.USER_PROFILE;
+import com.marketpay.services.keypass.KeyPassService;
 import com.marketpay.services.user.resource.ShopUserListResource;
 import com.marketpay.services.user.resource.ShopUserResource;
 import com.marketpay.services.user.resource.UserInformationResource;
@@ -38,6 +39,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private KeyPassService keyPassService;
 
     /**
      * Service de récupération d'un userInformation à partir d'un user
@@ -206,7 +210,7 @@ public class UserService {
         user = userRepository.save(user);
 
         //On envoi le mail de création du user
-        //TODO ETI
+        keyPassService.sendKeyPass(user.getEmail(), true);
 
         return user.getId();
     }
