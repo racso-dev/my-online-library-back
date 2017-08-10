@@ -1,5 +1,6 @@
 package com.marketpay.services.mail;
 
+import com.marketpay.conf.EmailConfig;
 import com.marketpay.references.LANGUAGE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class MailBuilder {
 
     @Autowired
     private TemplateEngine templateEngine;
+
+    @Autowired
+    private EmailConfig emailConfig;
 
     /**
      * Construit un MarketPayEmail
@@ -43,11 +47,34 @@ public class MailBuilder {
      * Construction du corps du mail avec le template Thymeleaf
      * @return
      */
-    public String buildBody(String body, LANGUAGE language){
+    private String buildBody(String body, LANGUAGE language){
+        //On créé le context mail
         Context ctx = new Context();
         ctx.setLocale(language.getLocale());
+
+        //On ajoute la signature
+        ctx.setVariable("signature", getEmailSignature());
+
+        //On ajoute le body
         ctx.setVariable("content", body);
+
         return templateEngine.process("email", ctx);
     }
 
+    /**
+     * Method qui retourne la signature du mail avec les infos de la conf
+     * @return
+     */
+    private EmailSignature getEmailSignature() {
+        EmailSignature signature = new EmailSignature();
+
+        signature.setName(emailConfig.getName());
+        signature.setAddress(emailConfig.getAddress());
+        signature.setPostalCodeAndCity(emailConfig.getPostalCodeAndCity());
+        signature.setCountry(emailConfig.getCountry());
+        signature.setEmail(emailConfig.getEmail());
+        signature.setPhoneNumber(emailConfig.getPhoneNumber());
+
+        return signature;
+    }
 }

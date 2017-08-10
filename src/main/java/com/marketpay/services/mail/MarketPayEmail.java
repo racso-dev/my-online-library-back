@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Bean avec le contenu du mail
  * Created by etienne on 08/08/17.
  */
 public class MarketPayEmail {
