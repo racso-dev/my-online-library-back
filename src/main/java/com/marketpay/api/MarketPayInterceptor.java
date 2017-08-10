@@ -119,9 +119,11 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
 
             //On récupère la langue en cookie si elle est présente, sinon on prend l'anglais par défaut
             LANGUAGE language = LANGUAGE.EN;
-            for(Cookie cookie :request.getCookies()){
-                if(cookie.getName().equals(COOKIE_LANGUAGE)){
-                    language = LANGUAGE.getByCode(cookie.getValue());
+            if(request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if (cookie.getName().equals(COOKIE_LANGUAGE)) {
+                        language = LANGUAGE.getByCode(cookie.getValue());
+                    }
                 }
             }
 
@@ -136,10 +138,12 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
 
             //On récupère le token
             String token = null;
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals(COOKIE_NAME_TOKEN)) {
-                    token = cookie.getValue();
-                    break;
+            if(request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if (cookie.getName().equals(COOKIE_NAME_TOKEN)) {
+                        token = cookie.getValue();
+                        break;
+                    }
                 }
             }
             context.setToken(token);

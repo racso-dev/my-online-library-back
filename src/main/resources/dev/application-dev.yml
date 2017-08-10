@@ -1,2 +1,6 @@
 database:
   flyway: true
+
+email:
+  filter: steamulo.com
+  emailFrom: jf@steamulo.com

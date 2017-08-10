@@ -7,7 +7,11 @@ import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.entity.UserKeyPass;
 import com.marketpay.persistence.repository.UserKeyPassRepository;
 import com.marketpay.persistence.repository.UserRepository;
+import com.marketpay.references.LANGUAGE;
 import com.marketpay.services.auth.TokenAuthenticationService;
+import com.marketpay.services.mail.MailBuilder;
+import com.marketpay.services.mail.MailService;
+import com.marketpay.services.mail.MarketPayEmail;
 import com.marketpay.utils.PasswordUtils;
 import com.marketpay.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,6 +44,12 @@ public class KeyPassService {
 
     @Value("${keypass.expirationCreate}")
     private long EXPIRATION_CREATE_RESET_KEY_PASS_MIN;
+
+    @Autowired
+    private MailService mailService;
+
+    @Autowired
+    private MailBuilder mailBuilder;
 
     /**
      * Service de modification de mot de passe via KeyPass
@@ -122,6 +134,22 @@ public class KeyPassService {
         //On envoi le mail
         //TODO ETI
         System.err.println(keyPass);
+
+        List<String> toList = new ArrayList<>();
+        toList.add("egay@steamulo.com");
+        List<String> toHiddenList = new ArrayList<>();
+        toHiddenList.add("tchekroun@steamulo.com");
+
+        MarketPayEmail marketPayEmail = mailBuilder.build(
+            toList,
+            toHiddenList,
+            "tchekroun@steamulo.com",
+            "Test MP",
+            keyPass,
+            LANGUAGE.FR);
+
+        mailService.sendMail(marketPayEmail);
+
     }
 
 }
