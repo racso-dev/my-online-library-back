@@ -181,24 +181,28 @@ public class KeyPassService {
         body.setFirstName(user.getFirstName());
         body.setLastName(user.getLastName());
 
-        //On construit le mail
-        List<String> toList = new ArrayList<>();
-        toList.add(email);
-
-        MarketPayEmail marketPayEmail = mailBuilder.build(
-            toList,
-            null,
-            subject,
-            body,
-            language);
-
-        //On envoi le mail
         try {
+            //On construit le mail
+            List<String> toList = new ArrayList<>();
+            toList.add(email);
+
+            MarketPayEmail marketPayEmail = mailBuilder.build(
+                toList,
+                null,
+                subject,
+                body,
+                language);
+
+            //On envoi le mail
             mailService.sendMail(marketPayEmail);
-        } catch (MarketPayException e) {
+        } catch (Exception e) {
             //Si une erreur est survenue pendant l'envoi du mail on rollback
             userKeyPassRepository.delete(userKeyPass);
-            throw e;
+            if((e instanceof MarketPayException)){
+                throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur est survenue lors de l'envoi du mail", e);
+            } else {
+                throw e;
+            }
         }
 
     }

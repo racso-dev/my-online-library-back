@@ -15,14 +15,12 @@
             <p th:text="#{mail.create.welcome}">Bienvenue ...</p>
             <p>
                 <span th:text="#{mail.create.add}">Votre compte ...</span>
-                <span th:if="${content.getShopName() == null && content.getBuName() != null}" th:text="#{mail.create.associateBU(${content.getBuName()})}"></span>
+                <span th:if="${content.getShopName() == null and content.getBuName() != null}" th:text="#{mail.create.associateBU(${content.getBuName()})}"></span>
                 <span th:if="${content.getShopName() != null}" th:text="#{mail.create.associateShop(${content.getShopName()})}"></span>
             </p>
-            <p><span th:text="#{mail.create.id">Votre id ...</span><b th:text="${content.getLogin()}"></b></p>
+            <p><span th:text="#{mail.create.id}">Votre id ...</span> <b th:text="${content.getLogin()}"></b>.</p>
             <p th:text="#{mail.create.link}"></p>
             <p><a th:href="${content.getUrlFirstConnection()}" th:text="${content.getUrlFirstConnection()}">link</a></p>
-            <p th:text="#{mail.create.expiration(${content.getExpirationDate()})}"></p>
-            <p th:text="#{mail.create.reset}"></p>
             <br/>
             <p th:text="#{mail.cordialement}">Cordi,</p>
         </div>
@@ -42,7 +40,7 @@
             <div th:text="${signature.getPhoneNumber()}"></div>
         </div>
 
-        <!--/* Logo Tick&Live */-->
+        <!--/* Logo MarketPay */-->
         <img style="margin-left: 50px; margin-top: 5px;" src="logoMP-horizontal-small.png" th:src="'cid:marketPay'" />
 
     </body>

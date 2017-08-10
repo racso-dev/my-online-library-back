@@ -15,4 +15,4 @@ email:
 
 
 keypass:
-  urlReset: http://localhost:3000/login/keypass/
+  urlReset: http://localhost:3000/login/key/

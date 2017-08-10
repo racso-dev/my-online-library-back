@@ -15,8 +15,6 @@
             <p th:text="#{mail.reset.confirm}">Votre demande ...</p>
             <p th:text="#{mail.reset.link}">blabla</p>
             <p><a th:href="${content.getUrlReset()}" th:text="${content.getUrlReset()}">link</a></p>
-            <p th:text="#{mail.reset.expiration(${content.getExpirationDate()})}">expiration</p>
-            <p th:text="#{mail.reset.retry}">reset</p>
             <br/>
             <p th:text="#{mail.cordialement}">Cordi,</p>
         </div>
@@ -36,7 +34,7 @@
             <div th:text="${signature.getPhoneNumber()}"></div>
         </div>
 
-	    <!--/* Logo Tick&Live */-->
+	    <!--/* Logo MarketPay */-->
 	    <img style="margin-left: 50px; margin-top: 5px;" src="logoMP-horizontal-small.png" th:src="'cid:marketPay'" />
 
 	</body>
