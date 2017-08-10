@@ -7,3 +7,14 @@ spring:
     url: jdbc:mysql://localhost/marketpay
     username: root
     password: root
+
+
+  mail:
+      host: tchekroun
+      port: 25
+      username:
+      password:
+
+sftp:
+  pathIncomming: /Users/tchekroun/workspace/marketpay/incomming
+  pathArchive: /Users/tchekroun/workspace/marketpay/archive
