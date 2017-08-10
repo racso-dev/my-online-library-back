@@ -173,24 +173,24 @@ public class MailService {
     public File getMarketPayImage() {
         try {
 
-            File img2 = applicationContext.getResource(IMAGE_MARKET_PAY_PATH).getFile();
+            File img2 = applicationContext.getResource(IMAGE_MARKET_PAY_PATH) != null ? applicationContext.getResource(IMAGE_MARKET_PAY_PATH).getFile() : null;
             File img3 = applicationContext.getResource("templates/logoMP-horizontal-small.png") != null ? applicationContext.getResource("templates/logoMP-horizontal-small.png").getFile() : null;
             File img4 = new File(IMAGE_MARKET_PAY_PATH);
             File img5 = new File("templates/logoMP-horizontal-small.png");
 
             if (img2 != null) {
-                System.err.println("img2");
+                LOGGER.info("img2");
                 return img2;
             }
             if (img3 != null) {
-                System.err.println("img3");
+                LOGGER.info("img3");
                 return img3;
             }
             if (img4 != null) {
-                System.err.println("img4");
+                LOGGER.info("img4");
                 return img4;
             }
-            System.err.println("img5");
+            LOGGER.info("img5");
             return img5;
         } catch(Exception e) {
             LOGGER.error("Erreur lors de la récupération de l'image marketPay", e);
