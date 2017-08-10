@@ -173,15 +173,15 @@ public class MailService {
     public File getMarketPayImage() {
         try {
 
-            File img2 = applicationContext.getResource(IMAGE_MARKET_PAY_PATH) != null ? applicationContext.getResource(IMAGE_MARKET_PAY_PATH).getFile() : null;
+//            File img2 = applicationContext.getResource(IMAGE_MARKET_PAY_PATH) != null ? applicationContext.getResource(IMAGE_MARKET_PAY_PATH).getFile() : null;
             File img3 = applicationContext.getResource("templates/logoMP-horizontal-small.png") != null ? applicationContext.getResource("templates/logoMP-horizontal-small.png").getFile() : null;
             File img4 = new File(IMAGE_MARKET_PAY_PATH);
             File img5 = new File("templates/logoMP-horizontal-small.png");
 
-            if (img2 != null) {
-                LOGGER.info("img2");
-                return img2;
-            }
+//            if (img2 != null) {
+//                LOGGER.info("img2");
+//                return img2;
+//            }
             if (img3 != null) {
                 LOGGER.info("img3");
                 return img3;
