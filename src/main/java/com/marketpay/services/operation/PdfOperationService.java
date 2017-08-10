@@ -137,7 +137,7 @@ public class PdfOperationService {
             contentStream.endText();
 
             // Ajout de l'image dans le coin en haut à gauche du pdf
-            Image image = new Image(ImageIO.read(applicationContext.getResource("classpath:img/cornerLogoMP-transparent.png").getFile()));
+            Image image = new Image(ImageIO.read(applicationContext.getResource("classpath:img/cornerLogoMP-transparent.png").getInputStream()));
             image = image.scaleByWidth(140);
             image.draw(mainDocument, contentStream, 0, 600);
             contentStream.close();
