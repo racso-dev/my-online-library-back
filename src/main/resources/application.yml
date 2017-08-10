@@ -40,12 +40,14 @@ spring:
 
 email:
   filter: steamulo.com
-  emailFrom:
+  emailFrom: marketpay@steamulo.com
+  replyTo: marketpay@steamulo.com
+  #signature
   name: Market Pay
   address: rue du Gourio
   postalCodeAndCity: 75009
   country: France
-  email: tchekroun@steamulo.com
+  email: marketpay@steamulo.com
   phoneNumber: +33 1 73 04 13 45
 
 keypass:

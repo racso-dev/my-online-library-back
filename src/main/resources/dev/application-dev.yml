@@ -3,8 +3,8 @@ database:
 
 email:
   filter: steamulo.com
-  emailFrom: jf@steamulo.com
-  replyTo: tchekroun@steamulo.com
+  emailFrom: marketpay@steamulo.com
+  replyTo: marketpay@steamulo.com
   #signature
   name: Market Pay
   address: 69 rue du Gourio
