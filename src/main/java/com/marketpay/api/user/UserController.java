@@ -97,7 +97,7 @@ public class UserController extends MarketPayController {
     @Profile({USER_PROFILE.ADMIN_USER, USER_PROFILE.USER_MANAGER})
     @RequestMapping(value = "", method = RequestMethod.POST)
     public @ResponseBody IdResponse createUser(@RequestBody @Valid UserResource userResource) throws MarketPayException {
-        long newIdUser = userService.createUser(RequestContext.get().getUserProfile(), userResource);
+        long newIdUser = userService.createUser(RequestContext.get().getUserProfile(), userResource, RequestContext.get().getLanguage());
         LOGGER.info("Creation du nouveau user " + newIdUser);
         return new IdResponse(newIdUser);
     }

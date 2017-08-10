@@ -1,5 +1,7 @@
 package com.marketpay.utils;
 
+import com.marketpay.references.LANGUAGE;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,5 +38,15 @@ public class DateUtils {
      */
     public static Date toDateFromLocalDateTime(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    /**
+     * Convertie une localDateTime en String dans le format de la langue passée
+     * @param localDateTime
+     * @param language
+     * @return
+     */
+    public static String toStringLocalDateTime(LocalDateTime localDateTime, LANGUAGE language) {
+        return localDateTime.format(DateTimeFormatter.ofPattern(language.getFormatMail(), language.getLocale()));
     }
 }

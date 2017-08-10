@@ -11,7 +11,14 @@ import com.marketpay.references.LANGUAGE;
 import com.marketpay.services.auth.TokenAuthenticationService;
 import com.marketpay.services.mail.MailBuilder;
 import com.marketpay.services.mail.MailService;
-import com.marketpay.services.mail.MarketPayEmail;
+import com.marketpay.services.mail.resource.CreateEmailBody;
+import com.marketpay.services.mail.resource.EmailBody;
+import com.marketpay.services.mail.resource.MarketPayEmail;
+import com.marketpay.services.mail.resource.ResetEmailBody;
+import com.marketpay.services.user.UserService;
+import com.marketpay.services.user.resource.UserResource;
+import com.marketpay.utils.DateUtils;
+import com.marketpay.utils.I18nUtils;
 import com.marketpay.utils.PasswordUtils;
 import com.marketpay.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,11 +53,20 @@ public class KeyPassService {
     @Value("${keypass.expirationCreate}")
     private long EXPIRATION_CREATE_RESET_KEY_PASS_MIN;
 
+    @Value("${keypass.urlReset}")
+    private String URL_RESET_KEY_PASS;
+
     @Autowired
     private MailService mailService;
 
     @Autowired
     private MailBuilder mailBuilder;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private I18nUtils i18nUtils;
 
     /**
      * Service de modification de mot de passe via KeyPass
@@ -96,7 +113,7 @@ public class KeyPassService {
      * @param email
      * @throws MarketPayException
      */
-    public void sendKeyPass(String email, boolean createMode) throws MarketPayException {
+    public void sendKeyPass(String email, boolean createMode, LANGUAGE language) throws MarketPayException {
         //On récupère le user associé à l'email
         User user = userRepository.findUserByEmail(email).orElseThrow(() ->
             new MarketPayException(HttpStatus.BAD_GATEWAY, "Pas de user pour l'email " + email, "email")
@@ -128,24 +145,61 @@ public class KeyPassService {
         userKeyPass.setExpirationDateTime(expirationDateTime);
         userKeyPassRepository.save(userKeyPass);
 
-        //On envoi le mail
-        //TODO ETI
-        System.err.println(keyPass);
+        //On construit l'url du reset
+        String urlReset = URL_RESET_KEY_PASS + keyPass;
 
+        //On récupère l'objet du mail
+        String subject = null;
+
+        //On construit le body du mail
+        EmailBody body;
+        if(createMode){
+            //body
+            CreateEmailBody createBody = new CreateEmailBody();
+            createBody.setLogin(user.getLogin());
+            createBody.setUrlFirstConnection(urlReset);
+
+            //On récupère le userResource pour avoir la BU et le shop
+            UserResource userResource = userService.getUserResource(user);
+            createBody.setShopName(userResource.getNameShop());
+            createBody.setBuName(userResource.getNameBu());
+
+            body = createBody;
+
+            //subject
+            subject = i18nUtils.getMessage("mail.create.subject", null, language);
+        } else {
+            //body
+            ResetEmailBody resetBody = new ResetEmailBody();
+            resetBody.setUrlReset(urlReset);
+            body = resetBody;
+
+            //subject
+            subject = i18nUtils.getMessage("mail.reset.subject", null, language);
+        }
+
+        body.setFirstName(user.getFirstName());
+        body.setLastName(user.getLastName());
+
+        //On construit le mail
         List<String> toList = new ArrayList<>();
-        toList.add("egay@steamulo.com");
-        List<String> toHiddenList = new ArrayList<>();
-        toHiddenList.add("tchekroun@steamulo.com");
+        toList.add(email);
 
         MarketPayEmail marketPayEmail = mailBuilder.build(
             toList,
-            toHiddenList,
-            "tchekroun@steamulo.com",
-            "Test MP",
-            keyPass,
-            LANGUAGE.FR);
+            null,
+            subject,
+            body,
+            language);
 
-        mailService.sendMail(marketPayEmail);
+        //On envoi le mail
+        try {
+            mailService.sendMail(marketPayEmail);
+        } catch (MarketPayException e) {
+            //Si une erreur est survenue pendant l'envoi du mail on rollback
+            userKeyPassRepository.delete(userKeyPass);
+            throw e;
+        }
 
     }
 

@@ -1,4 +1,4 @@
-package com.marketpay.services.mail;
+package com.marketpay.services.mail.resource;
 
 /**
  * Bean contenant les infos pour la signature du mail

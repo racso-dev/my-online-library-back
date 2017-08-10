@@ -51,4 +51,5 @@ email:
 keypass:
   expirationReset: 60
   expirationCreate: 2880
+  urlReset: http://localhost:3000/login/keypass/
 

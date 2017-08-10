@@ -1,17 +1,16 @@
 package com.marketpay.services.mail;
 
 import com.marketpay.conf.EmailConfig;
+import com.marketpay.exception.MarketPayException;
+import com.marketpay.services.mail.resource.MarketPayEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -19,7 +18,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,7 +48,7 @@ public class MailService {
      * @param email
      * @return
      */
-    public boolean sendMail(MarketPayEmail email) {
+    public boolean sendMail(MarketPayEmail email) throws MarketPayException {
         try {
             //Construction du message avec des fichiers joints
             MimeMessage message = mailSender.createMimeMessage();
@@ -59,9 +57,9 @@ public class MailService {
             message.setFrom(new InternetAddress(emailConfig.getEmailFrom()));
 
             //on ajoute un mail de réponse s'il y en a
-            if(email.getReplyTo() != null && !email.getReplyTo().isEmpty()){
+            if(emailConfig.getReplyTo() != null && !emailConfig.getReplyTo().isEmpty()){
                 List<Address> replyToList = new ArrayList<>();
-                replyToList.add(new InternetAddress(email.getReplyTo()));
+                replyToList.add(new InternetAddress(emailConfig.getReplyTo()));
                 message.setReplyTo(replyToList.toArray(new Address[replyToList.size()]));
             }
 
@@ -69,11 +67,13 @@ public class MailService {
             List<InternetAddress> toAddresseList = new ArrayList<InternetAddress>();
 
             //liste des destinataires
-            for (String to : email.getToList()){
-                if(isEmailAuthorized(to)){
-                    toAddresseList.add(new InternetAddress(to));
-                } else{
-                    LOGGER.info("Envoi de l'email " + email.getSubject() + " - utilisateur filtré : " + to);
+            if(email.getToList() != null) {
+                for (String to : email.getToList()) {
+                    if (isEmailAuthorized(to)) {
+                        toAddresseList.add(new InternetAddress(to));
+                    } else {
+                        LOGGER.info("Envoi de l'email " + email.getSubject() + " - utilisateur filtré : " + to);
+                    }
                 }
             }
 
@@ -81,11 +81,13 @@ public class MailService {
             List<InternetAddress> toHiddenAddressList = new ArrayList<InternetAddress>();
 
             //liste des destinataires
-            for (String toHidden : email.getHiddenToList()){
-                if(isEmailAuthorized(toHidden)){
-                    toHiddenAddressList.add(new InternetAddress(toHidden));
-                } else{
-                    LOGGER.info("Envoi de l'email " + email.getSubject() + " - utilisateur filtré : " + toHidden);
+            if(email.getHiddenToList() != null) {
+                for (String toHidden : email.getHiddenToList()) {
+                    if (isEmailAuthorized(toHidden)) {
+                        toHiddenAddressList.add(new InternetAddress(toHidden));
+                    } else {
+                        LOGGER.info("Envoi de l'email " + email.getSubject() + " - utilisateur filtré : " + toHidden);
+                    }
                 }
             }
 
@@ -137,8 +139,7 @@ public class MailService {
 
             return true;
         } catch (Exception e) {
-            LOGGER.error("Une erreur est survenue pendant l'envoi du mail :", e);
-            return false;
+            throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur est survenue pendant l'envoi du mail", e);
         }
     }
 

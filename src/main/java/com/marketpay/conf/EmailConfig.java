@@ -26,6 +26,8 @@ public class EmailConfig {
 
     private String phoneNumber;
 
+    private String replyTo;
+
     public String getFilter() {
         return filter;
     }
@@ -88,5 +90,13 @@ public class EmailConfig {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
     }
 }

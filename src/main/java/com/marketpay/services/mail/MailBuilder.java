@@ -2,6 +2,9 @@ package com.marketpay.services.mail;
 
 import com.marketpay.conf.EmailConfig;
 import com.marketpay.references.LANGUAGE;
+import com.marketpay.services.mail.resource.EmailBody;
+import com.marketpay.services.mail.resource.EmailSignature;
+import com.marketpay.services.mail.resource.MarketPayEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
@@ -25,20 +28,18 @@ public class MailBuilder {
      * Construit un MarketPayEmail
      * @param toList
      * @param toHiddenList
-     * @param replyTo
      * @param subject
      * @param body
      * @param language
      * @return
      */
-    public MarketPayEmail build(List<String> toList, List<String> toHiddenList, String replyTo, String subject, String body, LANGUAGE language) {
+    public MarketPayEmail build(List<String> toList, List<String> toHiddenList, String subject, EmailBody body, LANGUAGE language) {
         //On construit le mail
         MarketPayEmail email = new MarketPayEmail();
         email.setSubject(subject);
         email.setBody(buildBody(body, language));
         email.setToList(toList);
         email.setHiddenToList(toHiddenList);
-        email.setReplyTo(replyTo);
 
         return email;
     }
@@ -47,7 +48,7 @@ public class MailBuilder {
      * Construction du corps du mail avec le template Thymeleaf
      * @return
      */
-    private String buildBody(String body, LANGUAGE language){
+    private String buildBody(EmailBody body, LANGUAGE language){
         //On créé le context mail
         Context ctx = new Context();
         ctx.setLocale(language.getLocale());
@@ -58,7 +59,7 @@ public class MailBuilder {
         //On ajoute le body
         ctx.setVariable("content", body);
 
-        return templateEngine.process("email", ctx);
+        return templateEngine.process(body.getMailType().getName(), ctx);
     }
 
     /**
