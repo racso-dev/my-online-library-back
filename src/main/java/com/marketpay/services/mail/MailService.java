@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -18,7 +20,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,20 +116,18 @@ public class MailService {
                 multipart.addBodyPart(messageBodyPart);
 
                 // Ajout image MarketPay
-                File imageFile = getMarketPayImage();
+                InputStream imageInputStream = getMarketPayImage();
 
-                if (imageFile != null && imageFile.exists()) {
+                if (imageInputStream != null) {
+                    DataSource imageSource = new ByteArrayDataSource(imageInputStream, "image/png");
                     MimeBodyPart imagePart = new MimeBodyPart();
                     imagePart.setHeader("Content-ID", "<marketPay>");
                     imagePart.setDisposition(MimeBodyPart.INLINE);
-
+                    imagePart.setDataHandler(new DataHandler(imageSource));
                     // Pièce jointe de type image
-                    imagePart.attachFile(imageFile);
                     multipart.addBodyPart(imagePart);
                 } else {
-                    if (imageFile != null) {
-                        LOGGER.info("L'image " + imageFile.getAbsolutePath() + " à insérer dans l'email n'existe pas sur le filesystem");
-                    }
+                    LOGGER.info("L'image à insérer dans l'email n'existe pas dans le jar");
                 }
 
                 // sets the multi-part as e-mail's content
@@ -170,9 +172,9 @@ public class MailService {
      * Récupération de l'image MarketPay
      * @return
      */
-    public File getMarketPayImage() {
+    public InputStream getMarketPayImage() {
         try {
-            return new File(applicationContext.getClassLoader().getResource(IMAGE_MARKET_PAY_PATH).getFile());
+            return applicationContext.getResource(IMAGE_MARKET_PAY_PATH).getInputStream();
         } catch(Exception e) {
             LOGGER.error("Erreur lors de la récupération de l'image marketPay", e);
             return null;
