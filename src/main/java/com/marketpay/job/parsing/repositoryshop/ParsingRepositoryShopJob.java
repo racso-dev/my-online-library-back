@@ -33,6 +33,8 @@ public class ParsingRepositoryShopJob extends ParsingJob {
     private int newShop;
     private int newBU;
 
+    private final String REPOSITORY_SHOP_CSV_EXTENSION = ".csv";
+
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
 
@@ -204,7 +206,12 @@ public class ParsingRepositoryShopJob extends ParsingJob {
 
     /**
      * Retourne la location à partir du filePath
-     * TODO ETI certainement à revoir quand on aura la nomenclature définitive des fichiers référentiel
+     * La nomenclature des référentiels est la suivante : : YYYYMMDDHHMMSS_MKP_AIL_IBOREVEMPX.csv
+     * Où
+     * YYYYMMDDHHMMSS : Timestamp
+     * X : code pays
+     *      X = 2 pour le référentiel Espagne
+     *      X = 3 pour le référentiel Belgique
      * @param filePath
      * @return
      * @throws ParsingException
@@ -214,10 +221,12 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             throw new ParsingException("filePath null", filePath, "referentiel");
         }
 
-        String fileName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
-        String codeLocation = fileName.split("_")[1];
+        String fileName = filePath.substring(filePath.lastIndexOf(File.separator) + 1).toLowerCase().split(REPOSITORY_SHOP_CSV_EXTENSION)[0];
 
-        LOCATION location = LOCATION.getByCode(codeLocation);
+        //On récupère le dernier charactère du filename ce qui correspond au X
+        String codeLocation = fileName.substring(fileName.length() - 1);
+
+        LOCATION location = LOCATION.getByCodeNomenclature(codeLocation);
 
         if(location == null){
             throw new ParsingException("Aucune location trouvé", filePath, "referentiel");
