@@ -2,6 +2,7 @@ package com.marketpay.api.keypass.request;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
@@ -13,7 +14,7 @@ public class ResetPasswordRequest {
     private String login;
 
     @NotBlank(message = "Password mandatory")
-    //TODO ETI regex password
+    @Pattern(regexp = "(?=.*[a-zA-Z])(?=.*[0-9]).*", message = "Invalid password")
     @Size(min = 8, max = 256, message = "Invalid password")
     private String password;
 

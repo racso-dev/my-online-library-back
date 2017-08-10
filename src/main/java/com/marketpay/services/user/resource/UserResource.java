@@ -39,8 +39,12 @@ public class UserResource {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long idBu;
 
+    private String nameBu;
+
     @JsonSerialize(using = ToStringSerializer.class)
     private Long idShop;
+
+    private String nameShop;
 
     public UserResource(User user) {
         this.id = user.getId();
@@ -104,12 +108,28 @@ public class UserResource {
         this.idBu = idBu;
     }
 
+    public String getNameBu() {
+        return nameBu;
+    }
+
+    public void setNameBu(String nameBu) {
+        this.nameBu = nameBu;
+    }
+
     public Long getIdShop() {
         return idShop;
     }
 
     public void setIdShop(Long idShop) {
         this.idShop = idShop;
+    }
+
+    public String getNameShop() {
+        return nameShop;
+    }
+
+    public void setNameShop(String nameShop) {
+        this.nameShop = nameShop;
     }
 
     public String getLogin() {
@@ -119,4 +139,5 @@ public class UserResource {
     public void setLogin(String login) {
         this.login = login;
     }
+
 }
