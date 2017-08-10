@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" style="font-family: Arial;">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title></title>
+    </head>
+
+    <body>
+
+        <!--/* Contenu de l'email */-->
+        <div>
+            <p th:text="#{mail.hello(${content.getFirstName()},${content.getLastName()})}">Yo Sylvain Gourio,</p>
+            <br/>
+            <p th:text="#{mail.create.welcome}">Bienvenue ...</p>
+            <p>
+                <span th:text="#{mail.create.add}">Votre compte ...</span>
+                <span th:if="${content.getShopName() == null and content.getBuName() != null}" th:text="#{mail.create.associateBU(${content.getBuName()})}"></span>
+                <span th:if="${content.getShopName() != null}" th:text="#{mail.create.associateShop(${content.getShopName()})}"></span>
+            </p>
+            <p><span th:text="#{mail.create.id}">Votre id ...</span> <b th:text="${content.getLogin()}"></b>.</p>
+            <p th:text="#{mail.create.link}"></p>
+            <p><a th:href="${content.getUrlFirstConnection()}" th:text="${content.getUrlFirstConnection()}">link</a></p>
+            <br/>
+            <p th:text="#{mail.cordialement}">Cordi,</p>
+        </div>
+
+        <br/>
+
+        <!--/* Signature de l'email */-->
+        <div style="float: left;">
+            --
+            <br/>
+            <div><b><span th:text="${signature.getName()}"></span></b></div>
+            <div th:text="${signature.getAddress()}"></div>
+            <div th:text="${signature.getPostalCodeAndCity()}"></div>
+            <div th:text="${signature.getCountry()}"></div>
+            <br/>
+            <div th:text="${signature.getEmail()}"></div>
+            <div th:text="${signature.getPhoneNumber()}"></div>
+        </div>
+
+        <!--/* Logo MarketPay */-->
+        <img style="margin-left: 50px; margin-top: 5px;" src="logoMP-horizontal-small.png" th:src="'cid:marketPay'" />
+
+    </body>
+</html>

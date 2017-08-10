@@ -1,9 +1,10 @@
-package com.marketpay.services.mail;
+package com.marketpay.services.mail.resource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Bean avec le contenu du mail
  * Created by etienne on 08/08/17.
  */
 public class MarketPayEmail {
@@ -15,8 +16,6 @@ public class MarketPayEmail {
     private List<String> toList = new ArrayList<String>();
 
     private List<String> hiddenToList = new ArrayList<String>();
-
-    private String replyTo;
 
     public String getSubject() {
         return subject;
@@ -50,11 +49,4 @@ public class MarketPayEmail {
         this.hiddenToList = hiddenToList;
     }
 
-    public String getReplyTo() {
-        return replyTo;
-    }
-
-    public void setReplyTo(String replyTo) {
-        this.replyTo = replyTo;
-    }
 }

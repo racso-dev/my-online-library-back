@@ -11,6 +11,7 @@ import com.marketpay.persistence.repository.BusinessUnitRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserKeyPassRepository;
 import com.marketpay.persistence.repository.UserRepository;
+import com.marketpay.references.LANGUAGE;
 import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.keypass.KeyPassService;
 import com.marketpay.services.user.resource.ShopUserListResource;
@@ -149,7 +150,7 @@ public class UserService {
      * @return
      * @throws MarketPayException
      */
-    public Long createUser(USER_PROFILE userProfileRequester, UserResource userResource) throws MarketPayException {
+    public Long createUser(USER_PROFILE userProfileRequester, UserResource userResource, LANGUAGE language) throws MarketPayException {
         //On créé le user
         User user = new User();
         user.setProfile(userResource.getProfile());
@@ -215,7 +216,13 @@ public class UserService {
         user = userRepository.save(user);
 
         //On envoi le mail de création du user
-        keyPassService.sendKeyPass(user.getEmail(), true);
+        try {
+            keyPassService.sendKeyPass(user.getEmail(), true, language);
+        } catch (MarketPayException e) {
+            //Si une erreur est survenue pendant l'envoi du mail on rollback
+            userRepository.delete(user);
+            throw e;
+        }
 
         return user.getId();
     }
@@ -252,7 +259,7 @@ public class UserService {
      * @return
      * @throws EntityNotFoundException
      */
-    private UserResource getUserResource(User user) throws EntityNotFoundException {
+    public UserResource getUserResource(User user) throws EntityNotFoundException {
         UserResource resource = new UserResource(user);
 
         // On récupère la BU de l'user si l'user est rattaché à la BU

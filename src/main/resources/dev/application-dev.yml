@@ -1,2 +1,18 @@
 database:
   flyway: true
+
+email:
+  filter: steamulo.com
+  emailFrom: marketpay@steamulo.com
+  replyTo: marketpay@steamulo.com
+  #signature
+  name: Market Pay
+  address: 69 rue du Gourio
+  postalCodeAndCity: 75009
+  country: France
+  email: tchekroun@steamulo.com
+  phoneNumber: +33 1 73 04 13 45
+
+
+keypass:
+  urlReset: http://localhost:3000/login/key/

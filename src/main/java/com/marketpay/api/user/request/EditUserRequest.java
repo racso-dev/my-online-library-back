@@ -14,11 +14,11 @@ public class EditUserRequest {
     private String email;
 
     @NotBlank(message = "lastName mandatory")
-    @Size(min = 3, max = 45, message = "invalid lastName")
+    @Size(min = 1, max = 45, message = "invalid lastName")
     private String lastName;
 
     @NotBlank(message = "firstName mandatory")
-    @Size(min = 3, max = 45, message = "invalid firstName")
+    @Size(min = 1, max = 45, message = "invalid firstName")
     private String firstName;
 
     @NotBlank(message = "login mandatory")

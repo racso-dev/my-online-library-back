@@ -7,17 +7,19 @@ import java.util.Locale;
  */
 public enum LANGUAGE {
 
-    FR("fr", Locale.FRENCH),
-    EN("en", Locale.ENGLISH),
-    NL("nl", new Locale("nl", "BE")),
-    ES("es", new Locale("es", "ES"));
+    FR("fr", Locale.FRENCH, "EE dd/MM/yyyy 'à' HH'h'mm"),
+    EN("en", Locale.ENGLISH, "EE MM/dd/yyyy HH:mm"),
+    NL("nl", new Locale("nl", "BE"), "EE dd/MM/yyyy 'om' HH'h'mm"),
+    ES("es", new Locale("es", "ES"), "EE dd/MM/yyyy 'a las' HH'h'mm");
 
     private String code;
     private Locale locale;
+    private String formatMail;
 
-    LANGUAGE(String code, Locale locale) {
+    LANGUAGE(String code, Locale locale, String formatMail) {
         this.code = code;
         this.locale = locale;
+        this.formatMail = formatMail;
     }
 
     public Locale getLocale() {
@@ -26,6 +28,10 @@ public enum LANGUAGE {
 
     public String getCode() {
         return code;
+    }
+
+    public String getFormatMail() {
+        return formatMail;
     }
 
     public static LANGUAGE getByCode(String code){
