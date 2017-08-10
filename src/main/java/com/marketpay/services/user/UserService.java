@@ -9,6 +9,7 @@ import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.BusinessUnitRepository;
 import com.marketpay.persistence.repository.ShopRepository;
+import com.marketpay.persistence.repository.UserKeyPassRepository;
 import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.references.USER_PROFILE;
 import com.marketpay.services.keypass.KeyPassService;
@@ -42,6 +43,9 @@ public class UserService {
 
     @Autowired
     private KeyPassService keyPassService;
+
+    @Autowired
+    private UserKeyPassRepository userKeyPassRepository;
 
     /**
      * Service de récupération d'un userInformation à partir d'un user
@@ -335,6 +339,11 @@ public class UserService {
 
         //On récupère le user
         User user = getUserEntity(idUserToDelete);
+
+        //On supprime le keyPass associé au user s'il existe
+        userKeyPassRepository.findByIdUser(user.getId()).ifPresent(userKeyPass -> {
+            userKeyPassRepository.delete(userKeyPass);
+        });
 
         //On supprime le user
         userRepository.delete(user);
