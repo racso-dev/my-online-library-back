@@ -25,8 +25,12 @@ import javax.validation.constraints.Max;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Component
 public class PdfOperationService {
@@ -247,8 +251,11 @@ public class PdfOperationService {
      */
     private String getFormattedNumber(Long number) {
         // On utilise pas de formatter car la lib ne gère pas le format du string retourné
-        String numberString = String.valueOf(number/100.0);
-        numberString = numberString.replaceAll("\\d{3}\\.", " $0");
+        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.UK);
+        otherSymbols.setDecimalSeparator(',');
+        otherSymbols.setGroupingSeparator(' ');
+        NumberFormat formatter =  new DecimalFormat("#,###,###,##0.00", otherSymbols);
+        String numberString = String.valueOf(formatter.format(number/100.0));
         return numberString;
     }
 
