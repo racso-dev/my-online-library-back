@@ -4,7 +4,7 @@ import com.marketpay.annotation.Profile;
 import com.marketpay.api.MarketPayController;
 import com.marketpay.api.RequestContext;
 import com.marketpay.api.response.IdResponse;
-import com.marketpay.api.user.request.EditMyUserRequest;
+import com.marketpay.api.user.request.EditMyPasswordRequest;
 import com.marketpay.api.user.request.EditUserRequest;
 import com.marketpay.api.user.response.ShopUserListResponse;
 import com.marketpay.api.user.response.UserResponse;
@@ -149,9 +149,20 @@ public class UserController extends MarketPayController {
      */
     @Profile({})
     @RequestMapping(value = "/my", method = RequestMethod.POST)
-    public @ResponseBody UserResponse editMyUser(@RequestBody @Valid EditMyUserRequest editMyUserRequest) throws MarketPayException {
+    public @ResponseBody UserResponse editMyUser(@RequestBody @Valid EditUserRequest editUserRequest) throws MarketPayException {
         LOGGER.info("Modification du user connecté " + RequestContext.get().getUser().getId());
-        return new UserResponse(userService.editMyUser(RequestContext.get().getUser().getId(), editMyUserRequest));
+        return new UserResponse(userService.editMyUser(RequestContext.get().getUser().getId(), editUserRequest));
+    }
+
+    /**
+     * WS d'edition du user connecté par lui même
+     * @return
+     */
+    @Profile({})
+    @RequestMapping(value = "/passwd", method = RequestMethod.POST)
+    public void editMyPassword(@RequestBody @Valid EditMyPasswordRequest editMyPasswordRequest) throws MarketPayException {
+        LOGGER.info("Modification du password du user connecté " + RequestContext.get().getUser().getId());
+        userService.editMyPassword(RequestContext.get().getUser().getId(), editMyPasswordRequest);
     }
 
 }

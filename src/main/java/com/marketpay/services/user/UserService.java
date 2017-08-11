@@ -1,6 +1,6 @@
 package com.marketpay.services.user;
 
-import com.marketpay.api.user.request.EditMyUserRequest;
+import com.marketpay.api.user.request.EditMyPasswordRequest;
 import com.marketpay.api.user.request.EditUserRequest;
 import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
@@ -205,7 +205,7 @@ public class UserService {
 
         //On set les autres champs: email, login, firstName, lastName
         //Et si tout est ok on sauvegarde le user
-        EditUserRequest request = new EditMyUserRequest();
+        EditUserRequest request = new EditUserRequest();
         request.setEmail(userResource.getEmail());
         request.setLogin(userResource.getLogin());
         request.setLastName(userResource.getLastName());
@@ -365,18 +365,28 @@ public class UserService {
      * @param request
      * @return
      */
-    public UserResource editMyUser(long idUser, EditMyUserRequest request) throws MarketPayException {
+    public UserResource editMyUser(long idUser, EditUserRequest request) throws MarketPayException {
         //On récupère le user
         User user = getUserEntity(idUser);
-
-        //On change le password s'il est renseigné
-        if(request.getPassword() != null){
-            user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getPassword()));
-        }
 
         //On met à jour le user
         user = editUserEntity(user, request, true);
 
         return getUserResource(user);
+    }
+
+    /**
+     * Service d'edition du password du user connecté
+     * @param idUser
+     * @param request
+     * @return
+     */
+    public void editMyPassword(long idUser, EditMyPasswordRequest request) throws MarketPayException {
+        //On récupère le user
+        User user = getUserEntity(idUser);
+
+        //On change le password
+        user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getPassword()));
+        userRepository.save(user);
     }
 }
