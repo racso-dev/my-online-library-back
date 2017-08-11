@@ -12,16 +12,27 @@ public class EditMyPasswordRequest {
     @NotNull(message = "Password mandatory")
     @Pattern(regexp = "(?=.*[a-zA-Z])(?=.*[0-9]).*", message = "Invalid password")
     @Size(min = 8, max = 256, message = "Invalid password")
-    private String password;
+    private String newPassword;
+
+    @NotNull(message = "Password mandatory")
+    private String oldPassword;
 
     public EditMyPasswordRequest() {
     }
 
-    public String getPassword() {
-        return password;
+    public String getNewPassword() {
+        return newPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
 }

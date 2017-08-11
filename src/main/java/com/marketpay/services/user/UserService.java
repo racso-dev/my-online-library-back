@@ -385,8 +385,13 @@ public class UserService {
         //On récupère le user
         User user = getUserEntity(idUser);
 
+        //On vérifie l'ancien password
+        if(!PasswordUtils.PASSWORD_ENCODER.matches(request.getOldPassword(), user.getPassword())){
+            throw new MarketPayException(HttpStatus.UNAUTHORIZED, "OldPassword incorrect");
+        }
+
         //On change le password
-        user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getPassword()));
+        user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getNewPassword()));
         userRepository.save(user);
     }
 }
