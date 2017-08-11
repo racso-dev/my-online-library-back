@@ -17,8 +17,10 @@ public class LocalDateListSerializer extends JsonSerializer<List<LocalDate>> {
     public void serialize(List<LocalDate> localDates, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
 
         jsonGenerator.writeStartArray();
-        for(LocalDate localDate: localDates) {
-            jsonGenerator.writeString(localDate.format(formatter));
+        if(localDates != null) {
+            for (LocalDate localDate : localDates) {
+                jsonGenerator.writeString(localDate.format(formatter));
+            }
         }
         jsonGenerator.writeEndArray();
 
