@@ -34,6 +34,10 @@ public class ScheduledParsingTask {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
+    /**
+     * Task qui regarde s'il y a des fichiers à parser, si c'est le cas les fichiers sont parsé
+     * @throws ScheduledTaskException
+     */
     @Scheduled(fixedRateString = "${scheduledTask.fixedRate}")
     private void schedulerParsing() throws ScheduledTaskException {
         LOGGER.info("*************** START Scheduled Parsing Task ***************");
@@ -80,7 +84,9 @@ public class ScheduledParsingTask {
             }
         }
 
-        LOGGER.info("*************** SUCCESS : " + nbSuccess + " , ERROR : " + nbError + " ***************");
+        if(fileToParseList.size() > 0) {
+            LOGGER.info("*************** SUCCESS : " + nbSuccess + " , ERROR : " + nbError + " ***************");
+        }
         LOGGER.info("*************** END Scheduled Parsing Task ***************");
     }
 
