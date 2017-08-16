@@ -2,6 +2,7 @@ package com.marketpay.services.user;
 
 import com.marketpay.api.user.request.EditMyPasswordRequest;
 import com.marketpay.api.user.request.EditUserRequest;
+import com.marketpay.api.user.response.EditMyResponse;
 import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.BusinessUnit;
@@ -13,6 +14,7 @@ import com.marketpay.persistence.repository.UserKeyPassRepository;
 import com.marketpay.persistence.repository.UserRepository;
 import com.marketpay.references.LANGUAGE;
 import com.marketpay.references.USER_PROFILE;
+import com.marketpay.services.auth.TokenAuthenticationService;
 import com.marketpay.services.keypass.KeyPassService;
 import com.marketpay.services.user.resource.ShopUserListResource;
 import com.marketpay.services.user.resource.ShopUserResource;
@@ -47,6 +49,9 @@ public class UserService {
 
     @Autowired
     private UserKeyPassRepository userKeyPassRepository;
+
+    @Autowired
+    private TokenAuthenticationService tokenAuthenticationService;
 
     /**
      * Service de récupération d'un userInformation à partir d'un user
@@ -210,7 +215,7 @@ public class UserService {
         request.setLogin(userResource.getLogin());
         request.setLastName(userResource.getLastName());
         request.setFirstName(userResource.getFirstName());
-        user = editUserEntity(user, request, false);
+        user = editUserEntity(user, request);
 
         //Tout est OK on sauvegarde le user
         user = userRepository.save(user);
@@ -238,7 +243,7 @@ public class UserService {
         User user = getUserEntity(idUser);
 
         //On met à jour le user
-        user = editUserEntity(user, request, false);
+        user = editUserEntity(user, request);
 
         return getUserResource(user);
     }
@@ -303,23 +308,20 @@ public class UserService {
      * Method qui met à jour un userEntity à partir d'une request
      * @param user
      * @param request
-     * @param isFromAccount : Quand on modifie son compte on ne peut pas modifier le login
      * @return
      * @throws MarketPayException
      */
-    private User editUserEntity(User user, EditUserRequest request, Boolean isFromAccount) throws MarketPayException {
+    private User editUserEntity(User user, EditUserRequest request) throws MarketPayException {
         //On met à jour le user
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
 
-        if(!isFromAccount) {
-            //On vérifie que le login n'existe pas déjà
-            Optional<User> uLogin = userRepository.findByLogin(request.getLogin());
-            if(uLogin.isPresent() && (user.getId() == null || !user.getId().equals(uLogin.get().getId()))){
-                throw new MarketPayException(HttpStatus.IM_USED, "Login déjà utilisé", "login");
-            }
-            user.setLogin(request.getLogin());
+        //On vérifie que le login n'existe pas déjà
+        Optional<User> uLogin = userRepository.findByLogin(request.getLogin());
+        if(uLogin.isPresent() && (user.getId() == null || !user.getId().equals(uLogin.get().getId()))){
+            throw new MarketPayException(HttpStatus.IM_USED, "Login déjà utilisé", "login");
         }
+        user.setLogin(request.getLogin());
 
         //On vérifie l'email
         if(!MailUtils.checkValidEmail(request.getEmail())){
@@ -365,14 +367,25 @@ public class UserService {
      * @param request
      * @return
      */
-    public UserResource editMyUser(long idUser, EditUserRequest request) throws MarketPayException {
+    public EditMyResponse editMyUser(long idUser, EditUserRequest request) throws MarketPayException {
+        EditMyResponse response = new EditMyResponse();
+
         //On récupère le user
         User user = getUserEntity(idUser);
 
-        //On met à jour le user
-        user = editUserEntity(user, request, true);
+        String previousLogin = user.getLogin();
 
-        return getUserResource(user);
+        //On met à jour le user
+        user = editUserEntity(user, request);
+
+        //Si on a modifié le login il faut regéner un nouveau token
+        if(!previousLogin.equals(user.getLogin())) {
+            //On créé le nouveau
+            response.setToken(tokenAuthenticationService.connectUser(user.getLogin()));
+        }
+
+        response.setUser(getUserResource(user));
+        return response;
     }
 
     /**

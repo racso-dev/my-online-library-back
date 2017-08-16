@@ -6,6 +6,7 @@ import com.marketpay.api.RequestContext;
 import com.marketpay.api.response.IdResponse;
 import com.marketpay.api.user.request.EditMyPasswordRequest;
 import com.marketpay.api.user.request.EditUserRequest;
+import com.marketpay.api.user.response.EditMyResponse;
 import com.marketpay.api.user.response.ShopUserListResponse;
 import com.marketpay.api.user.response.UserResponse;
 import com.marketpay.exception.MarketPayException;
@@ -149,9 +150,9 @@ public class UserController extends MarketPayController {
      */
     @Profile({})
     @RequestMapping(value = "/my", method = RequestMethod.POST)
-    public @ResponseBody UserResponse editMyUser(@RequestBody @Valid EditUserRequest editUserRequest) throws MarketPayException {
+    public @ResponseBody EditMyResponse editMyUser(@RequestBody @Valid EditUserRequest editUserRequest) throws MarketPayException {
         LOGGER.info("Modification du user connecté " + RequestContext.get().getUser().getId());
-        return new UserResponse(userService.editMyUser(RequestContext.get().getUser().getId(), editUserRequest));
+        return userService.editMyUser(RequestContext.get().getUser().getId(), editUserRequest);
     }
 
     /**
