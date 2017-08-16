@@ -29,7 +29,7 @@ flyway:
 
 #Intervale de temps entre l'execution de la scheduled task
 scheduledTask:
-  fixedRate: 120000
+  fixedRate: 60000
 
 spring:
   mail:
@@ -51,7 +51,7 @@ email:
   phoneNumber: +33 1 73 04 13 45
 
 keypass:
-  expirationReset: 60
+  expirationReset: 15
   expirationCreate: 2880
   urlReset: http://localhost:3000/login/key/
 

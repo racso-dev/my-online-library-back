@@ -3,6 +3,8 @@ package com.marketpay.persistence.repository;
 import com.marketpay.persistence.OptionalCRUDRepository;
 import com.marketpay.persistence.entity.UserToken;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,5 +13,6 @@ import java.util.Optional;
 public interface UserTokenRepository extends OptionalCRUDRepository<UserToken, Long> {
 
     Optional<UserToken> findByToken(String token);
+    List<UserToken> findByExpirationDateTimeLessThan(LocalDateTime expirationDateTime);
 
 }

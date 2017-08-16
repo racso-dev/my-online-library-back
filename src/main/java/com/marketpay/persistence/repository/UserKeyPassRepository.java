@@ -3,6 +3,8 @@ package com.marketpay.persistence.repository;
 import com.marketpay.persistence.OptionalCRUDRepository;
 import com.marketpay.persistence.entity.UserKeyPass;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,5 +14,6 @@ public interface UserKeyPassRepository extends OptionalCRUDRepository<UserKeyPas
 
     Optional<UserKeyPass> findByIdUser(long idUser);
     Optional<UserKeyPass> findByKeyPass(String keyPass);
+    List<UserKeyPass> findByExpirationDateTimeLessThan(LocalDateTime expirationDateTime);
 
 }
