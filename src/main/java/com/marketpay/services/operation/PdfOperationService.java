@@ -187,9 +187,8 @@ public class PdfOperationService {
         }
         row.createCell(8, "Total").setBorderStyle(new LineStyle(Color.black, 1));
         row.createCell(8, getFormattedNumber(totalGrossAmount));
-        row.createCell(8, getFormattedNumber(totalGrossAmount - totalNetAmount));
+        row.createCell(8, getFormattedNumber(totalNetAmount - totalGrossAmount));
         row.createCell(8, getFormattedNumber(totalNetAmount));
-
     }
 
 
@@ -225,7 +224,7 @@ public class PdfOperationService {
             row.createCell(8, i18nUtils.getMessage(sensProperties, null, language));
 
             row.createCell(8, getFormattedNumber(operation.getGrossAmount()));
-            row.createCell(8, getFormattedNumber((operation.getGrossAmount() - operation.getNetAmount())));
+            row.createCell(8, getFormattedNumber((operation.getNetAmount() - operation.getGrossAmount())));
             row.createCell(8, getFormattedNumber(operation.getNetAmount()));
 
             // Permet de colorier une ligne sur 2
@@ -257,10 +256,11 @@ public class PdfOperationService {
         NumberFormat formatter =  new DecimalFormat("#,###,###,##0.00", otherSymbols);
         String numberString = String.valueOf(formatter.format(number/100.0));
 
-        if (number > 0) {
-            numberString = "+" + numberString;
-        } else if (number < 0) {
-            numberString = "-" + numberString;
+        //On formatte correctement le signe
+        if(number < 0){
+            numberString = numberString.replace("-", "- ");
+        } else {
+            numberString = "+ ".concat(numberString);
         }
 
         return numberString;
