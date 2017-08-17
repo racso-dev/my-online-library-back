@@ -7,3 +7,7 @@ spring:
     url: jdbc:mysql://localhost/marketpay
     username: kevin
     password: steamulo
+
+sftp:
+  pathIncomming: /home/kdidelot/Workspace/carrefour-banque/incomming
+  pathArchive: /home/kdidelot/Workspace/carrefour-banque/archive

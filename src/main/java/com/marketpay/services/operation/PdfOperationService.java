@@ -256,6 +256,13 @@ public class PdfOperationService {
         otherSymbols.setGroupingSeparator(' ');
         NumberFormat formatter =  new DecimalFormat("#,###,###,##0.00", otherSymbols);
         String numberString = String.valueOf(formatter.format(number/100.0));
+
+        if (number > 0) {
+            numberString = "+" + numberString;
+        } else if (number < 0) {
+            numberString = "-" + numberString;
+        }
+
         return numberString;
     }
 
