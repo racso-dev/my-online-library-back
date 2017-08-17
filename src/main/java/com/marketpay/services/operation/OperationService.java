@@ -1,6 +1,7 @@
 package com.marketpay.services.operation;
 
 import com.marketpay.api.operation.response.OperationListResponse;
+import com.marketpay.exception.MarketPayException;
 import com.marketpay.persistence.entity.Block;
 import com.marketpay.persistence.entity.BusinessUnit;
 import com.marketpay.persistence.entity.Operation;
@@ -13,6 +14,7 @@ import com.marketpay.references.LANGUAGE;
 import com.marketpay.utils.I18nUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -118,7 +120,12 @@ public class OperationService {
      * @param language : utilisé pour la traduction i18n
      * @return
      */
-    public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList, LANGUAGE language) {
+    public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList, LANGUAGE language) throws MarketPayException {
+        //check shopIdList
+        if(shopIdList.isEmpty()){
+            throw new MarketPayException(HttpStatus.BAD_REQUEST, "IdShopList vide");
+        }
+
         List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
         pdfOperationService.setOperationList(operationList);
         String shopName = i18nUtils.getMessage("pdfOperationService.allShop", null, language);
