@@ -76,9 +76,8 @@ public class OperationService {
         }
 
         for(Operation operation: operationList) {
-            LocalDate financementDate = operation.getCreateDate();
-            if(!financementDateList.contains(financementDate)) {
-                financementDateList.add(financementDate);
+            if(operation.getCreateDate() != null && !financementDateList.contains(operation.getCreateDate())) {
+                financementDateList.add(operation.getCreateDate());
             }
             if(createDate != null && createDate.compareTo(operation.getCreateDate()) == 0) {
                 returnOperationList.add(operation);

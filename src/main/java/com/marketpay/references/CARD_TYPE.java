@@ -2,17 +2,17 @@ package com.marketpay.references;
 
 public enum CARD_TYPE {
     MAE("MAE", "pdfOperationService.mae"),
-    MC( "MC ", "pdfOperationService.mc"),
+    MC( "MC", "pdfOperationService.mc"),
     VIS("VIS", "pdfOperationService.vis"),
     BCM("BCM", "pdfOperationService.bcm");
 
 
     private String code;
-    private String value;
+    private String i18n;
 
-    CARD_TYPE(String code, String value) {
+    CARD_TYPE(String code, String i18n) {
         this.code = code;
-        this.value = value;
+        this.i18n = i18n;
     }
 
     public static CARD_TYPE getByCode(String code) {
@@ -24,8 +24,8 @@ public enum CARD_TYPE {
         return null;
     }
 
-    public String getValue() {
-        return value;
+    public String getI18n() {
+        return i18n;
     }
 
     public String getCode() {

@@ -19,7 +19,9 @@ public class LocalDateListSerializer extends JsonSerializer<List<LocalDate>> {
         jsonGenerator.writeStartArray();
         if(localDates != null) {
             for (LocalDate localDate : localDates) {
-                jsonGenerator.writeString(localDate.format(formatter));
+                if(localDate != null){
+                    jsonGenerator.writeString(localDate.format(formatter));
+                }
             }
         }
         jsonGenerator.writeEndArray();

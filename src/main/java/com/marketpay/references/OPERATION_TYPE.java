@@ -6,11 +6,11 @@ public enum OPERATION_TYPE {
     BOLETA(127, "pdfOperationService.cargo");
 
     private int code;
-    private String value;
+    private String i18n;
 
-    OPERATION_TYPE(int code, String value) {
+    OPERATION_TYPE(int code, String i18n) {
         this.code = code;
-        this.value = value;
+        this.i18n = i18n;
     }
 
     public static OPERATION_TYPE getByCode(int code) {
@@ -22,8 +22,8 @@ public enum OPERATION_TYPE {
         return null;
     }
 
-    public String getValue() {
-        return value;
+    public String getI18n() {
+        return i18n;
     }
 
     public int getCode() {
