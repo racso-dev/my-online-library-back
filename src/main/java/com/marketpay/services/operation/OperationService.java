@@ -127,7 +127,6 @@ public class OperationService {
         }
 
         List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
-        pdfOperationService.setOperationList(operationList);
         String shopName = i18nUtils.getMessage("pdfOperationService.allShop", null, language);
         String buName = "";
 
@@ -145,7 +144,7 @@ public class OperationService {
             }
         }
 
-        return pdfOperationService.getPdfDocument(language, buName, shopName);
+        return pdfOperationService.getPdfDocument(language, buName, shopName, operationList);
     }
 
     /**

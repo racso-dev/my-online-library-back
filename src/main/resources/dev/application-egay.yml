@@ -18,3 +18,5 @@ sftp:
   pathIncomming: /home/etienne/workspaceMarketPay/incomming
   pathArchive: /home/etienne/workspaceMarketPay/archive
 
+jwt:
+  expiration: 86400000
