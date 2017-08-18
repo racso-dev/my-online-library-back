@@ -5,11 +5,11 @@ public enum OPERATION_SENS {
     DEBIT(1, "pdfOperationService.debit");
 
     private int code;
-    private String value;
+    private String i18n;
 
-    OPERATION_SENS(int code, String value) {
+    OPERATION_SENS(int code, String i18n) {
         this.code = code;
-        this.value = value;
+        this.i18n = i18n;
     }
 
     public static OPERATION_SENS getByCode(int code) {
@@ -21,8 +21,8 @@ public enum OPERATION_SENS {
         return null;
     }
 
-    public String getValue() {
-        return value;
+    public String getI18n() {
+        return i18n;
     }
 
     public int getCode() {

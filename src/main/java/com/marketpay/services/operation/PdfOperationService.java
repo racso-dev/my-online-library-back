@@ -207,21 +207,21 @@ public class PdfOperationService {
             String rowValue;
             // Si c'est un coda on prend le type de carte sinon le type d'opération
             if(isCoda) {
-                String cardTypeValue = CARD_TYPE.getByCode(operation.getCardType()).getValue();
+                String cardTypeValue = CARD_TYPE.getByCode(operation.getCardType()).getI18n();
                 rowValue = i18nUtils.getMessage(cardTypeValue, null, language);
             } else {
-                String operationTypeValue = OPERATION_TYPE.getByCode(operation.getOperationType()).getValue();
+                String operationTypeValue = OPERATION_TYPE.getByCode(operation.getOperationType()).getI18n();
                 rowValue = i18nUtils.getMessage(operationTypeValue, null, language);
             }
 
             row.createCell(8, rowValue);
 
-            String sensProperties = OPERATION_SENS.getByCode(operation.getSens()).getValue();
-            row.createCell(8, i18nUtils.getMessage(sensProperties, null, language));
+            OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
+            row.createCell(8, i18nUtils.getMessage(operationSens.getI18n(), null, language));
 
-            row.createCell(8, getFormattedNumber(operation.getGrossAmount()));
-            row.createCell(8, getFormattedNumber((operation.getNetAmount() - operation.getGrossAmount())));
-            row.createCell(8, getFormattedNumber(operation.getNetAmount()));
+            row.createCell(8, getFormattedNumber(operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getGrossAmount() : operation.getGrossAmount()));
+            row.createCell(8, getFormattedNumber(((operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getNetAmount() : operation.getNetAmount()) - (operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getGrossAmount() : operation.getGrossAmount()))));
+            row.createCell(8, getFormattedNumber(operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getNetAmount() : operation.getNetAmount()));
 
             // Permet de colorier une ligne sur 2
             if( shouldColor ) {
@@ -233,8 +233,8 @@ public class PdfOperationService {
             }
 
             shouldColor = !shouldColor;
-            totalGrossAmount += operation.getGrossAmount();
-            totalNetAmount += operation.getNetAmount();
+            totalGrossAmount += (operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getGrossAmount() : operation.getGrossAmount());
+            totalNetAmount += (operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getNetAmount() : operation.getNetAmount());
         }
     }
 

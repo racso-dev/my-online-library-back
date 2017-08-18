@@ -10,6 +10,7 @@ import com.marketpay.persistence.repository.BlockRepository;
 import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
+import com.marketpay.references.CARD_TYPE;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.utils.DateUtils;
 import org.apache.tomcat.jni.Local;
@@ -181,7 +182,7 @@ public class ParsingCODAJob extends ParsingJob {
         operation.setSens(getSens(detailLine1));
         operation.setNetAmount(getNetAmount(detailLine1));
         operation.setContractNumber(getContractNumber(detailLine1));
-        operation.setCardType(getCardType(detailLine1));
+        operation.setCardType(getCardType(detailLine1).getCode());
         operation.setGrossAmount(getGrossAmount(detailLine2));
         String dateString = getTransactionDate(detailLine1);
         operation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, dateString));
@@ -253,8 +254,8 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return le type de carte
      */
-    public String getCardType(String line) {
-        return line.substring(74, 77);
+    public CARD_TYPE getCardType(String line) {
+        return CARD_TYPE.getByCode(line.substring(74, 77).trim());
     }
 
     /**

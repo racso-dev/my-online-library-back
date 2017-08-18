@@ -2,6 +2,7 @@ package com.marketpay.job.parsing.coda;
 
 import com.marketpay.MarketPayUnitTests;
 import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.references.CARD_TYPE;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
@@ -33,8 +34,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingCardTypeTest() {
-        String cardType = parsingCODAJob.getCardType(TRANSACTION_LINE_MOCK);
-        assertEquals("MAE", cardType);
+        assertEquals(CARD_TYPE.MAE, parsingCODAJob.getCardType(TRANSACTION_LINE_MOCK));
     }
 
     @Test
