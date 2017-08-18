@@ -57,4 +57,15 @@ public class BusinessUnit {
     public void setCif(String cif) {
         this.cif = cif;
     }
+
+    @Override
+    public String toString() {
+        return "BusinessUnit{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", location='" + location + '\'' +
+            ", codeBu='" + codeBu + '\'' +
+            ", cif='" + cif + '\'' +
+            '}';
+    }
 }

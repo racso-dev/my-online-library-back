@@ -2,6 +2,7 @@ package com.marketpay.job.parsing.repositoryshop;
 
 import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.ParsingException;
+import com.marketpay.exception.ParsingRepositoryFileException;
 import com.marketpay.job.parsing.ParsingJob;
 import com.marketpay.job.parsing.repositoryshop.resource.ShopCsvResource;
 import com.marketpay.persistence.entity.*;
@@ -32,6 +33,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingRepositoryShopJob.class);
     private int newShop;
     private int newBU;
+    private int nbLineError;
 
     private final String REPOSITORY_SHOP_CSV_EXTENSION = ".csv";
 
@@ -69,6 +71,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             ShopCsvResource shopCsv;
             newShop = 0;
             newBU = 0;
+            nbLineError = 0;
             //On utilise un repère de ligne pour savoir quelle ligne du fichier est concernée dans les cas d'erreur
             //On commence à 2 car on saute le header
             int line = 2;
@@ -83,6 +86,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             }
 
             LOGGER.info("Ajout de " + newBU + " BU et de " + newShop + " shop");
+            LOGGER.info("Nb ligne(s) en erreur : " + nbLineError);
         } catch (Exception e) {
             LOGGER.error("Une erreur s'est produit pendant le parsing du referentiel", e);
             errorBlock(e, null, jobHistory);
@@ -108,10 +112,29 @@ public class ParsingRepositoryShopJob extends ParsingJob {
 
         //S'il existe on le met à jour ainsi que sa BU
         if(shopOpt.isPresent()){
+            //Mise à jour BU
+            BusinessUnit businessUnit = businessUnitRepository.findOne(shopOpt.get().getIdBu()).orElseThrow(() ->
+                    new EntityNotFoundException(shopOpt.get().getIdBu(), "business_unit")
+            );
+
+            if(businessUnit.getCodeBu().equals(shopCsv.getCode_BU()) && (businessUnit.getCif() == null || shopCsv.getCIF() == null || businessUnit.getCif().equals(shopCsv.getCIF())) ) {
+                //On met à jour la BU uniquement si on est sûr que c'est bien la même
+                businessUnit.setName(shopCsv.getNom_BU());
+                businessUnitRepository.save(businessUnit);
+            } else {
+                //Sinon on lève une erreur pour ce shopCSV car il y a une erreur dans le fichier
+                nbLineError++;
+                throw new ParsingRepositoryFileException("Erreur de cohérence avec la BU", filePath, "referentiel", shopCsv, businessUnit, shopOpt.get());
+            }
+
+            //On vérifie qu'il s'agit bien du même GLN ou ATICA sinon ça veut dire qu'il y a une erreur dans le fichier
+            if((shopOpt.get().getGln() != null && !shopOpt.get().getGln().equals(shopCsv.getGLN())) || (shopOpt.get().getAtica() != null && !shopOpt.get().getAtica().equals(shopCsv.getATICA()))){
+                nbLineError++;
+                throw new ParsingRepositoryFileException("Erreur de cohérence avec le shop", filePath, "referentiel", shopCsv, businessUnit, shopOpt.get());
+            }
+
             //Mise à jour shop
             shopOpt.get().setName(shopCsv.getNom_AL());
-            shopOpt.get().setAtica(shopCsv.getATICA());
-            shopOpt.get().setGln(shopCsv.getGLN());
             shopRepository.save(shopOpt.get());
 
             //On met à jour les shopContractNumber associé
@@ -125,23 +148,27 @@ public class ParsingRepositoryShopJob extends ParsingJob {
                 //On met à jour les opérations appartenant à ce contractNumber
                 updateOperationShop(shopOpt.get(), shopCsv.getNum_Contrat());
             }
-
-            //Mise à jour BU
-            BusinessUnit businessUnit = businessUnitRepository.findOne(shopOpt.get().getIdBu()).orElseThrow(() ->
-                new EntityNotFoundException(shopOpt.get().getIdBu(), "business_unit")
-            );
-
-            businessUnit.setName(shopCsv.getNom_BU());
-            businessUnitRepository.save(businessUnit);
         }
         //Sinon on le créé
         else {
+            //On vérifie que le contractNumber n'existe pas déjà
+            if(shopContractNumberRepository.findByContractNumber(shopCsv.getNum_Contrat()).isPresent()){
+                nbLineError++;
+                throw new ParsingException("Le contract number " + shopCsv.getNum_Contrat() + " existe déjà pour un autre shop que " + shopCsv.getCode_AL(), filePath, "referentiel");
+            }
+
             //On récupère la BU si elle existe
             BusinessUnit businessUnit;
             Optional<BusinessUnit> businessUnitOpt = businessUnitRepository.findByCodeBu(shopCsv.getCode_BU());
 
             //Si elle existe on la met à jour
             if(businessUnitOpt.isPresent()){
+                //On vérifie le code CIF est bien le même sinon ça veut dire qu'il y a une erreur dans le fichier
+                if(businessUnitOpt.get().getCif() != null && shopCsv.getCIF() != null && !businessUnitOpt.get().getCif().equals(shopCsv.getCIF())){
+                    nbLineError++;
+                    throw new ParsingRepositoryFileException("Erreur de cohérence avec la BU", filePath, "referentiel", shopCsv, businessUnitOpt.get(), null);
+                }
+
                 businessUnitOpt.get().setName(shopCsv.getNom_BU());
                 businessUnit = businessUnitRepository.save(businessUnitOpt.get());
             }
@@ -154,11 +181,6 @@ public class ParsingRepositoryShopJob extends ParsingJob {
                 businessUnit.setLocation(location.getCode());
                 businessUnit = businessUnitRepository.save(businessUnit);
                 newBU++;
-            }
-
-            //On vérifie que le contractNumber n'existe pas déjà
-            if(shopContractNumberRepository.findByContractNumber(shopCsv.getNum_Contrat()).isPresent()){
-                throw new ParsingException("Le contract number " + shopCsv.getNum_Contrat() + " existe déjà pour un autre shop que " + shopCsv.getCode_AL(), filePath, "referentiel");
             }
 
             //On créé le shop et son shopContractNumber

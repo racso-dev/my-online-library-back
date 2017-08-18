@@ -80,4 +80,18 @@ public class ShopCsvResource {
     public void setATICA(String ATICA) {
         this.ATICA = ATICA;
     }
+
+    @Override
+    public String toString() {
+        return "ShopCsvResource{" +
+            "Num_Contrat='" + Num_Contrat + '\'' +
+            ", Code_AL='" + Code_AL + '\'' +
+            ", GLN='" + GLN + '\'' +
+            ", ATICA='" + ATICA + '\'' +
+            ", Nom_AL='" + Nom_AL + '\'' +
+            ", Code_BU='" + Code_BU + '\'' +
+            ", CIF='" + CIF + '\'' +
+            ", Nom_BU='" + Nom_BU + '\'' +
+            '}';
+    }
 }

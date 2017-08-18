@@ -61,4 +61,15 @@ public class Shop {
         this.atica = atica;
     }
 
+    @Override
+    public String toString() {
+        return "Shop{" +
+            "id=" + id +
+            ", idBu=" + idBu +
+            ", name='" + name + '\'' +
+            ", codeAl='" + codeAl + '\'' +
+            ", gln='" + gln + '\'' +
+            ", atica='" + atica + '\'' +
+            '}';
+    }
 }
