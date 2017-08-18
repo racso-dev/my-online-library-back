@@ -21,9 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
-import javax.validation.constraints.Max;
-import java.awt.Color;
-import java.io.File;
+import java.awt.*;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -46,7 +44,6 @@ public class PdfOperationService {
 
     private long totalGrossAmount = 0;
     private long totalNetAmount = 0;
-    private List<Operation> operationList;
     private PDDocument mainDocument;
 
     @Autowired
@@ -58,16 +55,15 @@ public class PdfOperationService {
     public PdfOperationService() {
     }
 
-    public void setOperationList(List<Operation> operationList) {
-        this.operationList = operationList;
-    }
-
     /**
      * Crée le pdf et retourne le fichier
      * @param language: Utiliser pour la traduction i18n
      * @return : un document
      */
-    public PDDocument getPdfDocument(LANGUAGE language, String buName, String shopName) {
+    public PDDocument getPdfDocument(LANGUAGE language, String buName, String shopName, List<Operation> operationList) {
+        totalGrossAmount = 0;
+        totalNetAmount = 0;
+
         this.mainDocument = new PDDocument();
         // Si la liste est vide on renvoit directement le document
         if(operationList == null || operationList.isEmpty()) {
