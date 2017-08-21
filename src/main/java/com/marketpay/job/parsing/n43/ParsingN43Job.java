@@ -67,6 +67,8 @@ public class ParsingN43Job extends ParsingJob {
                     fundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
                 } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT, 0) != null) {
                     Operation newOperation = new Operation();
+                    newOperation.setIdJobHistory(jobHistory.getId());
+
                     if (fundingDate != null) {
                         newOperation.setFundingDate(fundingDate);
                         //Pour les N43 la funding = la create

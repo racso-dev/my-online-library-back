@@ -138,6 +138,7 @@ public class ParsingCODAJob extends ParsingJob {
                 String detailLine2 = block.get(i+1);
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
+                    operation.setIdJobHistory(jobHistory.getId());
                     operation.setFundingDate(foundingDate);
                     operation.setCreateDate(createDate);
                     Optional<Shop> shopOpt = shopRepository.findByContractNumber(operation.getContractNumber());
