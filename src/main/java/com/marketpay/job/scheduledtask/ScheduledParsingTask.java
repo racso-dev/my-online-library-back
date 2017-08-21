@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
@@ -75,10 +76,11 @@ public class ScheduledParsingTask {
 
                 //On déplace le fichier une fois parsé dans archive
                 File fileArchive = new File(archiveDirectory + File.separator + fileToParse.getName());
-                fileToParse.renameTo(fileArchive);
+                Files.copy(fileToParse.toPath(), fileArchive.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                fileToParse.delete();
 
                 nbSuccess++;
-            } catch (ScheduledTaskException e) {
+            } catch (ScheduledTaskException | IOException e) {
                 e.printStackTrace();
                 nbError++;
             }
