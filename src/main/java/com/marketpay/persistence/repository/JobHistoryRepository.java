@@ -15,4 +15,5 @@ public interface JobHistoryRepository extends OptionalCRUDRepository<JobHistory,
     List<JobHistory> findByStatus(int status);
     List<JobHistory> findByFiletype(String filetype);
     List<JobHistory> findByFilename(String filename);
+    Optional<JobHistory> findByFilenameOrderByDateDesc(String filename);
 }
