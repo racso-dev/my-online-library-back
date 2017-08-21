@@ -67,10 +67,16 @@ public class OperationController extends MarketPayController {
     @Profile({})
     public @ResponseBody
     OperationCodaBlockResponse getCodaBlock(@RequestParam(value = "fundingDate")  @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate,
-                                            @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate) {
+                                            @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate,
+                                            @RequestParam(value="idBu", required = false) Long idBu) throws MarketPayException {
         OperationCodaBlockResponse operationCodaBlockResponse = new OperationCodaBlockResponse();
+        Long requestedBu = RequestContext.get().getIdBu();
 
-        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, RequestContext.get().getIdBu(), createDate));
+        if(idBu != null) {
+            requestedBu = idBu;
+        }
+
+        operationCodaBlockResponse.setFileContent(operationService.getCodaBlockFromIdBuAndFundingDate(fundingDate, requestedBu, createDate));
         return operationCodaBlockResponse;
 
     }
