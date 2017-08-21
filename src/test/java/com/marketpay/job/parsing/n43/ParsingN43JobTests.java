@@ -69,25 +69,25 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void getCommisionTest() {
-        int commision = parsingN43Job.getCommission(COMISSION_LINE);
+        int commision = parsingN43Job.getCommission(COMISSION_LINE, 0);
         assertEquals(1465, commision);
     }
 
     @Test
     public void getComissionShouldFail() {
-        int comision = parsingN43Job.getCommission(TRANSACTION_LINE);
+        int comision = parsingN43Job.getCommission(TRANSACTION_LINE, 0);
         assertEquals(-1, comision);
     }
 
     @Test
     public void getGrossAmountTest() {
-        int grossAmount = parsingN43Job.getGrossAmount(TRANSACTION_LINE);
+        int grossAmount = parsingN43Job.getGrossAmount(TRANSACTION_LINE, 0);
         assertEquals(710734, grossAmount);
     }
 
     @Test
     public void getGrossAmountShouldFail() {
-        int grossAmount = parsingN43Job.getGrossAmount(COMISSION_LINE);
+        int grossAmount = parsingN43Job.getGrossAmount(COMISSION_LINE, 0);
         assertEquals(-1, grossAmount);
     }
 

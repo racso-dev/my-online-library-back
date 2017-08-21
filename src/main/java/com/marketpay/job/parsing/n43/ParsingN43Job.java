@@ -72,13 +72,13 @@ public class ParsingN43Job extends ParsingJob {
                         newOperation.setCreateDate(fundingDate);
                     }
 
+                    newOperation.setSens(getSens(line));
                     newOperation.setOperationType(getOperationType(line));
                     newOperation.setContractNumber(getContractNumber(line));
-                    newOperation.setGrossAmount(getGrossAmount(line));
+                    newOperation.setGrossAmount(getGrossAmount(line, newOperation.getSens()));
                     newOperation.setNetAmount(newOperation.getGrossAmount());
                     String dateString = getTransactionDate(line);
                     newOperation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, dateString));
-                    newOperation.setSens(getSens(line));
                     Optional<Shop> shopOpt = shopRepository.findByContractNumber(newOperation.getContractNumber());
                     if (shopOpt.isPresent()) {
                         newOperation.setNameShop(shopOpt.get().getName());
@@ -98,7 +98,7 @@ public class ParsingN43Job extends ParsingJob {
                     Integer lastIndex = operationList.size() - 1;
                     Operation lastOperation = operationList.get(lastIndex);
                     Operation operation = operationList.get(lastIndex);
-                    Integer commission = getCommission(line);
+                    Integer commission = getCommission(line, operation.getSens());
                     operation.setNetAmount(operation.getGrossAmount() - commission);
                     operationList.remove(lastOperation);
                     operationList.add(operation);
@@ -144,14 +144,26 @@ public class ParsingN43Job extends ParsingJob {
         return convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2))%2;
     }
 
-    public Integer getGrossAmount(String line) {
+    public Integer getGrossAmount(String line, int sens) {
         String amount = matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
-        return convertStringToInt(amount);
+        Integer value = convertStringToInt(amount);
+
+        if(sens == 1) {
+            value *= -1;
+        }
+
+        return value;
     }
 
-    public Integer getCommission(String line) {
+    public Integer getCommission(String line, int sens) {
         String amount = matchFromRegex(line, COMMISION_REGEX, 1);
-        return convertStringToInt(amount);
+        Integer value = convertStringToInt(amount);
+
+        if(sens == 1) {
+            value *= -1;
+        }
+
+        return value;
     }
 
     /**
@@ -176,32 +188,18 @@ public class ParsingN43Job extends ParsingJob {
     public Operation combineTransaction(Operation firstTransaction, Operation secondTransaction) {
         Operation combinedTransaction;
 
-        if( firstTransaction.getSens() == secondTransaction.getSens()) {
-            // On ajoute les montants
-            combinedTransaction = firstTransaction;
-            Long combineNetAmount = firstTransaction.getNetAmount() + secondTransaction.getNetAmount();
-            combinedTransaction.setNetAmount(combineNetAmount);
+        // On ajoute les montants
+        combinedTransaction = firstTransaction;
+        Long combineNetAmount = firstTransaction.getNetAmount() + secondTransaction.getNetAmount();
+        combinedTransaction.setNetAmount(combineNetAmount);
 
-            Long combineGrossAmount = firstTransaction.getGrossAmount() + secondTransaction.getGrossAmount();
-            combinedTransaction.setGrossAmount(combineGrossAmount);
+        Long combineGrossAmount = firstTransaction.getGrossAmount() + secondTransaction.getGrossAmount();
+        combinedTransaction.setGrossAmount(combineGrossAmount);
 
+        if(combineGrossAmount < 0 ) {
+            combinedTransaction.setSens(1);
         } else {
-            // On soustrait les montants
-            combinedTransaction = firstTransaction;
-
-            Long combineNetAmount = firstTransaction.getNetAmount() - secondTransaction.getNetAmount();
-            Long combineGrossAmount = firstTransaction.getGrossAmount() - secondTransaction.getGrossAmount();
-
-            if (combineGrossAmount < 0)  {
-                // On prend le sens du 2 et on remet en positif
-                combinedTransaction.setSens(secondTransaction.getSens());
-                combinedTransaction.setGrossAmount(combineGrossAmount * -1);
-                combinedTransaction.setNetAmount(combineNetAmount * -1);
-            } else {
-                // On prend le sens du 1
-                combinedTransaction.setNetAmount(combineNetAmount);
-                combinedTransaction.setGrossAmount(combineGrossAmount);
-            }
+            combinedTransaction.setSens(0);
         }
 
         return combinedTransaction;
