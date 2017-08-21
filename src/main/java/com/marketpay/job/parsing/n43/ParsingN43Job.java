@@ -57,6 +57,18 @@ public class ParsingN43Job extends ParsingJob {
         FileReader file = new FileReader(filePath);
         BufferedReader buffer = new BufferedReader(file);
 
+
+        Optional<JobHistory> jobHistoryOptional = jobHistoryRepository.findByFilenameOrderByDateDesc(jobHistory.getFilename());
+
+        // Si le fichier a déjà été parsé on regarde le statuts
+        if(jobHistoryOptional.isPresent()) {
+            LOGGER.info("Le fichier : " + filePath + " a déjà été parsé, on supprime les opérations et on le reparse");
+            JobHistory oldJobHistory = jobHistoryOptional.get();
+            // Si on a déjà parser le fichier on supprime les operations associé pour les reparser
+            List<Operation> operationList = operationRepository.findByIdJobHistory(oldJobHistory.getId());
+            operationRepository.delete(operationList);
+        }
+
         try {
             String line;
             List<Operation> operationList = new ArrayList<>();

@@ -4,20 +4,15 @@ import com.marketpay.job.parsing.coda.ParsingCODAJob;
 import com.marketpay.job.parsing.n43.ParsingN43Job;
 import com.marketpay.job.parsing.repositoryshop.ParsingRepositoryShopJob;
 import com.marketpay.persistence.entity.JobHistory;
-import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.repository.JobHistoryRepository;
-import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.JOB_TYPE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.rmi.runtime.Log;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ParsingDispatcher {
@@ -34,33 +29,12 @@ public class ParsingDispatcher {
     private ParsingRepositoryShopJob parsingRepositoryShopJob;
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
-    @Autowired
-    private OperationRepository operationRepository;
 
     /**
      * Permet de parser les fichiers en entrée
      * @param filePath
      */
     public void parsingFile(String filePath) {
-
-        Optional<JobHistory> jobHistoryOptional = jobHistoryRepository.findByFilenameOrderByDateDesc(filePath);
-
-        // Si le fichier a déjà été parsé on regarde le statuts
-        if(jobHistoryOptional.isPresent()) {
-            LOGGER.info("Le fichier : " + filePath + " a déjà été parsé");
-            JobHistory oldJobHistory = jobHistoryOptional.get();
-            // Si le job history n'a pas un status success on supprime toute les opérations associé
-            // Et on le reparse
-            if(oldJobHistory.getStatus() != JOB_STATUS.SUCESS.getCode()) {
-                LOGGER.info("L'ancien statuts n'était pas success, on le reparse");
-                List<Operation> operationList = operationRepository.findByIdJobHistory(oldJobHistory.getId());
-                operationRepository.delete(operationList);
-            } else {
-                // Sinon on skip le parsing
-                LOGGER.info("Fichier déjà parsé avec succès on ne le reparse pas");
-                return;
-            }
-        }
 
         //On créé le jobHistory
         JobHistory jobHistory = new JobHistory();
