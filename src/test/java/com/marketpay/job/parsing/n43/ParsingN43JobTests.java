@@ -81,13 +81,13 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void getGrossAmountTest() {
-        int grossAmount = parsingN43Job.getGrossAmount(TRANSACTION_LINE, OPERATION_SENS.DEBIT);
+        int grossAmount = parsingN43Job.getGrossAmount(TRANSACTION_LINE, OPERATION_SENS.CREDIT);
         assertEquals(710734, grossAmount);
     }
 
     @Test
     public void getGrossAmountShouldFail() {
-        int grossAmount = parsingN43Job.getGrossAmount(COMISSION_LINE, OPERATION_SENS.DEBIT);
+        int grossAmount = parsingN43Job.getGrossAmount(COMISSION_LINE, OPERATION_SENS.CREDIT);
         assertEquals(-1, grossAmount);
     }
 
@@ -130,14 +130,14 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
         Operation secondTransaction = new Operation();
-        secondTransaction.setGrossAmount(50);
-        secondTransaction.setNetAmount(20);
+        secondTransaction.setGrossAmount(-50);
+        secondTransaction.setNetAmount(-20);
         secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
         Operation combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
 
-        assertEquals(10, combinedTransaction.getNetAmount());
-        assertEquals(25, combinedTransaction.getGrossAmount());
+        assertEquals(-10, combinedTransaction.getNetAmount());
+        assertEquals(-25, combinedTransaction.getGrossAmount());
         int sens = combinedTransaction.getSens();
         assertEquals(OPERATION_SENS.DEBIT.getCode(), sens);
     }
@@ -150,8 +150,8 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         firstTransaction.setSens(OPERATION_SENS.CREDIT.getCode());
 
         Operation secondTransaction = new Operation();
-        secondTransaction.setGrossAmount(50);
-        secondTransaction.setNetAmount(20);
+        secondTransaction.setGrossAmount(-50);
+        secondTransaction.setNetAmount(-20);
         secondTransaction.setSens(OPERATION_SENS.DEBIT.getCode());
 
         Operation combinedTransaction = parsingN43Job.combineTransaction(firstTransaction, secondTransaction);
