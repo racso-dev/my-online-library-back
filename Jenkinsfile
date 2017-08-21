@@ -23,7 +23,7 @@ node ('web') {
             }
             stage ('Add git tag') {
                 gitlabCommitStatus('Add git tag') {
-                    if (!pom.version.contains("SNAPSHOT") && "master".equals("${env.BRANCH_NAME}")) {
+                    if (!pom.version.contains("SNAPSHOT") && "${env.BRANCH_NAME}" == "master") {
                         sshagent (credentials: ['gitlab-key']) {
                             def gitTags = sh(script: 'git ls-remote --tags origin', returnStdout: true)
                             sh 'git config --global user.email "jenkins@steamulo.com"'
