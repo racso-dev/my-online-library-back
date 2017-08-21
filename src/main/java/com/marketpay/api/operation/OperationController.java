@@ -73,7 +73,7 @@ public class OperationController extends MarketPayController {
         Long requestedBu = RequestContext.get().getIdBu();
 
         if(idBu != null) {
-            super.checkAccessBU(idBu);
+            checkAccessBU(idBu);
             requestedBu = idBu;
         }
 
