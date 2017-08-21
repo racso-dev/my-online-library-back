@@ -12,6 +12,7 @@ import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.CARD_TYPE;
 import com.marketpay.references.JOB_STATUS;
+import com.marketpay.references.OPERATION_SENS;
 import com.marketpay.utils.DateUtils;
 import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
@@ -180,10 +181,11 @@ public class ParsingCODAJob extends ParsingJob {
     public Operation parsingDetailLines(String detailLine1, String detailLine2) {
         Operation operation = new Operation();
         operation.setSens(getSens(detailLine1));
-        operation.setNetAmount(getNetAmount(detailLine1));
+        OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
+        operation.setNetAmount(getNetAmount(detailLine1, operationSens));
         operation.setContractNumber(getContractNumber(detailLine1));
         operation.setCardType(getCardType(detailLine1).getCode());
-        operation.setGrossAmount(getGrossAmount(detailLine2));
+        operation.setGrossAmount(getGrossAmount(detailLine2, operationSens));
         String dateString = getTransactionDate(detailLine1);
         operation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, dateString));
 
@@ -272,9 +274,11 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return valeur du net amount
      */
-    public Integer getNetAmount(String line) {
+    public Integer getNetAmount(String line, OPERATION_SENS sens) {
         String netAmountString = line.substring(32, 46);
-        return convertStringToInt(netAmountString);
+        Integer value = convertStringToInt(netAmountString);
+
+        return sens == OPERATION_SENS.DEBIT ? -value : value;
     }
 
     /**
@@ -291,9 +295,11 @@ public class ParsingCODAJob extends ParsingJob {
      * @param line
      * @return valeur du gross amount
      */
-    public Integer getGrossAmount(String line) {
+    public Integer getGrossAmount(String line, OPERATION_SENS sens) {
         String grossAmountString = line.substring(17, 32);
-        return convertStringToInt(grossAmountString);
+        Integer value = convertStringToInt(grossAmountString);
+
+        return sens == OPERATION_SENS.DEBIT ? -value : value;
     }
 
     /**
