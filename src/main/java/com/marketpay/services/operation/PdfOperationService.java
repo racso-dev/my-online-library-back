@@ -219,9 +219,9 @@ public class PdfOperationService {
             OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
             row.createCell(8, i18nUtils.getMessage(operationSens.getI18n(), null, language));
 
-            row.createCell(8, getFormattedNumber(operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getGrossAmount() : operation.getGrossAmount()));
-            row.createCell(8, getFormattedNumber(((operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getNetAmount() : operation.getNetAmount()) - (operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getGrossAmount() : operation.getGrossAmount()))));
-            row.createCell(8, getFormattedNumber(operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getNetAmount() : operation.getNetAmount()));
+            row.createCell(8, getFormattedNumber(operation.getGrossAmount()));
+            row.createCell(8, getFormattedNumber(operation.getNetAmount() - operation.getGrossAmount()));
+            row.createCell(8, getFormattedNumber(operation.getNetAmount()));
 
             // Permet de colorier une ligne sur 2
             if( shouldColor ) {
@@ -233,8 +233,8 @@ public class PdfOperationService {
             }
 
             shouldColor = !shouldColor;
-            totalGrossAmount += (operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getGrossAmount() : operation.getGrossAmount());
-            totalNetAmount += (operationSens.equals(OPERATION_SENS.DEBIT) ? - operation.getNetAmount() : operation.getNetAmount());
+            totalGrossAmount += operation.getGrossAmount();
+            totalNetAmount += operation.getNetAmount();
         }
     }
 
