@@ -64,7 +64,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingNetAmountTest() {
-        int netAmount = parsingCODAJob.getNetAmount(TRANSACTION_LINE_MOCK, 0);
+        int netAmount = parsingCODAJob.getNetAmount(TRANSACTION_LINE_MOCK, OPERATION_SENS.CREDIT);
         assertEquals(151892, netAmount);
     }
 
@@ -76,7 +76,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingGrossAmountTest() {
-        int grossAmount = parsingCODAJob.getGrossAmount(GROSS_AMOUNT_MOCK, 0);
+        int grossAmount = parsingCODAJob.getGrossAmount(GROSS_AMOUNT_MOCK, OPERATION_SENS.CREDIT);
         assertEquals(152151, grossAmount);
     }
 

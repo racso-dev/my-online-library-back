@@ -9,6 +9,7 @@ import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.references.JOB_STATUS;
+import com.marketpay.references.OPERATION_SENS;
 import com.marketpay.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +74,10 @@ public class ParsingN43Job extends ParsingJob {
                     }
 
                     newOperation.setSens(getSens(line));
+                    OPERATION_SENS operation_sens = OPERATION_SENS.getByCode(newOperation.getSens());
                     newOperation.setOperationType(getOperationType(line));
                     newOperation.setContractNumber(getContractNumber(line));
-                    newOperation.setGrossAmount(getGrossAmount(line, newOperation.getSens()));
+                    newOperation.setGrossAmount(getGrossAmount(line, operation_sens));
                     newOperation.setNetAmount(newOperation.getGrossAmount());
                     String dateString = getTransactionDate(line);
                     newOperation.setTradeDate(DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, dateString));
@@ -98,7 +100,8 @@ public class ParsingN43Job extends ParsingJob {
                     Integer lastIndex = operationList.size() - 1;
                     Operation lastOperation = operationList.get(lastIndex);
                     Operation operation = operationList.get(lastIndex);
-                    Integer commission = getCommission(line, operation.getSens());
+                    OPERATION_SENS operation_sens = OPERATION_SENS.getByCode(operation.getSens());
+                    Integer commission = getCommission(line, operation_sens);
                     operation.setNetAmount(operation.getGrossAmount() - commission);
                     operationList.remove(lastOperation);
                     operationList.add(operation);
@@ -144,22 +147,22 @@ public class ParsingN43Job extends ParsingJob {
         return convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2))%2;
     }
 
-    public Integer getGrossAmount(String line, int sens) {
+    public Integer getGrossAmount(String line, OPERATION_SENS sens) {
         String amount = matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
         Integer value = convertStringToInt(amount);
 
-        if(sens == 1) {
+        if(sens == OPERATION_SENS.DEBIT) {
             value *= -1;
         }
 
         return value;
     }
 
-    public Integer getCommission(String line, int sens) {
+    public Integer getCommission(String line, OPERATION_SENS sens) {
         String amount = matchFromRegex(line, COMMISION_REGEX, 1);
         Integer value = convertStringToInt(amount);
 
-        if(sens == 1) {
+        if(sens == OPERATION_SENS.CREDIT) {
             value *= -1;
         }
 
