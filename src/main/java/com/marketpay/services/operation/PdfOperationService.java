@@ -1,8 +1,6 @@
 package com.marketpay.services.operation;
 
-import be.quodlibet.boxable.BaseTable;
-import be.quodlibet.boxable.Cell;
-import be.quodlibet.boxable.Row;
+import be.quodlibet.boxable.*;
 import be.quodlibet.boxable.image.Image;
 import be.quodlibet.boxable.line.LineStyle;
 import com.marketpay.persistence.entity.Operation;
@@ -37,7 +35,7 @@ public class PdfOperationService {
     private final Color HEADER_LIGHT_COLOR = new Color(147,202,196);
 
     private final int yStart = 400;
-    private final int yStartNewPage = 1000;
+    private final int yStartNewPage = 2200;
     private final int bottomMargin = 100;
     private final int tableWidth = 1200;
     private final int xStart = 50;
@@ -70,6 +68,8 @@ public class PdfOperationService {
             return mainDocument;
         }
 
+        int totalPageNumber = (int) Math.round(operationList.size() / (double) MAX_LINE);
+
         for(int i = 0; i * MAX_LINE < operationList.size(); i++) {
             int startIndex = i * MAX_LINE;
             int endIndex = startIndex + MAX_LINE;
@@ -78,7 +78,7 @@ public class PdfOperationService {
                 endIndex = operationList.size();
             }
             List<Operation> subList = operationList.subList(startIndex, endIndex);
-            createTable(subList, i == 0, endIndex == operationList.size(), language, buName, shopName);
+            createTable(subList, i == 0, endIndex == operationList.size(), language, buName, shopName, i, totalPageNumber);
         }
 
         return mainDocument;
@@ -90,8 +90,10 @@ public class PdfOperationService {
      * @param isFirstPage : Permet de changer la couleur en fonction de si c'est la première page ou non
      * @param isFinalPage : Permet d'ajouter la ligne final avec le total
      * @param language : utilisé pour i18n
+     * @param index : utilisé pour la pagination
+     * @param totalPageNumber: utilisé pour la pagination
      */
-    private void createTable(List<Operation> operationList, Boolean isFirstPage, Boolean isFinalPage, LANGUAGE language, String buName, String shopName) {
+    private void createTable(List<Operation> operationList, Boolean isFirstPage, Boolean isFinalPage, LANGUAGE language, String buName, String shopName, int index, int totalPageNumber) {
 
         // On crée la page
         PDPage myPage = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth()));
@@ -118,6 +120,12 @@ public class PdfOperationService {
             contentStream.moveTextPositionByAmount(350, 500);
             contentStream.drawString(i18nUtils.getMessage("pdfOperationService.title", null, language));
 
+            contentStream.endText();
+
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.TIMES_ROMAN, 11);
+            contentStream.moveTextPositionByAmount(800, 30);
+            contentStream.drawString( String.valueOf(index + 1) + " / " + String.valueOf(totalPageNumber));
             contentStream.endText();
 
             contentStream.beginText();
@@ -182,9 +190,9 @@ public class PdfOperationService {
             row.createCell(8, "").setBorderStyle(new LineStyle(Color.white, 0));
         }
         row.createCell(8, "Total").setBorderStyle(new LineStyle(Color.black, 1));
-        row.createCell(8, getFormattedNumber(totalGrossAmount));
-        row.createCell(8, getFormattedNumber(totalNetAmount - totalGrossAmount));
-        row.createCell(8, getFormattedNumber(totalNetAmount));
+        row.createCell(8, getFormattedNumber(totalGrossAmount), HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE);
+        row.createCell(8, getFormattedNumber(totalNetAmount - totalGrossAmount), HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE);
+        row.createCell(8, getFormattedNumber(totalNetAmount), HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE);
     }
 
 
@@ -219,9 +227,9 @@ public class PdfOperationService {
             OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
             row.createCell(8, i18nUtils.getMessage(operationSens.getI18n(), null, language));
 
-            row.createCell(8, getFormattedNumber(operation.getGrossAmount()));
-            row.createCell(8, getFormattedNumber(operation.getNetAmount() - operation.getGrossAmount()));
-            row.createCell(8, getFormattedNumber(operation.getNetAmount()));
+            row.createCell(8, getFormattedNumber(operation.getGrossAmount()), HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE);
+            row.createCell(8, getFormattedNumber(operation.getNetAmount() - operation.getGrossAmount()), HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE);
+            row.createCell(8, getFormattedNumber(operation.getNetAmount()), HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE);
 
             // Permet de colorier une ligne sur 2
             if( shouldColor ) {
