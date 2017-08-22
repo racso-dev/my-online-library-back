@@ -114,7 +114,7 @@ public class ParsingN43Job extends ParsingJob {
                     Operation operation = operationList.get(lastIndex);
                     OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
                     Integer commission = getCommission(line, operationSens);
-                    operation.setNetAmount(operation.getGrossAmount() - commission);
+                    operation.setNetAmount(operation.getGrossAmount() + commission);
                     operationList.remove(lastOperation);
                     operationList.add(operation);
                 }
