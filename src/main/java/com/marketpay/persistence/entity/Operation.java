@@ -32,6 +32,15 @@ public class Operation {
     private String nameShop;
     private Long idShop;
     private Long idBlock;
+    private Long idJobHistory;
+
+    public Long getIdJobHistory() {
+        return idJobHistory;
+    }
+
+    public void setIdJobHistory(Long idJobHistory) {
+        this.idJobHistory = idJobHistory;
+    }
 
     public Long getIdBlock() {
         return idBlock;

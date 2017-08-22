@@ -55,6 +55,17 @@ public class ParsingCODAJob extends ParsingJob {
         FileReader input = null;
         BufferedReader buffer = null;
 
+        Optional<JobHistory> jobHistoryOptional = jobHistoryRepository.findByFilenameOrderByDateDesc(jobHistory.getFilename());
+
+        // Si le fichier a déjà été parsé on supprime les opérations associés
+        if(jobHistoryOptional.isPresent()) {
+            LOGGER.info("Le fichier : " + filePath + " a déjà été parsé, on supprime les opérations et on le reparse");
+            JobHistory oldJobHistory = jobHistoryOptional.get();
+            // Si on a déjà parser le fichier on supprime les operations associé pour les reparser
+            List<Operation> operationList = operationRepository.findByIdJobHistory(oldJobHistory.getId());
+            operationRepository.delete(operationList);
+        }
+
         try {
             input = new FileReader(filePath);
             buffer = new BufferedReader(input);
@@ -138,6 +149,7 @@ public class ParsingCODAJob extends ParsingJob {
                 String detailLine2 = block.get(i+1);
                 if (!(detailLine1.startsWith("21") && detailLine2.startsWith("23"))) {
                     Operation operation = parsingDetailLines(block.get(i), block.get(i + 1));
+                    operation.setIdJobHistory(jobHistory.getId());
                     operation.setFundingDate(foundingDate);
                     operation.setCreateDate(createDate);
                     Optional<Shop> shopOpt = shopRepository.findByContractNumber(operation.getContractNumber());

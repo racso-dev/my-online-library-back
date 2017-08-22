@@ -4,6 +4,7 @@ import com.marketpay.MarketPayUnitTests;
 import com.marketpay.exception.FundingDateException;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
+import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.OPERATION_SENS;
 import org.junit.Test;
@@ -11,11 +12,18 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -164,7 +172,9 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingGoodN43File() {
+        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(Optional.empty());
         JobHistory jobHistory = new JobHistory();
+        jobHistory.setDate(LocalDateTime.now());
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingN43Job.parsing(N43FILE_PATH, jobHistory);

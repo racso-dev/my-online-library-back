@@ -2,17 +2,26 @@ package com.marketpay.job.parsing.coda;
 
 import com.marketpay.MarketPayUnitTests;
 import com.marketpay.persistence.entity.JobHistory;
+import com.marketpay.persistence.repository.JobHistoryRepository;
 import com.marketpay.references.CARD_TYPE;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.OPERATION_SENS;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -31,6 +40,11 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     private String CODAFILE_PATH = "src/test/resources/parsing/parsingCODAFileBEOC4C.txt";
     private String BAD_CODAFILE_PATH = "src/test/resources/parsing/parsingBadCODAFileBEOC4C.txt";
     private String FIRST_LINE_MOCK = "0000001061700005        46390589  JAGI  concept BVBA        KREDBEBB   0675354481  00000                                       2\n";
+
+    @Before
+    public void mock() {
+        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(Optional.empty());
+    }
 
     @Test
     public void parsingCardTypeTest() {
@@ -103,6 +117,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     @Test
     public void parsingBadCodaFile() {
         JobHistory jobHistory = new JobHistory();
+        jobHistory.setDate(LocalDateTime.now());
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);

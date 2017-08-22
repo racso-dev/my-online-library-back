@@ -40,6 +40,7 @@ public class ParsingDispatcher {
         JobHistory jobHistory = new JobHistory();
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         jobHistory.setDate(LocalDateTime.now());
+        jobHistory = jobHistoryRepository.save(jobHistory);
 
         if (filePath == null) {
             LOGGER.error("Le filepath ne peut pas être null");
