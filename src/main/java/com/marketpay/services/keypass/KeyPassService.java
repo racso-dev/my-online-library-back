@@ -194,8 +194,6 @@ public class KeyPassService {
             //On envoi le mail
             mailService.sendMail(marketPayEmail);
         } catch (Exception e) {
-            //Si une erreur est survenue pendant l'envoi du mail on rollback
-            userKeyPassRepository.delete(userKeyPass);
             if((e instanceof MarketPayException)){
                 throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur est survenue lors de l'envoi du mail", e);
             } else {
