@@ -69,8 +69,6 @@ public class ParsingN43Job extends ParsingJob {
                     Operation newOperation = new Operation();
                     if (fundingDate != null) {
                         newOperation.setFundingDate(fundingDate);
-                        //Pour les N43 la funding = la create
-                        newOperation.setCreateDate(fundingDate);
                     }
 
                     newOperation.setSens(getSens(line));
