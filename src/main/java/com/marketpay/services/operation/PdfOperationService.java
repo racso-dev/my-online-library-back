@@ -68,7 +68,7 @@ public class PdfOperationService {
             return mainDocument;
         }
 
-        int totalPageNumber = (int) Math.round(operationList.size() / (double) MAX_LINE);
+        int totalPageNumber = operationList.size() % MAX_LINE == 0 ?  (operationList.size() / MAX_LINE) : (operationList.size() / MAX_LINE) + 1;
 
         for(int i = 0; i * MAX_LINE < operationList.size(); i++) {
             int startIndex = i * MAX_LINE;
