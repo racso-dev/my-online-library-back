@@ -114,7 +114,7 @@ public class KeyPassService {
     public void sendKeyPass(String login, boolean createMode, LANGUAGE language) throws MarketPayException {
         //On récupère le user associé à l'email
         User user = userRepository.findByLogin(login).orElseThrow(() ->
-            new MarketPayException(HttpStatus.BAD_GATEWAY, "Pas de user pour login" + login, "login")
+            new MarketPayException(HttpStatus.BAD_GATEWAY, "Pas de user pour login " + login, "login")
         );
 
         //On vérifie qu'il n'y a pas déjà une demande de resetPassword en cours pour ce user

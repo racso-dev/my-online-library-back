@@ -222,7 +222,7 @@ public class UserService {
 
         //On envoi le mail de création du user
         try {
-            keyPassService.sendKeyPass(user.getEmail(), true, language);
+            keyPassService.sendKeyPass(user.getLogin(), true, language);
         } catch (MarketPayException e) {
             //Si une erreur est survenue pendant l'envoi du mail on rollback
             userRepository.delete(user);
