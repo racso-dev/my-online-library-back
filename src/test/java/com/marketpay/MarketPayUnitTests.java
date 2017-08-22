@@ -24,7 +24,7 @@ public class MarketPayUnitTests {
 
     @Mock
     @Autowired
-    private JobHistoryRepository jobHistoryRepository = Mockito.mock(JobHistoryRepository.class);
+    protected JobHistoryRepository jobHistoryRepository = Mockito.mock(JobHistoryRepository.class);
 
     @Mock
     @Autowired
