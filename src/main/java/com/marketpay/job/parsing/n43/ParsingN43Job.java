@@ -60,7 +60,7 @@ public class ParsingN43Job extends ParsingJob {
 
         Optional<JobHistory> jobHistoryOptional = jobHistoryRepository.findByFilenameOrderByDateDesc(jobHistory.getFilename());
 
-        // Si le fichier a déjà été parsé on regarde le statuts
+        // Si le fichier a déjà été parsé on supprime les opérations associés
         if(jobHistoryOptional.isPresent()) {
             LOGGER.info("Le fichier : " + filePath + " a déjà été parsé, on supprime les opérations et on le reparse");
             JobHistory oldJobHistory = jobHistoryOptional.get();
