@@ -12,8 +12,8 @@ spring:
   mail:
       host: tchekroun
       port: 25
-      username:
-      password:
+      username: tchekroun@gmail.com
+      password: password
 
 sftp:
   pathIncomming: /Users/tchekroun/workspace/marketpay/incomming

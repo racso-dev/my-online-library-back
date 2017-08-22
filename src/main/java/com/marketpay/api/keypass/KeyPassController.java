@@ -38,7 +38,7 @@ public class KeyPassController extends MarketPayController {
     @NotAuthenticated
     @RequestMapping(value = "", method = RequestMethod.POST)
     public void sendKeyPass(@RequestBody @Valid SendKeyPassRequest sendKeyPassRequest) throws MarketPayException {
-        LOGGER.info("Demande de reset de password par mail pour l'email " + sendKeyPassRequest.getEmail());
-        keyPassService.sendKeyPass(sendKeyPassRequest.getEmail(), false, RequestContext.get().getLanguage());
+        LOGGER.info("Demande de reset de password par mail pour le login " + sendKeyPassRequest.getLogin());
+        keyPassService.sendKeyPass(sendKeyPassRequest.getLogin(), false, RequestContext.get().getLanguage());
     }
 }

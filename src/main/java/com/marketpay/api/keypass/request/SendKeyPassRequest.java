@@ -9,18 +9,18 @@ import javax.validation.constraints.Size;
  */
 public class SendKeyPassRequest {
 
-    @NotBlank(message = "Email mandatory")
-    @Size(min = 5, max = 100, message = "invalid email")
-    private String email;
+    @NotBlank(message = "login mandatory")
+    @Size(min = 3, max = 45, message = "invalid login")
+    private String login;
 
     public SendKeyPassRequest() {
     }
 
-    public String getEmail() {
-        return email;
+    public String getLogin() {
+        return login;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLogin(String login) {
+        this.login = login;
     }
 }

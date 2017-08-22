@@ -17,7 +17,6 @@ import com.marketpay.services.mail.resource.MarketPayEmail;
 import com.marketpay.services.mail.resource.ResetEmailBody;
 import com.marketpay.services.user.UserService;
 import com.marketpay.services.user.resource.UserResource;
-import com.marketpay.utils.DateUtils;
 import com.marketpay.utils.I18nUtils;
 import com.marketpay.utils.PasswordUtils;
 import com.marketpay.utils.RandomUtils;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,13 +108,13 @@ public class KeyPassService {
 
     /**
      * Génère un nouveau keyPass et envoi le mail de resetPassword pour l'email renseigné
-     * @param email
+     * @param login
      * @throws MarketPayException
      */
-    public void sendKeyPass(String email, boolean createMode, LANGUAGE language) throws MarketPayException {
+    public void sendKeyPass(String login, boolean createMode, LANGUAGE language) throws MarketPayException {
         //On récupère le user associé à l'email
-        User user = userRepository.findUserByEmail(email).orElseThrow(() ->
-            new MarketPayException(HttpStatus.BAD_GATEWAY, "Pas de user pour l'email " + email, "email")
+        User user = userRepository.findByLogin(login).orElseThrow(() ->
+            new MarketPayException(HttpStatus.BAD_GATEWAY, "Pas de user pour login " + login, "login")
         );
 
         //On vérifie qu'il n'y a pas déjà une demande de resetPassword en cours pour ce user
@@ -184,7 +182,7 @@ public class KeyPassService {
         try {
             //On construit le mail
             List<String> toList = new ArrayList<>();
-            toList.add(email);
+            toList.add(user.getEmail());
 
             MarketPayEmail marketPayEmail = mailBuilder.build(
                 toList,
@@ -196,8 +194,6 @@ public class KeyPassService {
             //On envoi le mail
             mailService.sendMail(marketPayEmail);
         } catch (Exception e) {
-            //Si une erreur est survenue pendant l'envoi du mail on rollback
-            userKeyPassRepository.delete(userKeyPass);
             if((e instanceof MarketPayException)){
                 throw new MarketPayException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur est survenue lors de l'envoi du mail", e);
             } else {

@@ -222,7 +222,7 @@ public class UserService {
 
         //On envoi le mail de création du user
         try {
-            keyPassService.sendKeyPass(user.getEmail(), true, language);
+            keyPassService.sendKeyPass(user.getLogin(), true, language);
         } catch (MarketPayException e) {
             //Si une erreur est survenue pendant l'envoi du mail on rollback
             userRepository.delete(user);
@@ -327,11 +327,7 @@ public class UserService {
         if(!MailUtils.checkValidEmail(request.getEmail())){
             throw new MarketPayException(HttpStatus.BAD_REQUEST, "invalid email " + request.getEmail(), "email");
         }
-        //On vérifie que l'email n'existe pas déjà
-        Optional<User> uEmail = userRepository.findUserByEmail(request.getEmail());
-        if(uEmail.isPresent() && (user.getId() == null || !user.getId().equals(uEmail.get().getId()))){
-            throw new MarketPayException(HttpStatus.IM_USED, "Email déjà utilisé", "email");
-        }
+
         user.setEmail(request.getEmail());
 
         //Tout est OK on sauvegarde le user
