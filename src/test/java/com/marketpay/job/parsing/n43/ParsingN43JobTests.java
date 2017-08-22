@@ -174,7 +174,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
     public void parsingGoodN43File() {
         Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(Optional.empty());
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setDate(LocalDateTime.of(LocalDate.now(), LocalTime.now()));
+        jobHistory.setDate(LocalDateTime.now());
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingN43Job.parsing(N43FILE_PATH, jobHistory);

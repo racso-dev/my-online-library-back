@@ -117,7 +117,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
     @Test
     public void parsingBadCodaFile() {
         JobHistory jobHistory = new JobHistory();
-        jobHistory.setDate(LocalDateTime.of(LocalDate.now(), LocalTime.now()));
+        jobHistory.setDate(LocalDateTime.now());
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
         try {
             parsingCODAJob.parsing(BAD_CODAFILE_PATH, jobHistory);
