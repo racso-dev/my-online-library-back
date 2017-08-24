@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -43,7 +44,7 @@ public class ParsingCODAJobTests extends MarketPayUnitTests {
 
     @Before
     public void mock() {
-        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(Optional.empty());
+        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(new ArrayList<>());
     }
 
     @Test

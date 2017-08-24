@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
@@ -172,7 +173,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingGoodN43File() {
-        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(Optional.empty());
+        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(new ArrayList<>());
         JobHistory jobHistory = new JobHistory();
         jobHistory.setDate(LocalDateTime.now());
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
