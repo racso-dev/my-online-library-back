@@ -29,7 +29,7 @@ public class ParsingN43Job extends ParsingJob {
 
     // Identifié sur les lignes commençant par 11
     private final String BU_LINE_INFORMATION = "11";
-    private final String FINANCING_DATE_REGEX = "^.{22}(\\d{6})"; // Groupe 1 format JJMMAA
+    private final String FINANCING_DATE_REGEX = "^.{20}(\\d{6})"; // Groupe 1 format JJMMAA
 
     // Identifié sur les lignes commençant par 22
     private final String TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT = "^22.{20}12\\d{3}";
@@ -76,7 +76,7 @@ public class ParsingN43Job extends ParsingJob {
             while ((line = buffer.readLine()) != null) {
                 if (line.startsWith(BU_LINE_INFORMATION)) {
                     String foundingDateString = getFundingDate(line);
-                    fundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_FILE, foundingDateString);
+                    fundingDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, foundingDateString);
                 } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_GROSSAMOUNT, 0) != null) {
                     Operation newOperation = new Operation();
                     newOperation.setIdJobHistory(jobHistory.getId());
