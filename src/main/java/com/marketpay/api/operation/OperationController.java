@@ -92,10 +92,6 @@ public class OperationController extends MarketPayController {
     @RequestMapping(value = "/pdf", method = RequestMethod.GET)
     @Profile({})
     public void getPdfFile(@RequestParam(value= "idShop", required = false) Long idShop, @RequestParam(value= "idBu", required = false) Long idBu, @RequestParam(value = "fundingDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate, HttpServletResponse response) throws MarketPayException {
-        //On check les idShop et IdBu
-        if(idShop == null && idBu == null){
-            throw new MarketPayException(HttpStatus.BAD_REQUEST, "Pas idShop ni idBu");
-        }
 
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         List<Long> shopIdList = getAuthoriseShop(idShop, idBu);

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
@@ -43,7 +44,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
     public void getFinancingDateTest() {
         try {
             String financingDate = parsingN43Job.getFundingDate(FIRSTLINE_N43_FILE);
-            assertEquals("060617", financingDate);
+            assertEquals("170606", financingDate);
         } catch (FundingDateException e) {
             e.printStackTrace();
             assertTrue(false);
@@ -172,7 +173,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void parsingGoodN43File() {
-        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(Optional.empty());
+        Mockito.when(jobHistoryRepository.findByFilenameOrderByDateDesc(Matchers.anyString())).thenReturn(new ArrayList<>());
         JobHistory jobHistory = new JobHistory();
         jobHistory.setDate(LocalDateTime.now());
         jobHistory.setStatus(JOB_STATUS.IN_PROGRESS.getCode());
