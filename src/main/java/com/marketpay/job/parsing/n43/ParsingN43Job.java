@@ -108,14 +108,7 @@ public class ParsingN43Job extends ParsingJob {
                     }
                     operationList.add(newOperation);
                 } else if (matchFromRegex(line, TRANSACTION_LINE_INFORMATION_WITH_COMMISION, 0) != null) {
-                    Integer lastIndex = operationList.size() - 1;
-                    Operation lastOperation = operationList.get(lastIndex);
-                    Operation operation = operationList.get(lastIndex);
-                    OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
-                    Integer commission = getCommission(line, operationSens);
-                    operation.setNetAmount(operation.getGrossAmount() + commission);
-                    operationList.remove(lastOperation);
-                    operationList.add(operation);
+                    operationList = addCommissionToOperation(line, operationList);
                 }
             }
 
@@ -130,6 +123,35 @@ public class ParsingN43Job extends ParsingJob {
             buffer.close();
             file.close();
         }
+    }
+
+    /**
+     * Permet d'ajouter la commission a une opération
+     * @param line
+     * @param operationList
+     * @return
+     */
+    public List<Operation> addCommissionToOperation(String line, List<Operation> operationList) {
+        // On récupére la date de transaction de la commission & son contract number
+        String dateString = getTransactionDate(line);
+        LocalDate transactionDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, dateString);
+        String contractNumber = getContractNumber(line);
+
+        List<Operation> finalOperationList = new ArrayList();
+
+        for(Operation operation: operationList) {
+            // On cherche l'opération associé a la commission
+            if(operation.getTradeDate().equals(transactionDate) && operation.getContractNumber().equals(contractNumber)) {
+                Integer operationIndex = operationList.indexOf(operation);
+                OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
+                Integer commission = getCommission(line, operationSens);
+                operation.setNetAmount(operation.getGrossAmount() + commission);
+            }
+
+            finalOperationList.add(operation);
+        }
+
+        return finalOperationList;
     }
 
     public String getFundingDate(String line) throws FundingDateException {

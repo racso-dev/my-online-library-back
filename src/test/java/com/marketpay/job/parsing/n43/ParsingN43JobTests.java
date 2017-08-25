@@ -5,8 +5,10 @@ import com.marketpay.exception.FundingDateException;
 import com.marketpay.persistence.entity.JobHistory;
 import com.marketpay.persistence.entity.Operation;
 import com.marketpay.persistence.repository.JobHistoryRepository;
+import com.marketpay.persistence.repository.OperationRepository;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.OPERATION_SENS;
+import com.marketpay.utils.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
@@ -24,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
@@ -33,12 +36,17 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
     private final String FIRSTLINE_N43_FILE = "110049150026101157911706061706062000000000000009783GROUP SUPECO MAXOR\n";
     private final String TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
     private final String COMISSION_LINE = "22    1500170606170605172051000000000014650002704735                            \n";
+
     private final String BAD_FIRST_LINE = "110049150026101157911706061706062000000000000009783\n";
     private String N43FILE_PATH = "src/test/resources/parsing/parsingN43File.txt";
 
     @Autowired
     @InjectMocks
     private ParsingN43Job parsingN43Job;
+
+    @Mock
+    @Autowired
+    private OperationRepository operationRepository =  Mockito.mock(OperationRepository.class);
 
     @Test
     public void getFinancingDateTest() {
@@ -184,6 +192,27 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         } catch (IOException e) {
             fail();
         }
+    }
+
+    @Test
+    public void addCommissionToCorrectOperation() {
+        List<Operation> operationList = new ArrayList();
+        Operation operation = new Operation();
+        operation.setContractNumber("2704735");
+        operation.setTradeDate(DateUtils.convertStringToLocalDate("yyMMdd", "170605"));
+        operation.setNetAmount(3000);
+        operation.setGrossAmount(3000);
+        operationList.add(operation);
+        Operation operation2 = new Operation();
+        operation2.setContractNumber("2704735");
+        operation2.setNetAmount(4000);
+        operation2.setGrossAmount(4000);
+        operation2.setTradeDate(DateUtils.convertStringToLocalDate("yyMMdd", "170611"));
+        operationList.add(operation2);
+
+        List<Operation> finalOperationList = parsingN43Job.addCommissionToOperation(COMISSION_LINE, operationList);
+        assertEquals(finalOperationList.get(1), operation2);
+        assertEquals(finalOperationList.get(0).getNetAmount(), 3000 - 1465);
     }
 
 
