@@ -13,6 +13,7 @@ public class Shop {
     private Long id;
     private long idBu;
     private String name;
+    private String location;
     private String codeAl;
     private String gln;
     private String atica;
@@ -35,6 +36,14 @@ public class Shop {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getCodeAl() {
@@ -67,6 +76,7 @@ public class Shop {
             "id=" + id +
             ", idBu=" + idBu +
             ", name='" + name + '\'' +
+            ", location='" + location + '\'' +
             ", codeAl='" + codeAl + '\'' +
             ", gln='" + gln + '\'' +
             ", atica='" + atica + '\'' +

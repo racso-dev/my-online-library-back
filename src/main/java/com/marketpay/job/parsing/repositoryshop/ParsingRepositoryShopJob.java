@@ -108,7 +108,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
         checkShopCsv(shopCsv, filePath, line);
 
         //On récupère le shop s'il existe déjà
-        Optional<Shop> shopOpt = shopRepository.findByCodeAl(shopCsv.getCode_AL());
+        Optional<Shop> shopOpt = shopRepository.findByCodeAlAndLocation(shopCsv.getCode_AL(), location.getCode());
 
         //S'il existe on le met à jour ainsi que sa BU
         if(shopOpt.isPresent()){
@@ -127,21 +127,16 @@ public class ParsingRepositoryShopJob extends ParsingJob {
                 throw new ParsingRepositoryFileException("Erreur de cohérence avec la BU", filePath, "referentiel", shopCsv, businessUnit, shopOpt.get());
             }
 
-            //On vérifie qu'il s'agit bien du même GLN ou ATICA sinon ça veut dire qu'il y a une erreur dans le fichier
-            if((shopOpt.get().getGln() != null && !shopOpt.get().getGln().equals(shopCsv.getGLN())) || (shopOpt.get().getAtica() != null && !shopOpt.get().getAtica().equals(shopCsv.getATICA()))){
-                nbLineError++;
-                throw new ParsingRepositoryFileException("Erreur de cohérence avec le shop", filePath, "referentiel", shopCsv, businessUnit, shopOpt.get());
-            }
-
             //Mise à jour shop
             shopOpt.get().setName(shopCsv.getNom_AL());
             shopRepository.save(shopOpt.get());
 
             //On met à jour les shopContractNumber associé
-            if(!shopContractNumberRepository.findByContractNumber(shopCsv.getNum_Contrat()).isPresent()){
+            if(!shopContractNumberRepository.findByContractNumberAndLocation(shopCsv.getNum_Contrat(), location.getCode()).isPresent()){
                 //On n'a pas encore ce contractNumber donc on l'ajoute
                 ShopContractNumber shopContractNumber = new ShopContractNumber();
                 shopContractNumber.setIdShop(shopOpt.get().getId());
+                shopContractNumber.setLocation(location.getCode());
                 shopContractNumber.setContractNumber(shopCsv.getNum_Contrat());
                 shopContractNumberRepository.save(shopContractNumber);
 
@@ -152,14 +147,14 @@ public class ParsingRepositoryShopJob extends ParsingJob {
         //Sinon on le créé
         else {
             //On vérifie que le contractNumber n'existe pas déjà
-            if(shopContractNumberRepository.findByContractNumber(shopCsv.getNum_Contrat()).isPresent()){
+            if(shopContractNumberRepository.findByContractNumberAndLocation(shopCsv.getNum_Contrat(), location.getCode()).isPresent()){
                 nbLineError++;
                 throw new ParsingException("Le contract number " + shopCsv.getNum_Contrat() + " existe déjà pour un autre shop que " + shopCsv.getCode_AL(), filePath, "referentiel");
             }
 
             //On récupère la BU si elle existe
             BusinessUnit businessUnit;
-            Optional<BusinessUnit> businessUnitOpt = businessUnitRepository.findByCodeBu(shopCsv.getCode_BU());
+            Optional<BusinessUnit> businessUnitOpt = businessUnitRepository.findByCodeBuAndLocation(shopCsv.getCode_BU(), location.getCode());
 
             //Si elle existe on la met à jour
             if(businessUnitOpt.isPresent()){
@@ -187,6 +182,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             Shop shop = new Shop();
             shop.setIdBu(businessUnit.getId());
             shop.setAtica(shopCsv.getATICA());
+            shop.setLocation(location.getCode());
             shop.setCodeAl(shopCsv.getCode_AL());
             shop.setGln(shopCsv.getGLN());
             shop.setName(shopCsv.getNom_AL());
@@ -194,6 +190,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
 
             ShopContractNumber shopContractNumber = new ShopContractNumber();
             shopContractNumber.setIdShop(shop.getId());
+            shopContractNumber.setLocation(location.getCode());
             shopContractNumber.setContractNumber(shopCsv.getNum_Contrat());
             shopContractNumberRepository.save(shopContractNumber);
 
@@ -214,14 +211,17 @@ public class ParsingRepositoryShopJob extends ParsingJob {
      */
     private void checkShopCsv(ShopCsvResource shopCsv, String filePath, int line) throws ParsingException {
         if(shopCsv.getCode_AL() == null){
+            nbLineError++;
             throw new ParsingException("CodeAL null at line " + line, filePath, "referentiel");
         }
 
         if(shopCsv.getNum_Contrat() == null){
+            nbLineError++;
             throw new ParsingException("ContractNumber null at line " + line, filePath, "referentiel");
         }
 
         if(shopCsv.getCode_BU() == null){
+            nbLineError++;
             throw new ParsingException("CodeBU null at line " + line, filePath, "referentiel");
         }
     }
