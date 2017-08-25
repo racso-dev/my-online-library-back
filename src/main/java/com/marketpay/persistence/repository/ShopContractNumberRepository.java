@@ -11,5 +11,5 @@ import java.util.Optional;
  */
 public interface ShopContractNumberRepository extends OptionalCRUDRepository<ShopContractNumber, Long> {
     List<ShopContractNumber> findByIdShop(long idShop);
-    Optional<ShopContractNumber> findByContractNumber(String contractNumber);
+    Optional<ShopContractNumber> findByContractNumberAndLocation(String contractNumber, String location);
 }

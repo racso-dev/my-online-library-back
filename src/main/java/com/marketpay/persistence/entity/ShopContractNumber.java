@@ -14,6 +14,7 @@ public class ShopContractNumber {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private long idShop;
+    private String location;
     private String contractNumber;
 
     public Long getId() {
@@ -26,6 +27,14 @@ public class ShopContractNumber {
 
     public void setIdShop(long idShop) {
         this.idShop = idShop;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getContractNumber() {
