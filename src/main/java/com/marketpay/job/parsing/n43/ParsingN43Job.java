@@ -142,7 +142,6 @@ public class ParsingN43Job extends ParsingJob {
         for(Operation operation: operationList) {
             // On cherche l'opération associé a la commission
             if(operation.getTradeDate().equals(transactionDate) && operation.getContractNumber().equals(contractNumber)) {
-                Integer operationIndex = operationList.indexOf(operation);
                 OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
                 Integer commission = getCommission(line, operationSens);
                 operation.setNetAmount(operation.getGrossAmount() + commission);

@@ -44,10 +44,6 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
     @InjectMocks
     private ParsingN43Job parsingN43Job;
 
-    @Mock
-    @Autowired
-    private OperationRepository operationRepository =  Mockito.mock(OperationRepository.class);
-
     @Test
     public void getFinancingDateTest() {
         try {
