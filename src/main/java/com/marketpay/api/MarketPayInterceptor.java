@@ -3,7 +3,9 @@ package com.marketpay.api;
 import com.marketpay.annotation.Dev;
 import com.marketpay.annotation.NotAuthenticated;
 import com.marketpay.annotation.Profile;
+import com.marketpay.exception.EntityNotFoundException;
 import com.marketpay.exception.MarketPayException;
+import com.marketpay.persistence.entity.Shop;
 import com.marketpay.persistence.entity.User;
 import com.marketpay.persistence.repository.ShopRepository;
 import com.marketpay.persistence.repository.UserRepository;
@@ -107,6 +109,11 @@ public class MarketPayInterceptor extends HandlerInterceptorAdapter {
             Long idBu = null;
             if(userOpt.isPresent()) {
                 if (userOpt.get().getIdShop() != null) {
+                    //On récupère le shop
+                    Optional<Shop> shopOpt = shopRepository.findOne(userOpt.get().getIdShop());
+                    if(shopOpt.isPresent()){
+                        idBu = shopOpt.get().getIdBu();
+                    }
                     idShopList.add(userOpt.get().getIdShop());
                 } else if (userOpt.get().getIdBu() != null) {
                     idBu = userOpt.get().getIdBu();
