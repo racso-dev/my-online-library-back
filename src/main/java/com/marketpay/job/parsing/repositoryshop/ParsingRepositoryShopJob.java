@@ -224,6 +224,16 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             nbLineError++;
             throw new ParsingException("CodeBU null at line " + line, filePath, "referentiel");
         }
+
+        if(shopCsv.getNom_AL() == null || shopCsv.getNom_AL().isEmpty()){
+            nbLineError++;
+            throw new ParsingException("ShopName null at line " + line, filePath, "referentiel");
+        }
+
+        if(shopCsv.getNom_BU() == null || shopCsv.getNom_BU().isEmpty()){
+            nbLineError++;
+            throw new ParsingException("BUName null at line " + line, filePath, "referentiel");
+        }
     }
 
     /**
