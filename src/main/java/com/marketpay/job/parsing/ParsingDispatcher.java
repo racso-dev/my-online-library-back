@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class ParsingDispatcher {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingJob.class);
-    private final String CODA_EXTENSION = "BEOC4C.txt";
+    private final List<String> CODA_EXTENSION_LIST = Arrays.asList("befchc.txt", "beoc4c.txt");
     private final String REPOSITORY_SHOP_CSV_EXTENSION = ".csv";
 
     @Autowired
@@ -51,7 +53,7 @@ public class ParsingDispatcher {
         jobHistory.setFilename(filePath);
 
         try {
-            if (filePath.toLowerCase().contains(CODA_EXTENSION.toLowerCase())) {
+            if (CODA_EXTENSION_LIST.stream().anyMatch(filePath.toLowerCase()::contains)) {
                 LOGGER.info("Parsing d'un fichier CODA");
                 jobHistory.setFiletype(JOB_TYPE.CODA.getCode());
                 parsingCoda.parsing(filePath, jobHistory);
