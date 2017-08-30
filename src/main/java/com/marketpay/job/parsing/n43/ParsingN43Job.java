@@ -201,7 +201,9 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     public String getContractNumber(String line) {
-        return matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
+        String contractNumber = matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
+        // On convertie en long pour enlever les premiers 0
+        return Long.valueOf(contractNumber).toString();
     }
 
     public Integer getCommisionType(String line) {
@@ -243,7 +245,10 @@ public class ParsingN43Job extends ParsingJob {
      * @return Bool
      */
     public Boolean shouldCombine(Operation firstTransaction, Operation secondTransaction) {
-        return (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != RECLAMATION_TYPE && firstTransaction.getOperationType() != ANNULATION_TYPE && firstTransaction.getContractNumber().equals(secondTransaction.getContractNumber()));
+        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != RECLAMATION_TYPE && firstTransaction.getOperationType() != ANNULATION_TYPE && firstTransaction.getContractNumber().equals(secondTransaction.getContractNumber())) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -263,7 +268,7 @@ public class ParsingN43Job extends ParsingJob {
         Long combineGrossAmount = firstTransaction.getGrossAmount() + secondTransaction.getGrossAmount();
         combinedTransaction.setGrossAmount(combineGrossAmount);
 
-        if (combineGrossAmount < 0) {
+        if(combineGrossAmount < 0 ) {
             combinedTransaction.setSens(1);
         } else {
             combinedTransaction.setSens(0);
