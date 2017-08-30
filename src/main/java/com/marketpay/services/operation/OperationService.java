@@ -53,7 +53,7 @@ public class OperationService {
      * @return List d'opération
      */
     public List<Operation> getOperationFromShopIdListAndLocalDate(LocalDate localDate, List<Long> shopIdList) {
-        return operationRepository.findOperationsByIdShopInAndFundingDate(shopIdList, localDate);
+        return operationRepository.findOperationsByIdShopInAndFundingDateOrderByContractNumberAscTradeDateAscOperationTypeAscCardTypeAsc(shopIdList, localDate);
     }
 
     /**
