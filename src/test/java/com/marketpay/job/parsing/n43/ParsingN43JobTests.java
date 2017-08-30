@@ -38,7 +38,7 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
     private final String COMISSION_LINE = "22    1500170606170605172051000000000014650002704735                            \n";
 
     private final String BAD_FIRST_LINE = "110049150026101157911706061706062000000000000009783\n";
-    private String N43FILE_PATH = "src/test/resources/parsing/parsingN43File.txt";
+    private String N43FILE_PATH = "src/test/resources/parsing/20170828parsingN43File.txt";
 
     @Autowired
     @InjectMocks
@@ -110,6 +110,8 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         Operation secondTransaction = new Operation();
         firstTransaction.setOperationType(125);
         secondTransaction.setOperationType(125);
+        firstTransaction.setContractNumber("22");
+        secondTransaction.setContractNumber("22");
 
         assertTrue(parsingN43Job.shouldCombine(firstTransaction, secondTransaction));
     }
@@ -198,11 +200,13 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         operation.setTradeDate(DateUtils.convertStringToLocalDate("yyMMdd", "170605"));
         operation.setNetAmount(3000);
         operation.setGrossAmount(3000);
+        operation.setOperationType(125);
         operationList.add(operation);
         Operation operation2 = new Operation();
         operation2.setContractNumber("2704735");
         operation2.setNetAmount(4000);
         operation2.setGrossAmount(4000);
+        operation2.setOperationType(126);
         operation2.setTradeDate(DateUtils.convertStringToLocalDate("yyMMdd", "170611"));
         operationList.add(operation2);
 

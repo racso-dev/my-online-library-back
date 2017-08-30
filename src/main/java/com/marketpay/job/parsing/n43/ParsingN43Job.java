@@ -21,11 +21,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Component
 public class ParsingN43Job extends ParsingJob {
+
+    // Récupération de la createDate apartir du nom du fichier
+    private final String CREATE_DATE_REGEX = "^\\d{2}(\\d{6})"; // Sur 20170826 on ne récupére que 170826
 
     // Identifié sur les lignes commençant par 11
     private final String BU_LINE_INFORMATION = "11";
@@ -39,8 +43,15 @@ public class ParsingN43Job extends ParsingJob {
     private final String OPERATION_SENS_REGEX = "^.{22}12(\\d{3})(\\d{1})"; // Groupe 1 : opération Groupe 2 : Sens
     private final String GROSS_AMOUNT_REGEX = "^.{22}12\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISION_REGEX = "^.{22}17\\d{3}\\d{1}(\\d{14})"; // Groupe 1
+    private final String COMMISSION_TYPE_REGEX = "^.{22}17(\\d{3})\\d{1}"; // Groupe 1
 
-    private final int AGREGEA_OPERATION_TYPE = 125;
+    private final Integer RECLAMATION_TYPE = 126;
+    private final Integer VENTE_TYPE = 125;
+    private final Integer ANNULATION_TYPE = 127;
+    private final List<Integer> VENTE_COMMISSION_TYPE = Arrays.asList(205,208,210);
+    private final List<Integer> RECLAMMATION_COMMISSION_TYPE = Arrays.asList(206);
+    private final List<Integer> ANULLATION_COMMISSION_TYPE = Arrays.asList(207);
+
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingN43Job.class);
 
@@ -68,6 +79,11 @@ public class ParsingN43Job extends ParsingJob {
             operationRepository.delete(operationList);
         }
 
+        String[] filepathList = filePath.split("/");
+        String filename = filepathList[filepathList.length - 1];
+        String createDateString = matchFromRegex(filename, CREATE_DATE_REGEX, 1);
+        LocalDate createDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, createDateString);
+
         try {
             String line;
             List<Operation> operationList = new ArrayList<>();
@@ -83,7 +99,7 @@ public class ParsingN43Job extends ParsingJob {
                     if (fundingDate != null) {
                         newOperation.setFundingDate(fundingDate);
                     }
-
+                    newOperation.setCreateDate(createDate);
                     newOperation.setSens(getSens(line));
                     OPERATION_SENS operationSens = OPERATION_SENS.getByCode(newOperation.getSens());
                     newOperation.setOperationType(getOperationType(line));
@@ -136,21 +152,44 @@ public class ParsingN43Job extends ParsingJob {
         String dateString = getTransactionDate(line);
         LocalDate transactionDate = DateUtils.convertStringToLocalDate(DATE_FORMAT_N43, dateString);
         String contractNumber = getContractNumber(line);
-
+        Integer commissionType = getCommisionType(line);
         List<Operation> finalOperationList = new ArrayList();
 
         for(Operation operation: operationList) {
             // On cherche l'opération associé a la commission
-            if(operation.getTradeDate().equals(transactionDate) && operation.getContractNumber().equals(contractNumber)) {
+            if(operation.getTradeDate().equals(transactionDate) && operation.getContractNumber().equals(contractNumber) && matchingCommissionOperation(operation.getOperationType(), commissionType)) {
                 OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
                 Integer commission = getCommission(line, operationSens);
-                operation.setNetAmount(operation.getGrossAmount() + commission);
+                operation.setNetAmount(operation.getNetAmount() + commission);
             }
 
             finalOperationList.add(operation);
         }
 
         return finalOperationList;
+    }
+
+    /**
+     * Vérifie qu'on ajoute la commission a la bonne opération
+     * @param typeOperation
+     * @param typeCommission
+     * @return
+     */
+    public Boolean matchingCommissionOperation(Integer typeOperation, Integer typeCommission) {
+
+        if(typeOperation == VENTE_TYPE && VENTE_COMMISSION_TYPE.contains(typeCommission)) {
+            return true;
+        }
+
+        if(typeOperation == RECLAMATION_TYPE && RECLAMMATION_COMMISSION_TYPE.contains(typeCommission)) {
+            return true;
+        }
+
+        if(typeOperation == ANNULATION_TYPE && ANULLATION_COMMISSION_TYPE.contains(typeCommission)) {
+            return true;
+        }
+
+        return false;
     }
 
     public String getFundingDate(String line) throws FundingDateException {
@@ -162,8 +201,12 @@ public class ParsingN43Job extends ParsingJob {
     }
 
     public String getContractNumber(String line) {
-        String contractNumber = matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
-        return Long.valueOf(contractNumber).toString();
+        return matchFromRegex(line, CONTRACT_NUMBER_REGEX, 1);
+    }
+
+    public Integer getCommisionType(String line) {
+        String commisionTypeString = matchFromRegex(line, COMMISSION_TYPE_REGEX, 1);
+        return Integer.parseInt(commisionTypeString);
     }
 
     public String getTransactionDate(String line) {
@@ -200,10 +243,7 @@ public class ParsingN43Job extends ParsingJob {
      * @return Bool
      */
     public Boolean shouldCombine(Operation firstTransaction, Operation secondTransaction) {
-        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() == AGREGEA_OPERATION_TYPE && firstTransaction.getContractNumber() == secondTransaction.getContractNumber()) {
-            return true;
-        }
-        return false;
+        return (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != RECLAMATION_TYPE && firstTransaction.getOperationType() != ANNULATION_TYPE && firstTransaction.getContractNumber().equals(secondTransaction.getContractNumber()));
     }
 
     /**
@@ -223,7 +263,7 @@ public class ParsingN43Job extends ParsingJob {
         Long combineGrossAmount = firstTransaction.getGrossAmount() + secondTransaction.getGrossAmount();
         combinedTransaction.setGrossAmount(combineGrossAmount);
 
-        if(combineGrossAmount < 0 ) {
+        if (combineGrossAmount < 0) {
             combinedTransaction.setSens(1);
         } else {
             combinedTransaction.setSens(0);
