@@ -218,7 +218,7 @@ public class PdfOperationService {
                 String cardTypeValue = CARD_TYPE.getByCode(operation.getCardType()).getI18n();
                 rowValue = i18nUtils.getMessage(cardTypeValue, null, language);
             } else {
-                String operationTypeValue = OPERATION_TYPE.getByCode(operation.getOperationType()).getI18n();
+                String operationTypeValue = OPERATION_TYPE.getByCode(operation.getOperationType() * 10 + operation.getSens()).getI18n();
                 rowValue = i18nUtils.getMessage(operationTypeValue, null, language);
             }
 
