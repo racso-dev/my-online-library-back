@@ -9,6 +9,7 @@ import com.marketpay.persistence.entity.*;
 import com.marketpay.persistence.repository.*;
 import com.marketpay.references.JOB_STATUS;
 import com.marketpay.references.LOCATION;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -183,7 +183,8 @@ public class ParsingRepositoryShopJob extends ParsingJob {
             shop.setIdBu(businessUnit.getId());
             shop.setAtica(shopCsv.getATICA());
             shop.setLocation(location.getCode());
-            shop.setCodeAl(shopCsv.getCode_AL());
+            // Le code AL est composé de 4 chiffres ( si on en récupére moins on le compléte avec des 0 )
+            shop.setCodeAl(StringUtils.leftPad(shopCsv.getCode_AL(), 4, "0"));
             shop.setGln(shopCsv.getGLN());
             shop.setName(shopCsv.getNom_AL());
             shop = shopRepository.save(shop);
