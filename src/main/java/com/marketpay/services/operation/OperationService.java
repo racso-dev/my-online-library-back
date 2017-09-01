@@ -47,16 +47,6 @@ public class OperationService {
     private I18nUtils i18nUtils;
 
     /**
-     * Permet de récupérer la liste d'opération effectué dans x magasins à un instant T
-     * @param localDate
-     * @param shopIdList
-     * @return List d'opération
-     */
-    public List<Operation> getOperationFromShopIdListAndLocalDate(LocalDate localDate, List<Long> shopIdList) {
-        return operationRepository.findOperationsByIdShopInAndFundingDateOrderByContractNumberAscTradeDateAscOperationTypeAscCardTypeAsc(shopIdList, localDate);
-    }
-
-    /**
      * Permet de récupérer la liste des opérations ainsi que la liste des financements
      * @param fundingDate : Date de financement
      * @param shopIdList : Liste des shop concernés
@@ -69,7 +59,7 @@ public class OperationService {
         // Correspond à la liste retourner par le WS
         List<Operation> returnOperationList = new ArrayList();
 
-        List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+        List<Operation> operationList = operationRepository.findOperationsByIdShopInAndFundingDateOrderByContractNumberAscTradeDateAscOperationTypeAscCardTypeAsc(shopIdList, fundingDate);
 
         if(createDate == null) {
             returnOperationList = operationList;
@@ -130,7 +120,7 @@ public class OperationService {
         if(createDate != null) {
             operationList = operationRepository.findOperationsByIdShopInAndFundingDateAndCreateDateOrderByContractNumberAscTradeDateAscOperationTypeAscCardTypeAsc(shopIdList, fundingDate, createDate);
         } else {
-            operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+            operationList = operationRepository.findOperationsByIdShopInAndFundingDateOrderByContractNumberAscTradeDateAscOperationTypeAscCardTypeAsc(shopIdList, fundingDate);
         }
         String shopName = i18nUtils.getMessage("pdfOperationService.allShop", null, language);
         String buName = "";
