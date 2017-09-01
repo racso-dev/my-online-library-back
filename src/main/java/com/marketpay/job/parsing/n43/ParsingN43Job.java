@@ -112,6 +112,10 @@ public class ParsingN43Job extends ParsingJob {
                     if (shopOpt.isPresent()) {
                         newOperation.setNameShop(shopOpt.get().getName());
                         newOperation.setIdShop(shopOpt.get().getId());
+                    } else {
+                        LOGGER.warn("impossible de relié le contract number : " + newOperation.getContractNumber() + " avec un magasin");
+                        jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_SHOP.getCode());
+                        jobHistory.addError("impossible de relié le contract number : " + newOperation.getContractNumber() + " avec un magasin");
                     }
 
                     if (!operationList.isEmpty()) {

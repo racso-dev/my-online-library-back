@@ -158,7 +158,9 @@ public class ParsingCODAJob extends ParsingJob {
                         operation.setNameShop(shopOpt.get().getName());
                         operation.setIdShop(shopOpt.get().getId());
                     } else {
+                        LOGGER.warn("impossible de relié le contract number : " + operation.getContractNumber() + " avec un magasin");
                         jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_SHOP.getCode());
+                        jobHistory.addError("impossible de relié le contract number : " + operation.getContractNumber() + " avec un magasin");
                     }
                     operation.setIdBlock(codaBlock.getId());
                     operationRepository.save(operation);
