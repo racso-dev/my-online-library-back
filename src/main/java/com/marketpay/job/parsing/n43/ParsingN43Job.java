@@ -44,14 +44,14 @@ public class ParsingN43Job extends ParsingJob {
     private final String GROSS_AMOUNT_REGEX = "^.{22}12\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISION_REGEX = "^.{22}17\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISSION_TYPE_REGEX = "^.{22}17(\\d{3})\\d{1}"; // Groupe 1
+    private final String OPERATION_REF_REGEX = ".{52}(.{12})"; // Groupe 1 utilisé uniquement pour les opérations 126 / 127
 
     private final Integer RECLAMATION_TYPE = 126;
     private final Integer VENTE_TYPE = 125;
     private final Integer ANNULATION_TYPE = 127;
     private final List<Integer> VENTE_COMMISSION_TYPE = Arrays.asList(205,208,210);
     private final List<Integer> RECLAMMATION_COMMISSION_TYPE = Arrays.asList(206);
-    private final List<Integer> ANULLATION_COMMISSION_TYPE = Arrays.asList(207);
-
+    private final List<Integer> ANNULATION_COMMISSION_TYPE = Arrays.asList(207);
 
     private final Logger LOGGER = LoggerFactory.getLogger(ParsingN43Job.class);
 
@@ -102,7 +102,13 @@ public class ParsingN43Job extends ParsingJob {
                     newOperation.setCreateDate(createDate);
                     newOperation.setSens(getSens(line));
                     OPERATION_SENS operationSens = OPERATION_SENS.getByCode(newOperation.getSens());
-                    newOperation.setOperationType(getOperationType(line));
+                    Integer operationType = getOperationType(line);
+                    newOperation.setOperationType(operationType);
+
+                    if(operationType.equals(RECLAMATION_TYPE) || operationType.equals(ANNULATION_TYPE)) {
+                        newOperation.setReference(getOperationRef(line));
+                    }
+
                     newOperation.setContractNumber(getContractNumber(line));
                     newOperation.setGrossAmount(getGrossAmount(line, operationSens));
                     newOperation.setNetAmount(newOperation.getGrossAmount());
@@ -158,13 +164,21 @@ public class ParsingN43Job extends ParsingJob {
         String contractNumber = getContractNumber(line);
         Integer commissionType = getCommisionType(line);
         List<Operation> finalOperationList = new ArrayList();
+        String commissionRef = null;
+
+        if(RECLAMMATION_COMMISSION_TYPE.contains(commissionType) || ANNULATION_COMMISSION_TYPE.contains(commissionType)) {
+            commissionRef = getOperationRef(line);
+        }
 
         for(Operation operation: operationList) {
             // On cherche l'opération associé a la commission
             if(operation.getTradeDate().equals(transactionDate) && operation.getContractNumber().equals(contractNumber) && matchingCommissionOperation(operation.getOperationType(), commissionType)) {
-                OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
-                Integer commission = getCommission(line, operationSens);
-                operation.setNetAmount(operation.getNetAmount() + commission);
+
+                if((commissionRef != null && operation.getReference() != null && commissionRef.equals(operation.getReference())) || (commissionRef == null)) {
+                    OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
+                    Integer commission = getCommission(line, operationSens);
+                    operation.setNetAmount(operation.getNetAmount() + commission);
+                }
             }
 
             finalOperationList.add(operation);
@@ -189,7 +203,7 @@ public class ParsingN43Job extends ParsingJob {
             return true;
         }
 
-        if(typeOperation == ANNULATION_TYPE && ANULLATION_COMMISSION_TYPE.contains(typeCommission)) {
+        if(typeOperation == ANNULATION_TYPE && ANNULATION_COMMISSION_TYPE.contains(typeCommission)) {
             return true;
         }
 
@@ -233,6 +247,16 @@ public class ParsingN43Job extends ParsingJob {
         Integer value = convertStringToInt(amount);
 
         return sens == OPERATION_SENS.DEBIT ? -value : value;
+    }
+
+    /**
+     * Récupération du numéro de référence de la transaction
+     * utilisé uniquement pour les operations type 126 et 127
+     * @param line
+     * @return
+     */
+    public String getOperationRef(String line) {
+        return matchFromRegex(line, OPERATION_REF_REGEX, 1);
     }
 
     public Integer getCommission(String line, OPERATION_SENS sens) {

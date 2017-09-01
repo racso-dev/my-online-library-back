@@ -33,6 +33,19 @@ public class Operation {
     private Long idShop;
     private Long idBlock;
     private Long idJobHistory;
+    private String reference = "";
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
     public Long getIdJobHistory() {
         return idJobHistory;
