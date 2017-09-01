@@ -112,6 +112,10 @@ public class ParsingN43Job extends ParsingJob {
                     if (shopOpt.isPresent()) {
                         newOperation.setNameShop(shopOpt.get().getName());
                         newOperation.setIdShop(shopOpt.get().getId());
+                    } else {
+                        LOGGER.warn("impossible de relié le contract number : " + newOperation.getContractNumber() + " avec un magasin");
+                        jobHistory.setStatus(JOB_STATUS.MISSING_MATCHING_SHOP.getCode());
+                        jobHistory.addError("impossible de relié le contract number : " + newOperation.getContractNumber() + " avec un magasin");
                     }
 
                     if (!operationList.isEmpty()) {
@@ -245,10 +249,10 @@ public class ParsingN43Job extends ParsingJob {
      * @return Bool
      */
     public Boolean shouldCombine(Operation firstTransaction, Operation secondTransaction) {
-        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && firstTransaction.getOperationType() != RECLAMATION_TYPE && firstTransaction.getOperationType() != ANNULATION_TYPE && firstTransaction.getContractNumber().equals(secondTransaction.getContractNumber())) {
-            return true;
-        }
-        return false;
+        return  firstTransaction.getOperationType() == secondTransaction.getOperationType() && // si même type d'opération
+                firstTransaction.getOperationType() != RECLAMATION_TYPE && firstTransaction.getOperationType() != ANNULATION_TYPE && // on aggrége tout sauf les annulation et les réclamations
+                firstTransaction.getContractNumber().equals(secondTransaction.getContractNumber()) &&
+                firstTransaction.getTradeDate().isEqual(secondTransaction.getTradeDate()); // On vérifie que les deux dates de financement sont identiques
     }
 
     /**

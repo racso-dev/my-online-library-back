@@ -109,6 +109,8 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         Operation firstTransaction = new Operation();
         Operation secondTransaction = new Operation();
         firstTransaction.setOperationType(125);
+        firstTransaction.setTradeDate(LocalDate.now());
+        secondTransaction.setTradeDate(LocalDate.now());
         secondTransaction.setOperationType(125);
         firstTransaction.setContractNumber("22");
         secondTransaction.setContractNumber("22");
