@@ -91,7 +91,10 @@ public class OperationController extends MarketPayController {
      */
     @RequestMapping(value = "/pdf", method = RequestMethod.GET)
     @Profile({})
-    public void getPdfFile(@RequestParam(value= "idShop", required = false) Long idShop, @RequestParam(value= "idBu", required = false) Long idBu, @RequestParam(value = "fundingDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate, HttpServletResponse response) throws MarketPayException {
+    public void getPdfFile(@RequestParam(value= "idShop", required = false) Long idShop,
+                           @RequestParam(value = "createDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createDate,
+                           @RequestParam(value= "idBu", required = false) Long idBu,
+                           @RequestParam(value = "fundingDate") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fundingDate, HttpServletResponse response) throws MarketPayException {
 
         //Si on passe un idShop, on vérifie que le user à le droit d'accès à ce shop
         List<Long> shopIdList = getAuthoriseShop(idShop, idBu);
@@ -102,7 +105,7 @@ public class OperationController extends MarketPayController {
         response.setHeader("Content-Disposition", "attachment; filename=" + filename);
         try {
 
-            PDDocument pdDocument = operationService.getPdfFileFromTable(fundingDate, shopIdList, RequestContext.get().getLanguage());
+            PDDocument pdDocument = operationService.getPdfFileFromTable(fundingDate, shopIdList, RequestContext.get().getLanguage(), createDate);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             pdDocument.save(outputStream);
             pdDocument.close();
