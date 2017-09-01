@@ -249,13 +249,10 @@ public class ParsingN43Job extends ParsingJob {
      * @return Bool
      */
     public Boolean shouldCombine(Operation firstTransaction, Operation secondTransaction) {
-        if (firstTransaction.getOperationType() == secondTransaction.getOperationType() && // si même type d'opération
-            firstTransaction.getOperationType() != RECLAMATION_TYPE && firstTransaction.getOperationType() != ANNULATION_TYPE && // on aggrége tout sauf les annulation et les réclamations
-            firstTransaction.getContractNumber().equals(secondTransaction.getContractNumber()) &&
-            firstTransaction.getTradeDate().isEqual(secondTransaction.getTradeDate())) {
-            return true;
-        }
-        return false;
+        return  firstTransaction.getOperationType() == secondTransaction.getOperationType() && // si même type d'opération
+                firstTransaction.getOperationType() != RECLAMATION_TYPE && firstTransaction.getOperationType() != ANNULATION_TYPE && // on aggrége tout sauf les annulation et les réclamations
+                firstTransaction.getContractNumber().equals(secondTransaction.getContractNumber()) &&
+                firstTransaction.getTradeDate().isEqual(secondTransaction.getTradeDate()); // On vérifie que les deux dates de financement sont identiques
     }
 
     /**
