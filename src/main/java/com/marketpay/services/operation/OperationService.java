@@ -119,13 +119,19 @@ public class OperationService {
      * @param language : utilisé pour la traduction i18n
      * @return
      */
-    public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList, LANGUAGE language) throws MarketPayException {
+    public PDDocument getPdfFileFromTable(LocalDate fundingDate, List<Long> shopIdList, LANGUAGE language, LocalDate createDate) throws MarketPayException {
         //check shopIdList
         if(shopIdList.isEmpty()){
             throw new MarketPayException(HttpStatus.BAD_REQUEST, "IdShopList vide");
         }
 
-        List<Operation> operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+        List<Operation> operationList;
+
+        if(createDate != null) {
+            operationList = operationRepository.findOperationsByIdShopInAndFundingDateAndCreateDateOrderByContractNumberAscTradeDateAscOperationTypeAscCardTypeAsc(shopIdList, fundingDate, createDate);
+        } else {
+            operationList = getOperationFromShopIdListAndLocalDate(fundingDate, shopIdList);
+        }
         String shopName = i18nUtils.getMessage("pdfOperationService.allShop", null, language);
         String buName = "";
 

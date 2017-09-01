@@ -15,4 +15,5 @@ public interface OperationRepository extends OptionalCRUDRepository<Operation, L
     List<Operation> findByContractNumberAndIdShopIsNull(String contractNumber);
     Optional<Operation> findFirstByIdShopInOrderByFundingDateDesc(List<Long> idShopList);
     List<Operation> findByIdJobHistory(long idJobHistory);
+    List<Operation> findOperationsByIdShopInAndFundingDateAndCreateDateOrderByContractNumberAscTradeDateAscOperationTypeAscCardTypeAsc(List<Long> idShopList, LocalDate fundingDate, LocalDate createDate);
 }
