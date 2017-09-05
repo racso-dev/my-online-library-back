@@ -108,8 +108,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
         checkShopCsv(shopCsv, filePath, line);
 
         //On récupère le shop s'il existe déjà
-        Optional<Shop> shopOpt = shopRepository.findByCodeAlAndLocation(shopCsv.getCode_AL(), location.getCode());
-
+        Optional<Shop> shopOpt = shopRepository.findByCodeAlAndLocation(StringUtils.leftPad(shopCsv.getCode_AL(), 4, "0"), location.getCode());
         //S'il existe on le met à jour ainsi que sa BU
         if(shopOpt.isPresent()){
             //Mise à jour BU
