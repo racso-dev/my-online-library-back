@@ -64,6 +64,11 @@ public class ParsingCODAJob extends ParsingJob {
             // Si on a déjà parser le fichier on supprime les operations associé pour les reparser
             List<Operation> operationList = operationRepository.findByIdJobHistory(oldJobHistory.getId());
             operationRepository.delete(operationList);
+
+            // On supprime les block coda associé aux opérations
+            for(Operation operation: operationList) {
+                blockRepository.delete(operation.getIdBlock());
+            }
         }
 
         try {

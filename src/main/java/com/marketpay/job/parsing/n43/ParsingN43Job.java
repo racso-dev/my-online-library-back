@@ -44,6 +44,7 @@ public class ParsingN43Job extends ParsingJob {
     private final String GROSS_AMOUNT_REGEX = "^.{22}12\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISION_REGEX = "^.{22}17\\d{3}\\d{1}(\\d{14})"; // Groupe 1
     private final String COMMISSION_TYPE_REGEX = "^.{22}17(\\d{3})\\d{1}"; // Groupe 1
+    private final String COMMISSION_SENS = "^.{22}17(\\d{3})(\\d{1})"; // Groupe 2 : Sens
     private final String OPERATION_REF_REGEX = ".{52}(.{12})"; // Groupe 1 utilisé uniquement pour les opérations 126 / 127
 
     private final Integer RECLAMATION_TYPE = 126;
@@ -175,8 +176,7 @@ public class ParsingN43Job extends ParsingJob {
             if(operation.getTradeDate().equals(transactionDate) && operation.getContractNumber().equals(contractNumber) && matchingCommissionOperation(operation.getOperationType(), commissionType)) {
 
                 if((commissionRef != null && operation.getReference() != null && commissionRef.equals(operation.getReference())) || (commissionRef == null)) {
-                    OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
-                    Integer commission = getCommission(line, operationSens);
+                    Integer commission = getCommission(line);
                     operation.setNetAmount(operation.getNetAmount() + commission);
                 }
             }
@@ -242,6 +242,10 @@ public class ParsingN43Job extends ParsingJob {
         return convertStringToInt(matchFromRegex(line, OPERATION_SENS_REGEX, 2))%2;
     }
 
+    public Integer getCommissionSens(String line) {
+        return convertStringToInt(matchFromRegex(line, COMMISSION_SENS, 2))%2;
+    }
+
     public Integer getGrossAmount(String line, OPERATION_SENS sens) {
         String amount = matchFromRegex(line, GROSS_AMOUNT_REGEX, 1);
         Integer value = convertStringToInt(amount);
@@ -259,11 +263,11 @@ public class ParsingN43Job extends ParsingJob {
         return matchFromRegex(line, OPERATION_REF_REGEX, 1);
     }
 
-    public Integer getCommission(String line, OPERATION_SENS sens) {
+    public Integer getCommission(String line) {
         String amount = matchFromRegex(line, COMMISION_REGEX, 1);
         Integer value = convertStringToInt(amount);
-
-        return sens == OPERATION_SENS.CREDIT ? -value : value;
+        OPERATION_SENS commissionSens = OPERATION_SENS.getByCode(getCommissionSens(line));
+        return commissionSens == OPERATION_SENS.DEBIT ? -value : value;
     }
 
     /**
