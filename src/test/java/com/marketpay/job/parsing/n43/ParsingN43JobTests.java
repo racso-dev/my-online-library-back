@@ -35,7 +35,8 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     private final String FIRSTLINE_N43_FILE = "110049150026101157911706061706062000000000000009783GROUP SUPECO MAXOR\n";
     private final String TRANSACTION_LINE = "22    1500170606170605121252000000007107340002704735                            \n";
-    private final String COMISSION_LINE = "22    1500170606170605172051000000000014650002704735                            \n";
+    private final String COMISSION_LINE = "22    1500170606170605172052000000000014650002704735                            \n";
+    private final String NEGATIVE_COMISSION_LINE = "22    1500170606170605172051000000000014650002704735                            \n";
 
     private final String BAD_FIRST_LINE = "110049150026101157911706061706062000000000000009783\n";
     private String N43FILE_PATH = "src/test/resources/parsing/20170828parsingN43File.txt";
@@ -82,13 +83,19 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
 
     @Test
     public void getCommisionTest() {
-        int commision = parsingN43Job.getCommission(COMISSION_LINE, OPERATION_SENS.DEBIT);
+        int commision = parsingN43Job.getCommission(COMISSION_LINE);
         assertEquals(1465, commision);
     }
 
     @Test
+    public void getNegativeCommissionTest() {
+        int commission = parsingN43Job.getCommission(NEGATIVE_COMISSION_LINE);
+        assertEquals(-1465, commission);
+    }
+
+    @Test
     public void getComissionShouldFail() {
-        int comision = parsingN43Job.getCommission(TRANSACTION_LINE, OPERATION_SENS.DEBIT);
+        int comision = parsingN43Job.getCommission(TRANSACTION_LINE);
         assertEquals(-1, comision);
     }
 
@@ -212,9 +219,27 @@ public class ParsingN43JobTests extends MarketPayUnitTests {
         operation2.setTradeDate(DateUtils.convertStringToLocalDate("yyMMdd", "170611"));
         operationList.add(operation2);
 
-        List<Operation> finalOperationList = parsingN43Job.addCommissionToOperation(COMISSION_LINE, operationList);
+        List<Operation> finalOperationList = parsingN43Job.addCommissionToOperation(NEGATIVE_COMISSION_LINE, operationList);
         assertEquals(finalOperationList.get(1), operation2);
-        assertEquals(finalOperationList.get(0).getNetAmount(), 3000 - 1465);
+        assertEquals(3000 - 1465, finalOperationList.get(0).getNetAmount());
+    }
+
+    @Test
+    public void agregeaCommissionTest() {
+        List<Operation> operationList = new ArrayList();
+        Operation operation = new Operation();
+        operation.setContractNumber("2704735");
+        operation.setTradeDate(DateUtils.convertStringToLocalDate("yyMMdd", "170605"));
+        operation.setNetAmount(3000);
+        operation.setGrossAmount(3000);
+        operation.setOperationType(125);
+        operationList.add(operation);
+
+        List<Operation> finalOperationList = parsingN43Job.addCommissionToOperation(NEGATIVE_COMISSION_LINE, operationList);
+        assertEquals(3000 - 1465, finalOperationList.get(0).getNetAmount());
+
+        finalOperationList = parsingN43Job.addCommissionToOperation(COMISSION_LINE, finalOperationList);
+        assertEquals(3000, finalOperationList.get(0).getNetAmount());
     }
 
 
