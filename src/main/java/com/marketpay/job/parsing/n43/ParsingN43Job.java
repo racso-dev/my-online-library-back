@@ -176,7 +176,6 @@ public class ParsingN43Job extends ParsingJob {
             if(operation.getTradeDate().equals(transactionDate) && operation.getContractNumber().equals(contractNumber) && matchingCommissionOperation(operation.getOperationType(), commissionType)) {
 
                 if((commissionRef != null && operation.getReference() != null && commissionRef.equals(operation.getReference())) || (commissionRef == null)) {
-                    //OPERATION_SENS operationSens = OPERATION_SENS.getByCode(operation.getSens());
                     Integer commission = getCommission(line);
                     operation.setNetAmount(operation.getNetAmount() + commission);
                 }
