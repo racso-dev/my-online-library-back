@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
+import sun.rmi.runtime.Log;
 
 import java.io.File;
 import java.io.FileReader;
@@ -108,8 +109,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
         checkShopCsv(shopCsv, filePath, line);
 
         //On récupère le shop s'il existe déjà
-        Optional<Shop> shopOpt = shopRepository.findByCodeAlAndLocation(shopCsv.getCode_AL(), location.getCode());
-
+        Optional<Shop> shopOpt = shopRepository.findByCodeAlAndLocation(StringUtils.leftPad(shopCsv.getCode_AL(), 4, "0"), location.getCode());
         //S'il existe on le met à jour ainsi que sa BU
         if(shopOpt.isPresent()){
             //Mise à jour BU
