@@ -293,6 +293,7 @@ public class ParsingRepositoryShopJob extends ParsingJob {
 
         blockOptional.ifPresent(block -> {
             block.setIdBu(shop.getIdBu());
+            blockRepository.save(block);
         });
     }
 
