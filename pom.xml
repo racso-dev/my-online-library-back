@@ -64,7 +64,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.33</version> <!-- TODO passer en version 6.0.6 -->
+            <version>6.0.6</version>
         </dependency>
 
         <dependency>
@@ -98,18 +98,6 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
             <version>2.4.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sf.supercsv</groupId>
-            <artifactId>super-csv-java8</artifactId>
-            <version>2.4.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.dhorions</groupId>
-            <artifactId>boxable</artifactId>
-            <version>1.4</version>
         </dependency>
 
         <dependency>
