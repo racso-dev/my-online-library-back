@@ -1,4 +1,4 @@
-package com.steamulo.job.scheduledtask;
+package com.steamulo.scheduledtask;
 
 import com.steamulo.persistence.repository.UserTokenRepository;
 import org.slf4j.Logger;
