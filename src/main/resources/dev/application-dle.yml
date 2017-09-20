@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost/steamuloapistarter
+    username: root
+    password: root
+
+sftp:
+  pathIncomming: /home/dle/Documents/SteamuloAPIStarter/incomming
+  pathArchive: /home/dle/Documents/SteamuloAPIStarter/archive
