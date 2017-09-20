@@ -1,10 +1,7 @@
-database:
-  flyway: true
-
 spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost/marketpay
+    url: jdbc:mysql://localhost/steamulo-api-starter
     username: root
     password: root
 
@@ -13,10 +10,6 @@ spring:
       port: 25
       username:
       password:
-
-sftp:
-  pathIncomming: /home/etienne/workspaceMarketPay/incomming
-  pathArchive: /home/etienne/workspaceMarketPay/archive
 
 jwt:
   expiration: 86400000

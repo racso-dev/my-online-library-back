@@ -1,6 +1,3 @@
-database:
-  flyway: true
-
 spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
