@@ -26,7 +26,7 @@ public class Application {
         ServerConfig serverConf = applicationContext.getBean(ServerConfig.class);
 
         LOGGER.info("***************************************************");
-        LOGGER.info("* Application Steamulo-Api-Starter démarrée         *");
+        LOGGER.info("* Application Steamulo-Api-Starter démarrée       *");
         LOGGER.info("* - Port public : " + serverConf.getServer().getPort() + "                            *");
         LOGGER.info("* - Port admin : " + serverConf.getManagement().getPort() + "                             *");
         LOGGER.info("***************************************************");
