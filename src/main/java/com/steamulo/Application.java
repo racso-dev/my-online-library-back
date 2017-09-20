@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * Created by etienne on 03/07/17.
  */
 @SpringBootApplication
-@EnableScheduling
+//@EnableScheduling
 public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
