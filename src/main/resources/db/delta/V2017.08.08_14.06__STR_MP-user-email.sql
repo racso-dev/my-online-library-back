@@ -1,4 +1,0 @@
-
-ALTER TABLE user
-CHANGE COLUMN `email` `email` VARCHAR(100) NOT NULL ;
-

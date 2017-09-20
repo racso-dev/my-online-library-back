@@ -1,2 +1,0 @@
-ALTER TABLE `block`ADD COLUMN `create_date` DATETIME NOT NULL;
-ALTER TABLE `operation`ADD COLUMN `create_date` DATETIME NULL;
