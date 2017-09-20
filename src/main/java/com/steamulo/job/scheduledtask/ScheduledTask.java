@@ -13,7 +13,7 @@ import java.util.Date;
 
 /**
  * Exemple d'utilisation @Scheduled
- * Pour activer les schedule task, ajoute l'annotation @EnableScheduling dans Application.java
+ * Pour activer les schedule task, ajouter l'annotation @EnableScheduling dans Application.java
  */
 @Component
 public class ScheduledTask {
@@ -27,6 +27,12 @@ public class ScheduledTask {
      * Task qui clean les userToken périmé et les userKeyPass périmé
      * Elle s'exécute tous les jours à 3h
      * cron : cron expression. Pour exécuter des tâches pédiodiques
+     * min	heure   jour/mois	mois	jour/semaine	Périodicité
+     *	*	 *	     *	         *	       *            Toutes les minutes
+     *  30	 0	     1	        1,6,12	   *	        à 00:30 le premier janvier, juin et décembre
+     *	0    20	     *	        10	       1-5	        à 20:00 chaque jour de la semaine (du lundi au vendredi) d’octobre
+     *	0	 0       1,10,15	*	       *	        à minuit les premiers, dixièmes, et quinzième jours de chaque mois
+     * 5,10	 0	     10	        *	       1	        à 00:05 et 00:10 chaque lundi et le 10 de chaque mois
      */
     @Scheduled(cron = "0 0 3 * * *")
     private void schedulerClean() {
