@@ -1,11 +1,9 @@
 package com.steamulo.services.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.steamulo.api.auth.response.TokenResponse;
 import com.steamulo.exception.ApiException;
-import com.steamulo.persistence.entity.UserToken;
-import com.steamulo.persistence.repository.UserTokenRepository;
+import com.steamulo.filter.security.AccountCredentials;
 import com.steamulo.utils.DateUtils;
+import com.steamulo.utils.PasswordUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Date;
 
 import static java.util.Collections.emptyList;
 /**
@@ -30,48 +27,28 @@ import static java.util.Collections.emptyList;
 @Component
 public class TokenAuthenticationService {
 
+    @Autowired
+    private ApiUserDetailsService apiUserDetailsService;
+
     @Value("${jwt.expiration}")
     private long EXPIRATIONTIME;
     @Value("${jwt.secret}")
     private String SECRET;
-    private final String COOKIE_NAME = "sid";
-
-    @Autowired
-    private UserTokenRepository userTokenRepository;
+    static final String TOKEN_PREFIX = "Bearer";
+    static final String HEADER_STRING = "Authorization";
 
     /**
      * Service d'ajout d'une authentification
-     * @param req
      * @param res
      * @param login
-     * @throws IOException
      */
-    public void addAuthentication(HttpServletRequest req, HttpServletResponse res, String login) throws IOException {
+    public void addAuthentication(HttpServletResponse res, String login) {
         //On connecte le user
-        String newToken = connectUser(login);
+        String newToken = newToken(login);
 
         //On renvoit le token
         res.setContentType("application/json");
-        ObjectMapper mapper = new ObjectMapper();
-        res.getWriter().write(mapper.writeValueAsString(new TokenResponse(newToken)));
-    }
-
-    /**
-     * Service de connection d'un user
-     * @param login
-     * @return
-     */
-    public String connectUser(String login) {
-        //On génère le nouveau token
-        String newToken = newToken(login);
-
-        //On ajoute le token en BDD avec la bonne date d'expiration
-        UserToken userToken = new UserToken();
-        userToken.setExpirationDateTime(DateUtils.getLocalDateTimeFromInstantMillis(System.currentTimeMillis() + EXPIRATIONTIME));
-        userToken.setToken(newToken);
-        userTokenRepository.save(userToken);
-
-        return newToken;
+        res.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + newToken);
     }
 
     /**
@@ -80,43 +57,18 @@ public class TokenAuthenticationService {
      * @return
      */
     public Authentication getAuthentication(HttpServletRequest request) throws ApiException {
-        if( request.getCookies() != null ) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals(COOKIE_NAME)) {
-                    String token = cookie.getValue();
-                    if (!StringUtils.isEmpty(token)) {
-                        // parse the token.
-                        String user = Jwts.parser()
-                            .setSigningKey(SECRET)
-                            .parseClaimsJws(token)
-                            .getBody()
-                            .getSubject();
+        String token = request.getHeader(HEADER_STRING);
+        if (token != null) {
+            // parse the token.
+            String user = Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                .getBody()
+                .getSubject();
 
-                        // On vérifie que le token n'est pas expiré
-                        Optional<UserToken> userTokenOpt = userTokenRepository.findByToken(token);
-
-                        if (userTokenOpt.isPresent()) {
-                            if(userTokenOpt.get().getExpirationDateTime().isAfter(LocalDateTime.now())){
-                                //S'il n'est pas expiré on met à jour sa date d'expiration
-                                userTokenOpt.get().setExpirationDateTime(DateUtils.getLocalDateTimeFromInstantMillis(System.currentTimeMillis() + EXPIRATIONTIME));
-                                userTokenRepository.save(userTokenOpt.get());
-                            } else {
-                                //S'il est expiré on le supprime de la BDD et on retourne un UNAUTHORIZED
-                                userTokenRepository.delete(userTokenOpt.get());
-                                throw new ApiException(HttpStatus.UNAUTHORIZED, "Token " + token + " expiré");
-                            }
-                        } else {
-                            //Si le token n'est pas trouvé alors on rejète la request
-                            throw new ApiException(HttpStatus.UNAUTHORIZED, "Token " + token + " inconnu");
-                        }
-
-                        return user != null ?
-                            new UsernamePasswordAuthenticationToken(user, null, emptyList()) :
-                            null;
-                    }
-                }
-            }
-
+            return user != null ?
+                new UsernamePasswordAuthenticationToken(user, null, emptyList()) :
+                null;
         }
         return null;
     }
@@ -130,6 +82,7 @@ public class TokenAuthenticationService {
         return Jwts.builder()
             .setSubject(username)
             .setIssuedAt(DateUtils.toDateFromLocalDateTime(LocalDateTime.now()))
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
             .signWith(SignatureAlgorithm.HS512, SECRET)
             .compact();
     }
@@ -139,12 +92,27 @@ public class TokenAuthenticationService {
      * @param token
      */
     public void logout(String token) {
-        //On récupère le token
-        Optional<UserToken> userTokenOpt = userTokenRepository.findByToken(token);
-        if(userTokenOpt.isPresent()){
-            //On le supprime pour la déconnexion
-            userTokenRepository.delete(userTokenOpt.get());
-        }
+
     }
 
+    /**
+     * Service de connexion
+     */
+    public void login(HttpServletResponse res, AccountCredentials user) throws ApiException {
+        if (user.getUsername() == null || user.getPassword() == null) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials");
+        }
+        UserDetails userDetails;
+        try {
+            userDetails = apiUserDetailsService.loadUserByUsername(user.getUsername());
+        } catch(UsernameNotFoundException e) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials");
+        }
+        String password = user.getPassword();
+        String pwd = userDetails.getPassword();
+        if (!PasswordUtils.PASSWORD_ENCODER.matches(password, pwd)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials");
+        }
+        addAuthentication(res, user.getUsername());
+    }
 }

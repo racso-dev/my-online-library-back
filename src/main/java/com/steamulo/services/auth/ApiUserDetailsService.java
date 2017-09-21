@@ -14,7 +14,7 @@ import java.util.Optional;
  * Created by etienne on 03/07/17.
  */
 @Component
-public class MarketPayUserDetailsService implements UserDetailsService {
+public class ApiUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -28,6 +28,6 @@ public class MarketPayUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No user for login " + username);
         }
 
-        return new MarketPayUserDetails(userOpt.get());
+        return new ApiUserDetails(userOpt.get());
     }
 }

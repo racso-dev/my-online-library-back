@@ -1,13 +1,8 @@
 package com.steamulo.job.scheduledtask;
 
-import com.steamulo.persistence.repository.UserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 /**
  * Created by etienne on 16/08/17.
@@ -17,13 +12,13 @@ public class ScheduledCleanTask {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ScheduledCleanTask.class);
 
-    @Autowired
+    /*@Autowired
     private UserTokenRepository userTokenRepository;
 
-    /**
+    *//**
      * Task qui clean les userToken périmé et les userKeyPass périmé
      * Elle s'exécute tous les jours à 3h
-     */
+     *//*
     @Scheduled(cron = "0 0 3 * * *")
     private void schedulerClean() {
         LOGGER.info("*************** START Scheduled Clean Task ***************");
@@ -38,5 +33,5 @@ public class ScheduledCleanTask {
             }
         });
         LOGGER.info("*************** END Scheduled Clean Task ***************");
-    }
+    }*/
 }

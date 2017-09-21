@@ -10,9 +10,9 @@ import java.util.Collections;
 /**
  * Created by etienne on 31/07/17.
  */
-public class MarketPayUserDetails extends User implements UserDetails {
+public class ApiUserDetails extends User implements UserDetails {
 
-    public MarketPayUserDetails(User user) {
+    public ApiUserDetails(User user) {
         super(user);
     }
 

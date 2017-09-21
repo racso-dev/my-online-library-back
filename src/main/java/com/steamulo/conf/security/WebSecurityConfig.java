@@ -1,15 +1,12 @@
 package com.steamulo.conf.security;
 
 import com.steamulo.filter.security.JWTAuthenticationFilter;
-import com.steamulo.filter.security.JWTLoginFilter;
-import com.steamulo.services.auth.MarketPayUserDetailsService;
 import com.steamulo.services.auth.TokenAuthenticationService;
-import com.steamulo.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -31,9 +28,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
             .csrf().disable().authorizeRequests()
                 .antMatchers("/manage/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/login/**").permitAll()
-                .antMatchers("/parsing").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/login/**").permitAll()
                 .antMatchers("/swagger**").permitAll()
                 .antMatchers("/swagger/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
@@ -41,18 +37,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers("/error").permitAll()
             .anyRequest().authenticated()
             .and()
-            // We filter the api/login requests
-            .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
             // And filter other requests to check the presence of JWT in header
             .addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class);
     }
 
-    @Autowired
-    private MarketPayUserDetailsService marketPayUserDetailsService;
-
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(marketPayUserDetailsService).passwordEncoder(PasswordUtils.PASSWORD_ENCODER);
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/auth/login");
     }
-
 }
