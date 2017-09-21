@@ -88,14 +88,6 @@ public class TokenAuthenticationService {
     }
 
     /**
-     * Service de déconnexion
-     * @param token
-     */
-    public void logout(String token) {
-
-    }
-
-    /**
      * Service de connexion
      */
     public void login(HttpServletResponse res, AccountCredentials user) throws ApiException {
