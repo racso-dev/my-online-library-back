@@ -30,22 +30,6 @@ public class UserService {
     private TokenAuthenticationService tokenAuthenticationService;
 
     /**
-     * Service de récupération d'un userInformation à partir d'un user
-     * @param user
-     * @return
-     */
-    public UserInformationResource getUserInformation(User user) throws EntityNotFoundException {
-        UserInformationResource resource = new UserInformationResource();
-
-        // On set le user
-        resource.setIdUser(user.getId());
-        resource.setProfile(user.getProfile());
-        resource.setLogin(user.getLogin());
-
-        return resource;
-    }
-
-    /**
      * Génère une liste de UserResource à partir d'une liste de User
      * @param userList
      * @return la liste géneré de UserResource

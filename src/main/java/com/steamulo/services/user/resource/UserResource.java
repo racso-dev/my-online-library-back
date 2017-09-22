@@ -16,9 +16,7 @@ public class UserResource {
     private Long id;
 
     @NotNull(message = "profile mandatory")
-    @Max(value = 4, message = "unknow profile")
-    @Min(value = 1, message = "unknow profile")
-    private Integer profile;
+    private String profile;
 
     @NotBlank(message = "login mandatory")
     @Size(min = 3, max = 45, message = "invalid login")
@@ -41,11 +39,11 @@ public class UserResource {
         this.id = id;
     }
 
-    public Integer getProfile() {
+    public String getProfile() {
         return profile;
     }
 
-    public void setProfile(Integer profile) {
+    public void setProfile(String profile) {
         this.profile = profile;
     }
 

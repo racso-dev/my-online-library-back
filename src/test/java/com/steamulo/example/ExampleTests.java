@@ -1,6 +1,6 @@
 package com.steamulo.example;
 
-import com.steamulo.APITests;
+import com.steamulo.ApiTests;
 import com.steamulo.services.user.UserService;
 import com.steamulo.utils.MailUtils;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertFalse;
  * Exemple de test unitaire avec des mocks
  */
 @RunWith(SpringRunner.class)
-public class ExampleTests extends APITests {
+public class ExampleTests extends ApiTests {
 
     @Mock
     private List<String> mockedList;

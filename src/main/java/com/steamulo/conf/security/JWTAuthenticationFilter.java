@@ -1,4 +1,4 @@
-package com.steamulo.filter.security;
+package com.steamulo.conf.security;
 
 import com.steamulo.exception.ApiException;
 import com.steamulo.services.auth.TokenAuthenticationService;
