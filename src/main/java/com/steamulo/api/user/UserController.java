@@ -1,6 +1,5 @@
 package com.steamulo.api.user;
 
-import com.steamulo.annotation.NotAuthenticated;
 import com.steamulo.annotation.Permission;
 import com.steamulo.api.RequestContext;
 import com.steamulo.api.user.request.CreateUserRequest;
@@ -41,7 +40,6 @@ public class UserController {
      * @param request
      * @return
      */
-    @NotAuthenticated
     @Permission(PERMISSION.USER_CREATE)
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public void createUser(@RequestBody @Valid CreateUserRequest request) throws ApiException {

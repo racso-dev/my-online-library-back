@@ -46,6 +46,7 @@ public class UserService {
      * Service de récupération d'un user
      * @param idUser
      * @return
+     * @throws EntityNotFoundException
      */
     public UserResponse getUserResponse(long idUser) throws EntityNotFoundException {
         //On récupère le user
@@ -60,7 +61,7 @@ public class UserService {
      */
     private User getUserById(long idUser) throws EntityNotFoundException {
         return userRepository.findOne(idUser).orElseThrow(() ->
-                new EntityNotFoundException(idUser, "user")
+            new EntityNotFoundException(idUser, "user")
         );
     }
 

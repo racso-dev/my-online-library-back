@@ -21,6 +21,9 @@ public class AuthService {
 
     /**
      * Service de connexion
+     * @param loginRequest
+     * @return
+     * @throws ApiException
      */
     public LoginResponse login(LoginRequest loginRequest) throws ApiException {
         if (loginRequest.getLogin() == null || loginRequest.getPassword() == null) {
