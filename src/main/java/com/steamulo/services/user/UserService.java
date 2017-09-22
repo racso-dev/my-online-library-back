@@ -3,8 +3,8 @@ package com.steamulo.services.user;
 import com.steamulo.api.user.request.EditMyPasswordRequest;
 import com.steamulo.api.user.request.EditUserRequest;
 import com.steamulo.api.user.response.EditMyResponse;
-import com.steamulo.exception.EntityNotFoundException;
 import com.steamulo.exception.ApiException;
+import com.steamulo.exception.EntityNotFoundException;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
 import com.steamulo.services.auth.TokenAuthenticationService;
@@ -185,12 +185,6 @@ public class UserService {
 
         //On met à jour le user
         user = editUserEntity(user, request);
-
-        //Si on a modifié le login il faut regéner un nouveau token
-        if(!previousLogin.equals(user.getLogin())) {
-            //On créé le nouveau
-            response.setToken(tokenAuthenticationService.connectUser(user.getLogin()));
-        }
 
         response.setUser(getUserResource(user));
         return response;
