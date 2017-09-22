@@ -1,7 +1,6 @@
 package com.steamulo.api.auth;
 
 import com.steamulo.annotation.NotAuthenticated;
-import com.steamulo.api.ApiController;
 import com.steamulo.exception.ApiException;
 import com.steamulo.filter.security.AccountCredentials;
 import com.steamulo.services.auth.TokenAuthenticationService;
@@ -19,7 +18,7 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping(value = "/auth")
-public class AuthController extends ApiController {
+public class AuthController {
 
     @Autowired
     private TokenAuthenticationService tokenAuthenticationService;

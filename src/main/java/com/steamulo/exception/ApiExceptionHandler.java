@@ -1,28 +1,22 @@
-package com.steamulo.api;
+package com.steamulo.exception;
 
 import com.steamulo.api.response.ErrorResponse;
-import com.steamulo.exception.ApiException;
-import com.steamulo.persistence.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by etienne on 03/07/17.
+ * Created by etienne on 22/09/17.
  */
-@RestController
-public class ApiController {
+@ControllerAdvice
+public class ApiExceptionHandler {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
-
-    @Autowired
-    private UserRepository userRepository;
+    private final Logger LOGGER = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     /**
      * Permet d'attraper les erreurs du serveur lors des appels WS et de retourner la réponse adéquate
@@ -52,4 +46,5 @@ public class ApiController {
 
         return respError;
     }
+
 }

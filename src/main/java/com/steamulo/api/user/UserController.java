@@ -1,7 +1,6 @@
 package com.steamulo.api.user;
 
 import com.steamulo.annotation.Profile;
-import com.steamulo.api.ApiController;
 import com.steamulo.api.RequestContext;
 import com.steamulo.api.response.IdResponse;
 import com.steamulo.api.user.request.EditMyPasswordRequest;
@@ -22,7 +21,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/user")
-public class UserController extends ApiController {
+public class UserController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
