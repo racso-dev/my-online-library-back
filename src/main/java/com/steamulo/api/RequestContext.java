@@ -1,7 +1,7 @@
 package com.steamulo.api;
 
-import com.steamulo.permission.USER_PROFILE;
 import com.steamulo.persistence.entity.User;
+import com.steamulo.references.USER_PROFILE;
 
 /**
  * Keep context of the request

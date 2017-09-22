@@ -1,4 +1,4 @@
-package com.steamulo.permission;
+package com.steamulo.references;
 
 import java.util.Arrays;
 import java.util.List;

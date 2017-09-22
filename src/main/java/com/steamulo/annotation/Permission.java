@@ -1,6 +1,6 @@
 package com.steamulo.annotation;
 
-import com.steamulo.permission.PERMISSION;
+import com.steamulo.references.PERMISSION;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

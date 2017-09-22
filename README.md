@@ -30,7 +30,8 @@ Swagger est sur l'url: http://localhost:8000/swagger-ui.html
 ## Gestion des droits en fonction du profile
 
 La gestion des droits par profile se fait via l'intercepteur. Pour ce faire sur chaque method de controller (WS) il faut
-ajouter l'annotation @Permission. Qui prend en paramètre une PERMISSION qu'il faut ensuite aussi ajouter aux USER_PROFILE qui seront autorisés à accéder au WS.
+ajouter l'annotation @Permission qui prend en paramètre une PERMISSION. Ensuite chaque USER_PROFILE contient une liste de 
+PERMISSION autorisant l'accés aux différents WS.
 
 ## Annotations particulières
 

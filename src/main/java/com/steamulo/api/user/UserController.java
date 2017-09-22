@@ -5,7 +5,7 @@ import com.steamulo.api.RequestContext;
 import com.steamulo.api.user.request.CreateUserRequest;
 import com.steamulo.api.user.response.UserResponse;
 import com.steamulo.exception.ApiException;
-import com.steamulo.permission.PERMISSION;
+import com.steamulo.references.PERMISSION;
 import com.steamulo.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

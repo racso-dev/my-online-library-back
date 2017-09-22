@@ -1,4 +1,4 @@
-package com.steamulo.permission;
+package com.steamulo.references;
 
 /**
  * Enum des permissions des appels aux WS
