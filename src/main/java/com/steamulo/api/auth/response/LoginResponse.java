@@ -3,11 +3,11 @@ package com.steamulo.api.auth.response;
 /**
  * Created by etienne on 01/08/17.
  */
-public class TokenResponse {
+public class LoginResponse {
 
     private String token;
 
-    public TokenResponse(String token) {
+    public LoginResponse(String token) {
         this.token = token;
     }
 

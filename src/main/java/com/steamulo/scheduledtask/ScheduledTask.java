@@ -18,7 +18,7 @@ public class ScheduledTask {
     private final Logger LOGGER = LoggerFactory.getLogger(ScheduledTask.class);
 
     /**
-     * Elle s'exécute tous les jours à 3h
+     * Task qui s'exécute tous les jours à 3h
      * cron : cron expression. Pour exécuter des tâches pédiodiques
      * min	heure   jour/mois	mois	jour/semaine	Périodicité
      *	*	 *	     *	         *	       *            Toutes les minutes
@@ -28,10 +28,9 @@ public class ScheduledTask {
      * 5,10	 0	     10	        *	       1	        à 00:05 et 00:10 chaque lundi et le 10 de chaque mois
      */
     @Scheduled(cron = "0 0 3 * * *")
-    private void scheduleCronTask() {
+    private void schedulerCronTask() {
         LOGGER.info("Cron task - " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
     }
-
 
     /**
      * fixedDelay : Durée entre la fin de la dernière exécution et le début de la prochaine exécution est figée.

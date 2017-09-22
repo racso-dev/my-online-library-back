@@ -1,23 +1,38 @@
 package com.steamulo.api.user.response;
 
-import com.steamulo.services.user.resource.UserResource;
+import com.steamulo.persistence.entity.User;
 
 /**
  * Created by etienne on 08/08/17.
  */
 public class UserResponse {
 
-    private UserResource user;
+    private String login;
+    private String profile;
 
-    public UserResponse(UserResource user) {
-        this.user = user;
+    public UserResponse(String login, String profile) {
+        this.login = login;
+        this.profile = profile;
     }
 
-    public UserResource getUser() {
-        return user;
+    public UserResponse(User user) {
+        this.login = user.getLogin();
+        this.profile = user.getProfile();
     }
 
-    public void setUser(UserResource user) {
-        this.user = user;
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 }

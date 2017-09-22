@@ -1,7 +1,6 @@
 package com.steamulo.annotation;
 
 import com.steamulo.references.PERMISSION;
-import com.steamulo.references.USER_PROFILE;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
