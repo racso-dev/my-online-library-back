@@ -2,7 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
-    <!-- Profile 'dev' print log dans la console + fichier -->
+    <!-- Profile 'dev' print log dans la console -->
     <springProfile name="dev">
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
         <appender name="ROLLING-FILE"
@@ -16,11 +16,10 @@
         </appender>
         <root level="ERROR">
             <appender-ref ref="CONSOLE"/>
-            <!--<appender-ref ref="ROLLING-FILE"/>-->
         </root>
     </springProfile>
 
-    <!-- Profile 'prod' print log dans un fichier -->
+   <!--  Profile 'prod' print log dans un fichier
     <springProfile name="prod">
         <appender name="ROLLING-FILE"
                   class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -39,6 +38,6 @@
         <root level="ERROR">
             <appender-ref ref="ROLLING-FILE"/>
         </root>
-    </springProfile>
+    </springProfile>-->
 
 </configuration>
