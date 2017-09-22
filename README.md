@@ -16,7 +16,7 @@ Par exemple
 -Dspring.config.location=classpath:dev/ -Dspring.profiles.active=dev,atran
 ```
 
-##BDD
+## BDD
 Il faut créer la BDD avec le nom que vous avez enregistré dans votre fichier yml avant de lancer le server
 
 ## TIPS
