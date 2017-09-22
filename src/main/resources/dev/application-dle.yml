@@ -3,3 +3,6 @@ spring:
     url: jdbc:mysql://localhost/steamuloapistarter?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
     username: root
     password: root
+
+jwt:
+  expiration: 86400000
