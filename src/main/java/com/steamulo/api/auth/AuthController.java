@@ -1,16 +1,13 @@
 package com.steamulo.api.auth;
 
 import com.steamulo.annotation.NotAuthenticated;
+import com.steamulo.api.auth.request.LoginRequest;
+import com.steamulo.api.auth.response.LoginResponse;
 import com.steamulo.exception.ApiException;
-import com.steamulo.filter.security.AccountCredentials;
-import com.steamulo.services.auth.TokenAuthenticationService;
+import com.steamulo.services.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -21,14 +18,14 @@ import java.io.IOException;
 public class AuthController {
 
     @Autowired
-    private TokenAuthenticationService tokenAuthenticationService;
+    private AuthService authService;
 
     /**
      * WS de déconnexion
      */
     @NotAuthenticated
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public void login(HttpServletResponse response, @RequestBody AccountCredentials user) throws ApiException, IOException {
-        tokenAuthenticationService.login(response, user);
+    public @ResponseBody LoginResponse login(@RequestBody LoginRequest user) throws ApiException, IOException {
+        return authService.login(user);
     }
 }

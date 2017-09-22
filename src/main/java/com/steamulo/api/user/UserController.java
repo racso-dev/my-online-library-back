@@ -1,17 +1,14 @@
 package com.steamulo.api.user;
 
+import com.steamulo.annotation.NotAuthenticated;
 import com.steamulo.annotation.Profile;
 import com.steamulo.api.RequestContext;
-import com.steamulo.api.response.IdResponse;
+import com.steamulo.api.user.request.CreateUserRequest;
 import com.steamulo.api.user.request.EditMyPasswordRequest;
-import com.steamulo.api.user.request.EditUserRequest;
-import com.steamulo.api.user.response.EditMyResponse;
 import com.steamulo.api.user.response.UserResponse;
 import com.steamulo.exception.ApiException;
 import com.steamulo.references.USER_PROFILE;
 import com.steamulo.services.user.UserService;
-import com.steamulo.services.user.resource.UserInformationResource;
-import com.steamulo.services.user.resource.UserResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +26,6 @@ public class UserController {
     private UserService userService;
 
     /**
-     * WS de récupération d'un userInformation à du user connecté
-     * @return
-     */
-    @Profile({})
-    @RequestMapping(value = "/information", method = RequestMethod.GET)
-    public @ResponseBody UserInformationResource getUserInformation() throws ApiException {
-        //On récupère le userInformation
-        LOGGER.info("Récupération du userInformation pour le user " + RequestContext.get().getUser().getId());
-        return userService.getUserInformation(RequestContext.get().getUser());
-    }
-
-    /**
      * WS de récupération d'un user
      * @param idUser
      * @return
@@ -49,33 +34,19 @@ public class UserController {
     @RequestMapping(value = "/{idUser}", method = RequestMethod.GET)
     public @ResponseBody UserResponse getUser(@PathVariable(value = "idUser") long idUser) throws ApiException {
         LOGGER.info("Récupération du user " + idUser);
-        return new UserResponse(userService.getUser(idUser));
+        return userService.getUserResponse(idUser);
     }
 
     /**
      * WS de création d'un user
-     * @param userResource
+     * @param request
      * @return
      */
-    @Profile({})
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public @ResponseBody IdResponse createUser(@RequestBody @Valid UserResource userResource) throws ApiException {
-        long newIdUser = userService.createUser(userResource);
-        LOGGER.info("Creation du nouveau user " + newIdUser);
-        return new IdResponse(newIdUser);
-    }
-
-
-    /**
-     * WS d'edition d'un user différent de celui connecté
-     * @param editUserRequest
-     * @return
-     */
-    @Profile({USER_PROFILE.ADMIN_USER, USER_PROFILE.USER_MANAGER})
-    @RequestMapping(value = "/{idUser}", method = RequestMethod.POST)
-    public @ResponseBody UserResponse editUser(@RequestBody @Valid EditUserRequest editUserRequest, @PathVariable(value = "idUser") long idUser) throws ApiException {
-        LOGGER.info("Modification du user " + idUser);
-        return new UserResponse(userService.editUser(idUser, editUserRequest));
+    @NotAuthenticated
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public void createUser(@RequestBody @Valid CreateUserRequest request) throws ApiException {
+        userService.createUser(request);
+        LOGGER.info("Creation du nouveau user");
     }
 
     /**
@@ -97,18 +68,7 @@ public class UserController {
     @RequestMapping(value = "/my", method = RequestMethod.GET)
     public @ResponseBody UserResponse getMyUser() throws ApiException {
         LOGGER.info("Récupération du user connecté " + RequestContext.get().getUser().getId());
-        return new UserResponse(userService.getUser(RequestContext.get().getUser().getId()));
-    }
-
-    /**
-     * WS d'edition du user connecté par lui même
-     * @return
-     */
-    @Profile({})
-    @RequestMapping(value = "/my", method = RequestMethod.POST)
-    public @ResponseBody EditMyResponse editMyUser(@RequestBody @Valid EditUserRequest editUserRequest) throws ApiException {
-        LOGGER.info("Modification du user connecté " + RequestContext.get().getUser().getId());
-        return userService.editMyUser(RequestContext.get().getUser().getId(), editUserRequest);
+        return userService.getUserResponse(RequestContext.get().getUser().getId());
     }
 
     /**
