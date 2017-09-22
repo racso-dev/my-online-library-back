@@ -1,6 +1,5 @@
 package com.steamulo.conf.security;
 
-import com.steamulo.filter.security.JWTAuthenticationFilter;
 import com.steamulo.services.auth.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

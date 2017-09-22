@@ -1,29 +1,46 @@
 package com.steamulo.references;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Enum des profiles USER
  * Created by etienne on 31/07/17.
  */
 public enum USER_PROFILE {
 
-    ADMIN_USER(1),
-    SUPER_USER(2),
-    USER_MANAGER(3),
-    USER(4);
+    //Un profile donne des droits au user via sa collection de permission
+    //Liste des profiles
+    //A compléter ou modifier au besoin
+    ADMIN_USER("admin", Arrays.asList(
+        PERMISSION.USER_CREATE,
+        PERMISSION.USER_DELETE,
+        PERMISSION.USER_GET,
+        PERMISSION.USER_GET_CONNECTED
+    )),
+    USER("user", Arrays.asList(
+        PERMISSION.USER_GET_CONNECTED
+    ));
 
-    private int code;
+    private String code;
+    private List<PERMISSION> permissionList;
 
-    USER_PROFILE(int code) {
+    USER_PROFILE(String code, List<PERMISSION> permissionList) {
         this.code = code;
+        this.permissionList = permissionList;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public static USER_PROFILE getByCode(int code){
-        for(USER_PROFILE userProfile : USER_PROFILE.values()){
-            if(userProfile.getCode() == code){
+    public List<PERMISSION> getPermissionList() {
+        return permissionList;
+    }
+
+    public static USER_PROFILE getByCode(String code) {
+        for(USER_PROFILE userProfile : USER_PROFILE.values()) {
+            if(userProfile.getCode().equals(code)){
                 return userProfile;
             }
         }

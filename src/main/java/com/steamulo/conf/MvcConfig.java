@@ -1,4 +1,4 @@
-package com.steamulo.conf.security;
+package com.steamulo.conf;
 
 import com.steamulo.api.ApiInterceptor;
 import org.springframework.context.MessageSource;
@@ -14,6 +14,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
+    /////////////////////////////////////////////////////////
+    //                     INTERCEPTEUR                    //
+    /////////////////////////////////////////////////////////
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(getApiInterceptor());
@@ -25,6 +28,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         return new ApiInterceptor();
     }
 
+    /////////////////////////////////////////////////////////
+    //                         I18n                        //
+    /////////////////////////////////////////////////////////
     @Bean(name = "messageSource")
     public MessageSource messageSource() {
         ResourceBundleMessageSource reloadableResourceBundleMessageSource = new ResourceBundleMessageSource();

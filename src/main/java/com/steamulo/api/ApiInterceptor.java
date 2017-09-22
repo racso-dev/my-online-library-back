@@ -2,7 +2,7 @@ package com.steamulo.api;
 
 import com.steamulo.annotation.Dev;
 import com.steamulo.annotation.NotAuthenticated;
-import com.steamulo.annotation.Profile;
+import com.steamulo.annotation.Permission;
 import com.steamulo.exception.ApiException;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
@@ -87,12 +87,12 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
             }
 
             //On check ses droits d'accès à l'uri
-            Profile profile = methodHandler.getMethodAnnotation(Profile.class);
-            if(notAuthenticated == null && profile == null){
+            Permission permission = methodHandler.getMethodAnnotation(Permission.class);
+            if(notAuthenticated == null && permission == null){
                 throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Aucune sécurité sur le profile d'accès est implémentée pour le service " + uri);
             }
             if(userProfile != null){
-                checkProfile(profile, userProfile, uri);
+                checkProfile(permission, userProfile, uri);
             }
 
 
@@ -128,18 +128,14 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
     }
 
     /**
-     * Méthod qui check si userProfile est autorisé par profile
-     * @param profile
+     * Méthod qui check si userProfile est autorisé par la permission
+     * @param permission
      * @param userProfile
      */
-    private void checkProfile(Profile profile, USER_PROFILE userProfile, String uri) throws ApiException {
-        //Si profile ne contient pas de USER_PROFILE, il n'y a pas de droit d'accès particulier
-        //Donc on laisse passer
-        //Si profile contient userProfile c'est OK, on laisse passer
-        List<USER_PROFILE> profileList = Arrays.asList(profile.value());
-        if(!profileList.isEmpty() && !profileList.contains(userProfile)){
-            //Si profile ne contient pas userProfile alors on est pas autorisé, on STOP
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Le service " + uri + " n'est pas accessible au profile " + userProfile.getCode());
+    private void checkProfile(Permission permission, USER_PROFILE userProfile, String uri) throws ApiException {
+        if(!userProfile.getPermissionList().contains(permission.value())){
+            //Si profile ne contient pas la permission alors on est pas autorisé, on STOP
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Le service " + uri + " n'est pas accessible au profile " + userProfile.getCode() + " car il n'a pas la permission " + permission.value().getCode());
         }
     }
 }

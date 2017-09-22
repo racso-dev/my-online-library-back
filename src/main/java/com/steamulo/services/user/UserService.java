@@ -94,24 +94,4 @@ public class UserService {
         //On supprime le user
         userRepository.delete(user);
     }
-
-    /**
-     * Service d'edition du password du user connecté
-     * @param idUser
-     * @param request
-     * @return
-     */
-    public void editMyPassword(long idUser, EditMyPasswordRequest request) throws ApiException {
-        //On récupère le user
-        User user = getUserById(idUser);
-
-        //On vérifie l'ancien password
-        if(!PasswordUtils.PASSWORD_ENCODER.matches(request.getOldPassword(), user.getPassword())){
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "OldPassword incorrect");
-        }
-
-        //On change le password
-        user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getNewPassword()));
-        userRepository.save(user);
-    }
 }
