@@ -25,6 +25,9 @@ flyway:
   locations: classpath:db/migration
 
 spring:
+  metrics:
+    export:
+      enabled: false
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
 
