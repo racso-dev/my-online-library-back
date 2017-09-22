@@ -1,7 +1,6 @@
 package com.steamulo.services.user;
 
 import com.steamulo.api.user.request.CreateUserRequest;
-import com.steamulo.api.user.request.EditMyPasswordRequest;
 import com.steamulo.api.user.response.UserResponse;
 import com.steamulo.exception.ApiException;
 import com.steamulo.exception.EntityNotFoundException;
