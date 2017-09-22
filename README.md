@@ -1,4 +1,7 @@
 # STEAMULO API STARTER
+Ce projet spring boot utilisant java 8 est un starter pour la création d'une api. Il contient la logique applicative de 
+base d'une api rest, une gestion simplifié des users, des exceptions ainsi que des exemples d'utilisations de certaines 
+fonctionalités. Il utilise également une base de donnée MySql versionnée par Flyway avec JPA comme couche DAO.
 
 ## Run configuration projet
 Le fichier application.yml représente la configuration par défaut.
