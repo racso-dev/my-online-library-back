@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * Enum des profiles USER
- * Created by etienne on 31/07/17.
  */
 public enum USER_PROFILE {
 
@@ -16,10 +15,10 @@ public enum USER_PROFILE {
         PERMISSION.USER_CREATE,
         PERMISSION.USER_DELETE,
         PERMISSION.USER_GET,
-        PERMISSION.USER_GET_CONNECTED
+        PERMISSION.USER_GET_SELF
     )),
     USER("user", Arrays.asList(
-        PERMISSION.USER_GET_CONNECTED
+        PERMISSION.USER_GET_SELF
     ));
 
     private String code;

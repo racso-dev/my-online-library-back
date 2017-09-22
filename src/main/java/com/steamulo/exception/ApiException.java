@@ -2,9 +2,6 @@ package com.steamulo.exception;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Created by etienne on 01/08/17.
- */
 public class ApiException extends Exception {
 
     private HttpStatus httpStatus;

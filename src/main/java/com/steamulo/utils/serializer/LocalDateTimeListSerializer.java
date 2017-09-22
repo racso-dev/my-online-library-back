@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Created by dle on 20/09/17
- */
 public class LocalDateTimeListSerializer extends JsonSerializer<List<LocalDateTime>> {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 

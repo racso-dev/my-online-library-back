@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by sgourio on 10/07/2017.
+ * Check Authentication for filtered request
  */
 public class JWTAuthenticationFilter extends GenericFilterBean {
 

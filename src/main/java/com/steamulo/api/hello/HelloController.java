@@ -2,9 +2,7 @@ package com.steamulo.api.hello;
 
 import com.steamulo.annotation.NotAuthenticated;
 import com.steamulo.exception.ApiException;
-import com.steamulo.references.LANGUAGE;
 import com.steamulo.services.hello.HelloService;
-import com.steamulo.utils.I18nUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

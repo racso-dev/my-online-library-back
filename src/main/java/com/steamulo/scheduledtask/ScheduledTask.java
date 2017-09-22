@@ -28,7 +28,7 @@ public class ScheduledTask {
      * 5,10	 0	     10	        *	       1	        à 00:05 et 00:10 chaque lundi et le 10 de chaque mois
      */
     @Scheduled(cron = "0 0 3 * * *")
-    private void schedulerCronTask() {
+    private void scheduleCronTask() {
         LOGGER.info("Cron task - " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
     }
 

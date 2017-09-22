@@ -1,7 +1,7 @@
 package com.steamulo.api.response;
 
 /**
- * Created by etienne on 08/08/17.
+ * Response body d'une erreur
  */
 public class ErrorResponse {
 

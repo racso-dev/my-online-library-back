@@ -8,9 +8,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-/**
- * Created by etienne on 31/07/17.
- */
 @Configuration
 public class MvcConfig extends WebMvcConfigurerAdapter {
 

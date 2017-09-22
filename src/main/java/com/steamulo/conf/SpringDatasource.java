@@ -3,9 +3,6 @@ package com.steamulo.conf;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by antony on 07/07/17.
- */
 @Component
 public class SpringDatasource {
     @Value("${spring.datasource.driverClassName}")

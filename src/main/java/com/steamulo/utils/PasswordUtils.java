@@ -4,9 +4,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by etienne on 24/07/17.
- */
 @Component
 public class PasswordUtils {
 
@@ -14,6 +11,9 @@ public class PasswordUtils {
 
     public static void main(String[] args) {
 
+        /**
+         * Encode les password permettant de les rentrer directment en bdd
+         */
         String p0 = "gourio";
         String p01 = "user2";
         String p02 = "123456789";

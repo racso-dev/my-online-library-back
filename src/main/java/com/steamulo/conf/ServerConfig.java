@@ -3,9 +3,6 @@ package com.steamulo.conf;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by etienne on 10/07/17.
- */
 @Component
 @ConfigurationProperties()
 public class ServerConfig {

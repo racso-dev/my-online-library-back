@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import static java.util.Collections.emptyList;
+
 /**
- * Created by sgourio on 10/07/2017.
+ * Service de gestion du JWT Token
  */
 @Component
 public class TokenAuthenticationService {

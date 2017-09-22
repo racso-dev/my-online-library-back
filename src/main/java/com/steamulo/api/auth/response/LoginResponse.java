@@ -1,7 +1,7 @@
 package com.steamulo.api.auth.response;
 
 /**
- * Created by etienne on 01/08/17.
+ * Response body de l'appel /auth/login
  */
 public class LoginResponse {
 

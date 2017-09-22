@@ -3,7 +3,7 @@ package com.steamulo.api.user.response;
 import com.steamulo.persistence.entity.User;
 
 /**
- * Created by etienne on 08/08/17.
+ * Response body de l'appel /user/create
  */
 public class UserResponse {
 

@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+/**
+ * WS concernant la gestion des users
+ */
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
@@ -62,9 +65,9 @@ public class UserController {
      * WS de récupération du user connecté
      * @return
      */
-    @Permission(PERMISSION.USER_GET_CONNECTED)
-    @RequestMapping(value = "/my", method = RequestMethod.GET)
-    public @ResponseBody UserResponse getMyUser() throws ApiException {
+    @Permission(PERMISSION.USER_GET_SELF)
+    @RequestMapping(value = "/self", method = RequestMethod.GET)
+    public @ResponseBody UserResponse getCurentUser() throws ApiException {
         LOGGER.info("Récupération du user connecté " + RequestContext.get().getUser().getId());
         return userService.getUserResponse(RequestContext.get().getUser().getId());
     }

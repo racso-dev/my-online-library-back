@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation pour la gestion des droits d'accès en fonction de la permission contenu dans le profile du user
- * Created by etienne on 31/07/17.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
