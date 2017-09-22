@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+
 @Component
 public class I18nUtils {
 
@@ -16,7 +18,7 @@ public class I18nUtils {
      * @param params
      * @return
      */
-    public String getMessage(String key, String[] params) {
-        return applicationContext.getMessage(key, params, null);
+    public String getMessage(String key, String[] params, Locale locale) {
+        return applicationContext.getMessage(key, params, locale);
     }
 }

@@ -54,3 +54,30 @@ key: Authorization
 value: Bearer ${your-token}
 Bien sur il faut remplacer ${your-token} par le token reçu.
 
+## Controller
+
+Les requêtes HTTP sont traitées par les controllers. Ils sont identifiés par l'annotation **@RestController** et se trouve 
+dans le package api/. Créer un package requête (Exemple: /user), dans lequel se trouve un package **request**
+qui contient les inputs des requêtes, un package **response** qui contients les outputs des requêtes et le **controller**.
+Attention à ne pas implémenter la logique métier dans les controllers, cette logique se trouve dans la couche **service**.
+Utiliser l'annotation **@Autowired** pour liée les différents services au controller.
+
+## Service
+
+L'annotation **@Component** est utilisée pour chaque service.
+Créer un package par objet métier dans lequel contient un package **ressource** qui contient les différents objets et 
+le **service**.
+
+## Persistence des données
+
+Chaque entité est annoté par **@Entity** (/persistence/entity/*), ce qui indique que c'est une entité JPA et qu'elle est 
+mappé directement avec la table correspondante avec ces différents attributs. Si le nom d'un attribut ne correspond pas
+exactemenent à celui en BDD utilisé l'annotation **@Column(name="nom")**.
+Pour utiliser de simples queries, nous pouvons utiliser les interfaces CrudRepository.
+
+## Tâches planifiées
+
+Pour créer des tâches planifiées, ajouter des méthodes dans le package src/main/java/com/steamulo/scheduledtask/* 
+précédés par l'annotation **@Scheduled(...)** avec l'expression souhaité.
+Attention à ne pas oublier d'ajouter l'annotation **@EnableScheduling** à Application.java pour activer ces tâches.
+
