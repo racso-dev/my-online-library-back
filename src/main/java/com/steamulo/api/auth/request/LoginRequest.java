@@ -1,7 +1,7 @@
 package com.steamulo.api.auth.request;
 
 /**
- * Created by sgourio on 10/07/2017.
+ * Request body de l'appel /auth/login
  */
 public class LoginRequest {
     private String login;

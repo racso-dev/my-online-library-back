@@ -16,12 +16,8 @@ Par exemple
 -Dspring.config.location=classpath:dev/ -Dspring.profiles.active=dev,atran
 ```
 
-### Fichier de conf à compléter pour le path du sftp en dev avec par exemple:
-```
-sftp:
-  pathIncomming: /home/etienne/workspaceMarketPay/incomming
-  pathArchive: /home/etienne/workspaceMarketPay/archive
-```
+##BDD
+Il faut créer la BDD avec le nom que vous avez enregistré dans votre fichier yml avant de lancer le server
 
 ## TIPS
 Si le port que vous souhaitez utiliser n'est pas disponible et que vous voulez le libérer :
@@ -34,8 +30,7 @@ Swagger est sur l'url: http://localhost:8000/swagger-ui.html
 ## Gestion des droits en fonction du profile
 
 La gestion des droits par profile se fait via l'intercepteur. Pour ce faire sur chaque method de controller (WS) il faut
-ajouter l'annotation @Profile. Qui prend en paramètre un array de USER_PROFILE autorisés à accéder au WS.
-Si l'array est vide alors tous les profiles sont autorisé.
+ajouter l'annotation @Permission. Qui prend en paramètre une PERMISSION qu'il faut ensuite aussi ajouter aux USER_PROFILE qui seront autorisés à accéder au WS.
 
 ## Annotations particulières
 
@@ -43,16 +38,19 @@ L'annotation @Dev permet de dire que le WS, sur lequel est mise @Dev, est access
 C'est à dire que la conf dev est utilisée.
 
 L'annotation @NotAuthenticated permet de dire que le au WS, sur lequel est mise @NotAuthenticated, est accessible sans être authentifié.
-Biensûr cela ne suffit pas à rendre accessible le WS sans authentification, il faut également autoriser la route dans WebSecurityConfig.
+Bien sûr cela ne suffit pas à rendre accessible le WS sans authentification, il faut également autoriser la route dans WebSecurityConfig.
 
-## Réponse HTTP des WS et gestion des Exception (MarketPayException)
+## Réponse HTTP des WS et gestion des Exception (ApiException)
 
 Pour renvoyer comme réponse à un WS un code HTTP autre que 200 (dans le cas d'une erreur fonctionnelle ou technique),
-il suffit de throw une MarketPayException qui prend en paramètre un code HTTP et un message. Celle ci sera attrapée par
+il suffit de throw une ApiException qui prend en paramètre un code HTTP et un message. Celle ci sera attrapée par
 un ExceptionHandler et renvoyée en réponse au WS avec le code HTTP spécifié. Cette exception peut être appelée partout
 à tout moment et elle stop le traitement en cours pour renvoyer l'erreur souhaitée.
 
-
-
-TODOux Thomas C. et Antony T.
+## Authentification
+JWT est utilisé au niveau de l'authentification, ce qui veut dire que pour les appels nécessitant une authentification, 
+il faut avoir le token récupéré par l'appel /auth/login et l'envoyer en header de la requete sous la forme :
+key: Authorization
+value: Bearer ${your-token}
+Bien sur il faut remplacer ${your-token} par le token reçu.
 

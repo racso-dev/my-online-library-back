@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation pour la gestion des droits d'accès à des WS réserver au mode dev
- * Created by etienne on 31/07/17.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD})

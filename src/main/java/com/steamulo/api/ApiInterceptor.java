@@ -4,11 +4,9 @@ import com.steamulo.annotation.Dev;
 import com.steamulo.annotation.NotAuthenticated;
 import com.steamulo.annotation.Permission;
 import com.steamulo.exception.ApiException;
+import com.steamulo.permission.USER_PROFILE;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
-import com.steamulo.references.USER_PROFILE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -16,27 +14,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Created by etienne on 03/07/17.
+ * Intercept les appels à l'API pour vérifier l'authentification et les permissions si besoin
  */
 public class ApiInterceptor extends HandlerInterceptorAdapter {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(ApiInterceptor.class);
     private final String DEV_PROFILE = "dev";
 
-    private final String LOGIN_URI = "/login";
+    private final String LOGIN_URI = "/auth/login";
     private final String SWAGGER_URI = "/swagger";
     private final String MANAGE_URI = "/manage";
     private final String ERROR_URI = "/error";
     private final String CONFIGURATION_URI = "/configuration";
 
-    private final String COOKIE_NAME_TOKEN = "sid";
+    private final String HEADER_STRING = "Authorization";
 
 
     @Autowired
@@ -102,16 +98,7 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
             context.setUser(userOpt.orElse(null));
 
             //On récupère le token
-            String token = null;
-            if(request.getCookies() != null) {
-                for (Cookie cookie : request.getCookies()) {
-                    if (cookie.getName().equals(COOKIE_NAME_TOKEN)) {
-                        token = cookie.getValue();
-                        break;
-                    }
-                }
-            }
-            context.setToken(token);
+            context.setToken(request.getHeader(HEADER_STRING));
 
             RequestContext.set(context);
         }

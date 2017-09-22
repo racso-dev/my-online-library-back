@@ -1,10 +1,10 @@
 package com.steamulo.api;
 
+import com.steamulo.permission.USER_PROFILE;
 import com.steamulo.persistence.entity.User;
-import com.steamulo.references.USER_PROFILE;
 
 /**
- * Created by etienne on 31/07/17.
+ * Keep context of the request
  */
 public class RequestContext {
 

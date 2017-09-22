@@ -1,2 +1,2 @@
 INSERT INTO user (profile, login, password)
-  VALUES ('admin', 'steamulo', '$2a$11$Tucu8QVVI1R.AOUiUzPISONHRYTFk53xk9x21B.VpXYVpaW//zUbS');
+  VALUES ('admin', 'steamulo', '$2a$11$vCMRkM4/CkOgUH2wee8NKe8705yOsnrjR/oApb0SYjJe5qmWcG7OG');

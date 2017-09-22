@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Created by etienne on 22/09/17.
- */
 @ControllerAdvice
 public class ApiExceptionHandler {
 

@@ -1,7 +1,7 @@
-package com.steamulo.references;
+package com.steamulo.permission;
 
 /**
- * Created by etienne on 22/09/17.
+ * Enum des permissions des appels aux WS
  */
 public enum PERMISSION {
 
@@ -11,7 +11,7 @@ public enum PERMISSION {
     USER_CREATE("user:create"),
     USER_DELETE("user:delete"),
     USER_GET("user:get"),
-    USER_GET_CONNECTED("user:getConnected");
+    USER_GET_SELF("user:getConnected");
 
     private String code;
 

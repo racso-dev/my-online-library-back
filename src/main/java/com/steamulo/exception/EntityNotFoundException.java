@@ -2,9 +2,6 @@ package com.steamulo.exception;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Created by etienne on 25/07/17.
- */
 public class EntityNotFoundException extends ApiException {
 
     private long id;

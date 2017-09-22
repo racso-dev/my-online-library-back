@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 /**
- * Created by etienne on 04/08/17.
+ * WS concernant l'authentification
  */
 @RestController
 @RequestMapping(value = "/auth")
@@ -21,7 +21,7 @@ public class AuthController {
     private AuthService authService;
 
     /**
-     * WS de déconnexion
+     * WS de connection
      */
     @NotAuthenticated
     @RequestMapping(value = "/login", method = RequestMethod.POST)

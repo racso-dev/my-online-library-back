@@ -8,7 +8,7 @@ management:
     enabled: false
 
 jwt:
-  secret: UnEXV9#C;-q)xa2$=q4?um2[;L-~Hj(6SWw!cW~5f,yLzHv
+  secret: sfpQq=a9HZy@2d_4@Tqf+B5Z#sk?u+cW?ju!-Qs8z!f&sH?Dvu
   expiration: 300000
 
 security:

@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Created by dle on 20/09/17
- */
 public class LocalDateDeserialize extends JsonDeserializer<LocalDate> {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");

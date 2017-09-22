@@ -5,9 +5,6 @@ import org.springframework.http.HttpStatus;
 
 import java.security.SecureRandom;
 
-/**
- * Created by etienne on 08/08/17.
- */
 public class RandomUtils {
 
     private final static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
