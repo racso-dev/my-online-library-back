@@ -1,4 +1,5 @@
 .idea/
 steamulo-api-starter.iml
 target/
+logs/
 
