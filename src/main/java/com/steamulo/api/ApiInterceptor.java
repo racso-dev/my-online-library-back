@@ -6,7 +6,7 @@ import com.steamulo.annotation.Permission;
 import com.steamulo.exception.ApiException;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
-import com.steamulo.references.USER_PROFILE;
+import com.steamulo.references.USER_ROLE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -72,12 +72,12 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
                 }
             }
 
-            //On récupère le profile du user
-            USER_PROFILE userProfile = null;
+            //On récupère le role du user
+            USER_ROLE userRole = null;
             if(userOpt.isPresent()){
-                userProfile = USER_PROFILE.getByCode(userOpt.get().getProfile());
-                if(userProfile == null){
-                    throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Profile " + userOpt.get().getProfile() + " inconnu");
+                userRole = USER_ROLE.getByCode(userOpt.get().getRole());
+                if(userRole == null){
+                    throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Role " + userOpt.get().getRole() + " inconnu");
                 }
             }
 
@@ -86,15 +86,15 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
             if(notAuthenticated == null && permission == null){
                 throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Aucune sécurité sur le profile d'accès est implémentée pour le service " + uri);
             }
-            if(userProfile != null){
-                checkProfile(permission, userProfile, uri);
+            if(userRole != null){
+                checkRole(permission, userRole, uri);
             }
 
 
             //On créé le RequestContext
             RequestContext context = new RequestContext();
             context.setUri(uri);
-            context.setUserProfile(userProfile);
+            context.setUserRole(userRole);
             context.setUser(userOpt.orElse(null));
 
             //On récupère le token
@@ -114,14 +114,14 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
     }
 
     /**
-     * Méthod qui check si userProfile est autorisé par la permission
+     * Méthod qui check si userRole est autorisé par la permission
      * @param permission
-     * @param userProfile
+     * @param userRole
      */
-    private void checkProfile(Permission permission, USER_PROFILE userProfile, String uri) throws ApiException {
-        if(!userProfile.getPermissionList().contains(permission.value())){
-            //Si profile ne contient pas la permission alors on est pas autorisé, on STOP
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Le service " + uri + " n'est pas accessible au profile " + userProfile.getCode() + " car il n'a pas la permission " + permission.value().getCode());
+    private void checkRole(Permission permission, USER_ROLE userRole, String uri) throws ApiException {
+        if(!userRole.getPermissionList().contains(permission.value())){
+            //Si le role ne contient pas la permission alors on est pas autorisé, on STOP
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Le service " + uri + " n'est pas accessible au role " + userRole.getCode() + " car il n'a pas la permission " + permission.value().getCode());
         }
     }
 }

@@ -30,10 +30,10 @@ Si le port que vous souhaitez utiliser n'est pas disponible et que vous voulez l
 ## Swagger
 Swagger est sur l'url: http://localhost:8000/swagger-ui.html
 
-## Gestion des droits en fonction du profile
+## Gestion des droits en fonction du role
 
-La gestion des droits par profile se fait via l'intercepteur. Pour ce faire sur chaque method de controller (WS) il faut
-ajouter l'annotation @Permission qui prend en paramètre une PERMISSION. Ensuite chaque USER_PROFILE contient une liste de 
+La gestion des droits par role se fait via l'intercepteur. Pour ce faire sur chaque method de controller (WS) il faut
+ajouter l'annotation @Permission qui prend en paramètre une PERMISSION. Ensuite chaque USER_ROLE contient une liste de 
 PERMISSION autorisant l'accés aux différents WS.
 
 ## Annotations particulières

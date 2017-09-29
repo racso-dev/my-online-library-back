@@ -19,8 +19,8 @@ public class CreateUserRequest {
     @Size(min = 8, max = 256, message = "Invalid password")
     private String password;
 
-    @NotNull(message = "Profile mandatory")
-    private String profile;
+    @NotNull(message = "Role mandatory")
+    private String role;
 
     public CreateUserRequest() {
     }
@@ -41,11 +41,11 @@ public class CreateUserRequest {
         this.password = password;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getRole() {
+        return role;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

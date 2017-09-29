@@ -6,7 +6,7 @@ import com.steamulo.exception.ApiException;
 import com.steamulo.exception.EntityNotFoundException;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
-import com.steamulo.references.USER_PROFILE;
+import com.steamulo.references.USER_ROLE;
 import com.steamulo.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,15 +34,10 @@ public class UserService {
         if(uLogin.isPresent()) {
             throw new ApiException(HttpStatus.IM_USED, "Login déjà utilisé", "login");
         }
-        if(!isProfileValid(request.getProfile())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Le profile indiqué n'existe pas : " + request.getProfile(), "login");
-        }
         User user = new User();
         user.setLogin(request.getLogin());
         user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getPassword()));
-        user.setProfile(request.getProfile());
-
-
+        user.setRole(request.getRole());
 
         userRepository.save(user);
     }
@@ -98,19 +93,5 @@ public class UserService {
 
         //On supprime le user
         userRepository.delete(user);
-    }
-
-    /**
-     * Vérifie que le profile fait bien partie de la liste des profiles utilisateurs
-     * @param profile
-     * @return
-     */
-    public boolean isProfileValid(String profile) {
-        for (USER_PROFILE userProfile:USER_PROFILE.values()) {
-            if(userProfile.getCode().equals(profile)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

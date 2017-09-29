@@ -8,16 +8,16 @@ import com.steamulo.persistence.entity.User;
 public class UserResponse {
 
     private String login;
-    private String profile;
+    private String role;
 
-    public UserResponse(String login, String profile) {
+    public UserResponse(String login, String role) {
         this.login = login;
-        this.profile = profile;
+        this.role = role;
     }
 
     public UserResponse(User user) {
         this.login = user.getLogin();
-        this.profile = user.getProfile();
+        this.role = user.getRole();
     }
 
     public String getLogin() {
@@ -28,11 +28,11 @@ public class UserResponse {
         this.login = login;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getRole() {
+        return role;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

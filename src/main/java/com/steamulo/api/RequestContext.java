@@ -1,7 +1,7 @@
 package com.steamulo.api;
 
 import com.steamulo.persistence.entity.User;
-import com.steamulo.references.USER_PROFILE;
+import com.steamulo.references.USER_ROLE;
 
 /**
  * Keep context of the request
@@ -11,8 +11,8 @@ public class RequestContext {
     //Uri de la request
     private String uri;
 
-    //Profile du user
-    private USER_PROFILE userProfile;
+    //Role du user
+    private USER_ROLE userRole;
 
     //User
     private User user;
@@ -54,12 +54,12 @@ public class RequestContext {
         this.uri = uri;
     }
 
-    public USER_PROFILE getUserProfile() {
-        return userProfile;
+    public USER_ROLE getUserRole() {
+        return userRole;
     }
 
-    public void setUserProfile(USER_PROFILE userProfile) {
-        this.userProfile = userProfile;
+    public void setUserRole(USER_ROLE userRole) {
+        this.userRole = userRole;
     }
 
     public User getUser() {
