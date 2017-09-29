@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Enum des profiles USER
+ * Enum des roles USER
  */
-public enum USER_PROFILE {
+public enum USER_ROLE {
 
-    //Un profile donne des droits au user via sa collection de permission
-    //Liste des profiles
+    //Un role donne des droits au user via sa collection de permission
+    //Liste des roles
     //A compléter ou modifier au besoin
     ADMIN_USER("admin", Arrays.asList(
         PERMISSION.USER_CREATE,
@@ -24,7 +24,7 @@ public enum USER_PROFILE {
     private String code;
     private List<PERMISSION> permissionList;
 
-    USER_PROFILE(String code, List<PERMISSION> permissionList) {
+    USER_ROLE(String code, List<PERMISSION> permissionList) {
         this.code = code;
         this.permissionList = permissionList;
     }
@@ -37,10 +37,10 @@ public enum USER_PROFILE {
         return permissionList;
     }
 
-    public static USER_PROFILE getByCode(String code) {
-        for(USER_PROFILE userProfile : USER_PROFILE.values()) {
-            if(userProfile.getCode().equals(code)){
-                return userProfile;
+    public static USER_ROLE getByCode(String code) {
+        for(USER_ROLE userRole : USER_ROLE.values()) {
+            if(userRole.getCode().equals(code)){
+                return userRole;
             }
         }
         return null;

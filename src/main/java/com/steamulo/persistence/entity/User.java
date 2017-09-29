@@ -10,13 +10,13 @@ public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
-    private String profile;
+    private String role;
     private String login;
     private String password;
 
     public User(User user) {
         this.id = user.getId();
-        this.profile = user.getProfile();
+        this.role = user.getRole();
         this.login = user.getLogin();
         this.password = user.getPassword();
     }
@@ -28,12 +28,12 @@ public class User {
         return id;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getRole() {
+        return role;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getLogin() {
