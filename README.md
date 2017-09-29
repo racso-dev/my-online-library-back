@@ -74,7 +74,7 @@ le **service**.
 
 ## Persistence des données
 
-Chaque entité est annoté par **@Entity** (/persistence/entity/*), ce qui indique que c'est une entité JPA et qu'elle est 
+Chaque entité est annoté par **@Entity** (/persistence/entity/), ce qui indique que c'est une entité JPA et qu'elle est 
 mappé directement avec la table correspondante avec ces différents attributs. Si le nom d'un attribut ne correspond pas
 exactemenent à celui en BDD utilisé l'annotation **@Column(name="nom")**.
 Pour utiliser de simples queries, nous pouvons utiliser les interfaces CrudRepository.
