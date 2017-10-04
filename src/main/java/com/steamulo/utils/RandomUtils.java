@@ -46,7 +46,7 @@ public class RandomUtils {
      * @param length
      * @return
      */
-    public static String getRandowString(int length) throws ApiException {
+    public static String getRandomString(int length) throws ApiException {
         byte[] bytes = getRandomBytes(length);
         return bytesToHex(bytes);
     }
