@@ -23,17 +23,18 @@ public class ApiExceptionHandler {
      * @return
      */
     @ResponseBody
-    @ExceptionHandler(ApiException.class)
+    @ExceptionHandler(com.steamulo.exception.ApiException.class)
     public ErrorResponse handleException(HttpServletRequest req, HttpServletResponse response, Throwable t) {
         response.setContentType("application/json");
 
         String errorCode = null;
         //On traite l'exception set on set le status de la response en conséquence
-        if (t instanceof ApiException) {
+        if (t instanceof com.steamulo.exception.ApiException) {
             //Si cas d'erreur fonctionnel, mauvaise request, unauthorized, ...
-            response.setStatus(((ApiException) t).getHttpStatus().value());
-            errorCode = ((ApiException) t).getErrorCode();
-            LOGGER.info(t.getMessage(), t.getCause());
+            response.setStatus(((com.steamulo.exception.ApiException) t).getHttpStatus().value());
+            errorCode = ((com.steamulo.exception.ApiException) t).getErrorCode();
+
+            LOGGER.info(t.getMessage() + "(" + ((com.steamulo.exception.ApiException) t).getFileName() + ":" + ((com.steamulo.exception.ApiException) t).getLineNumber() + ")", t.getCause());
         }
 
         ErrorResponse respError = null;
