@@ -7,13 +7,15 @@ public class ApiException extends Exception {
     private HttpStatus httpStatus;
     private String errorCode;
     private String fileName;
-    private long lineNumber;
+    private Integer lineNumber;
 
     public ApiException(HttpStatus httpStatus, String message) {
         super(message);
         this.httpStatus = httpStatus;
-        this.fileName = Thread.currentThread().getStackTrace()[2].getFileName();
-        this.lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
+        if (Thread.currentThread().getStackTrace()[2] != null) {
+            this.fileName = Thread.currentThread().getStackTrace()[2].getFileName();
+            this.lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
+        }
     }
 
     public ApiException(HttpStatus httpStatus, String message, String errorCode) {
@@ -30,7 +32,7 @@ public class ApiException extends Exception {
         return fileName;
     }
 
-    public long getLineNumber() {
+    public Integer getLineNumber() {
         return lineNumber;
     }
 

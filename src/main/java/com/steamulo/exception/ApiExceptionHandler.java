@@ -1,6 +1,7 @@
 package com.steamulo.exception;
 
 import com.steamulo.api.response.ErrorResponse;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,8 +34,16 @@ public class ApiExceptionHandler {
             //Si cas d'erreur fonctionnel, mauvaise request, unauthorized, ...
             response.setStatus(((com.steamulo.exception.ApiException) t).getHttpStatus().value());
             errorCode = ((com.steamulo.exception.ApiException) t).getErrorCode();
+            String message = t.getMessage() + "(";
 
-            LOGGER.info(t.getMessage() + "(" + ((com.steamulo.exception.ApiException) t).getFileName() + ":" + ((com.steamulo.exception.ApiException) t).getLineNumber() + ")", t.getCause());
+            if (StringUtils.isNotBlank(((com.steamulo.exception.ApiException) t).getFileName())) {
+                message += ((com.steamulo.exception.ApiException) t).getFileName();
+            }
+            if (((com.steamulo.exception.ApiException) t).getLineNumber() != null) {
+                message += ":" + ((com.steamulo.exception.ApiException) t).getLineNumber();
+            }
+            message += ")";
+            LOGGER.info(message, t.getCause());
         }
 
         ErrorResponse respError = null;
