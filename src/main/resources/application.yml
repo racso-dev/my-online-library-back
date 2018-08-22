@@ -2,17 +2,12 @@ server:
   port: 8000
 
 management:
-  port: 9000
-  context-path: /manage
-  security:
-    enabled: false
+  server:
+    port: 9000
 
 jwt:
   secret: sfpQq=a9HZy@2d_4@Tqf+B5Z#sk?u+cW?ju!-Qs8z!f&sH?Dvu
   expiration: 300000
-
-security:
-  sessions: stateless
 
 springfox:
   documentation:
@@ -20,16 +15,12 @@ springfox:
       v2:
         path: /swagger/api-docs
 
-flyway:
-  enabled: true
-  locations: classpath:db/migration
-
 spring:
-  metrics:
-    export:
-      enabled: false
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 
 logging:
   level:

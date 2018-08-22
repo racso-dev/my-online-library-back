@@ -12,12 +12,11 @@ Puis on trouve les autres fichiers yml qui correspondent au conf individuel.
 Pour utiliser un fichier de conf en particulier, il faut créer / éditer une configuration de Run projet et rajouter en VM Options :
 
 ```
--Dspring.config.location=classpath:dev/ -Dspring.profiles.active=XXX,...
+-Dspring.config.additional-location=classpath:dev/
 ```
-Par exemple 
-```
--Dspring.config.location=classpath:dev/ -Dspring.profiles.active=dev,atran
-```
+
+Il faut également rajouter les profiles actifs dans l'onglet Spring boot puis "Active profiles".
+Par exemple "Active profiles: dev,atran"
 
 ## BDD
 Il faut créer la BDD avec le nom que vous avez enregistré dans votre fichier yml avant de lancer le server
