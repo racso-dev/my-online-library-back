@@ -60,7 +60,7 @@ public class UserService {
      * @throws EntityNotFoundException
      */
     private User getUserById(long idUser) throws EntityNotFoundException {
-        return userRepository.findOne(idUser).orElseThrow(() ->
+        return userRepository.findById(idUser).orElseThrow(() ->
             new EntityNotFoundException(idUser, "user")
         );
     }

@@ -1,10 +1,11 @@
 package com.steamulo.services.auth;
 
+import com.steamulo.conf.properties.JwtProperties;
 import com.steamulo.exception.ApiException;
 import com.steamulo.utils.DateUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -21,10 +22,9 @@ import static java.util.Collections.emptyList;
 @Component
 public class TokenAuthenticationService {
 
-    @Value("${jwt.expiration}")
-    private long EXPIRATIONTIME;
-    @Value("${jwt.secret}")
-    private String SECRET;
+    @Autowired
+    private JwtProperties jwtProperties;
+
     private final String TOKEN_PREFIX = "Bearer";
     private final String HEADER_STRING = "Authorization";
 
@@ -38,7 +38,7 @@ public class TokenAuthenticationService {
         if (token != null) {
             // parse the token.
             String user = Jwts.parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(jwtProperties.getSecret())
                 .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                 .getBody()
                 .getSubject();
@@ -59,8 +59,8 @@ public class TokenAuthenticationService {
         return Jwts.builder()
             .setSubject(login)
             .setIssuedAt(DateUtils.toDateFromLocalDateTime(LocalDateTime.now()))
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
-            .signWith(SignatureAlgorithm.HS512, SECRET)
+            .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
+            .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
             .compact();
     }
 }

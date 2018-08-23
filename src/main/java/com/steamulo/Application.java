@@ -1,10 +1,11 @@
 package com.steamulo;
 
-import com.steamulo.conf.ServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
@@ -19,12 +20,13 @@ public class Application {
         //Lancement de l'appli
         ApplicationContext applicationContext = SpringApplication.run(Application.class, args);
 
-        ServerConfig serverConf = applicationContext.getBean(ServerConfig.class);
+        ServerProperties serverConf = applicationContext.getBean(ServerProperties.class);
+        ManagementServerProperties managementConf = applicationContext.getBean(ManagementServerProperties.class);
 
         LOGGER.info("***************************************************");
         LOGGER.info("* Application Steamulo-Api-Starter démarrée       *");
-        LOGGER.info("* - Port public : " + serverConf.getServer().getPort() + "                            *");
-        LOGGER.info("* - Port admin : " + serverConf.getManagement().getPort() + "                             *");
+        LOGGER.info("* - Port public : " + serverConf.getPort() + "                            *");
+        LOGGER.info("* - Port admin : " + managementConf.getPort() + "                             *");
         LOGGER.info("***************************************************");
     }
 }

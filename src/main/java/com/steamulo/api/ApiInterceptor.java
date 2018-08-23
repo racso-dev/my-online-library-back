@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +46,11 @@ public class ApiInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         String uri = request.getRequestURI();
+
+        if(handler instanceof ResourceHttpRequestHandler){
+            super.preHandle(request, response, handler);
+            return true;
+        }
 
         // On ne passe pas par l'interceptor pour certaines uri
         if (!uri.equals(LOGIN_URI) && !uri.startsWith(MANAGE_URI) && !uri.startsWith(SWAGGER_URI) && !uri.equals(ERROR_URI) && !uri.startsWith(CONFIGURATION_URI)) {
