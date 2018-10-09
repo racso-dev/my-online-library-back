@@ -1,3 +1,0 @@
-*********************************
-package contenant les jobs, les task, ... qui ne sont pas appelés par les crontroller
-typement les job de récupération des fichiers sur le sftp et de parsing des fichiers, ...

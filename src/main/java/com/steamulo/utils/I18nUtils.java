@@ -1,6 +1,5 @@
 package com.steamulo.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +8,11 @@ import java.util.Locale;
 @Component
 public class I18nUtils {
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+
+    public I18nUtils(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * Retourne un message dans une langue donnée s'il existe, dans la langue par défaut sinon
