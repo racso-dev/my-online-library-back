@@ -19,7 +19,8 @@ Le fichier application-dev.yml représente la configuration par défaut.
 Il est recommandé d'utiliser les services installés via docker. Pour développer il est seulement nécéssaire d'activer le profile "dev"
 dans la configuration de lancement d'Intellij. Pour ce faire éditer dans l'onglet "Configuration" puis dans la section Spring boot le champ "Active profiles" et y ajouter "dev".
 
-Dans la liste déroulante "On 'Update' action" choisir "Update classes and ressources" pour tirer parti des spring-boot-devtools. Le reload est lancé via le raccourci CTRL+F9.
+Dans la liste déroulante "On 'Update' action" choisir "Update classes and ressources" pour tirer parti des spring-boot-devtools via le raccourci CTRL+F9.
+Dans la liste déroulante "On frame deactivation" choisir "Update classes and ressources" pour tirer parti des spring-boot-devtools lors du changement de fenêtre
 
 ### Liens
 * [API](http://localhost:8000)
