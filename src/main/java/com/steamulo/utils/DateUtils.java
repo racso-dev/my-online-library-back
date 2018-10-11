@@ -3,7 +3,7 @@ package com.steamulo.utils;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -21,20 +21,38 @@ public class DateUtils {
     }
 
     /**
-     * Retourne une localDateTime à partir d'un instant en millisecondes
-     * @param millis
+     * Retourne une LocalDateTime à partir d'un instant
+     * @param instant
      * @return
      */
-    public static LocalDateTime getLocalDateTimeFromInstantMillis(long millis) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());
+    public static LocalDateTime getLocalDateTimeFromMillis(Instant instant) {
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
     /**
-     * Convertie une localDateTime en Date
+     * Retourne une LocalDateTime à partir d'une durée millisecondes
+     * @param millis
+     * @return
+     */
+    public static LocalDateTime getLocalDateTimeFromInstant(long millis) {
+        return getLocalDateTimeFromMillis(Instant.ofEpochMilli(millis));
+    }
+
+    /**
+     * Convertie une LocalDateTime en Date
      * @param localDateTime
      * @return
      */
     public static Date toDateFromLocalDateTime(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(toDateFromInstant(localDateTime));
+    }
+
+    /**
+     * Convertie une LocalDateTime en Instant
+     * @param localDateTime
+     * @return
+     */
+    public static Instant toDateFromInstant(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneOffset.UTC).toInstant();
     }
 }

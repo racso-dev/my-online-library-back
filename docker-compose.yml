@@ -1,0 +1,41 @@
+version: '3'
+services:
+  maildev:
+    image: djfarrelly/maildev
+    restart: unless-stopped
+    ports:
+      - "2500:25"
+      - "8081:80"
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: apistarter
+      MYSQL_USER: apistarter
+      MYSQL_PASSWORD: apistarter
+    ports:
+      - "4306:3306"
+    networks:
+      - mysql
+    command: "mysqld --character-set-server=utf8mb4 --max_allowed_packet=32M"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8082:80"
+    networks:
+      - mysql
+
+volumes:
+  mysql_data:
+
+networks:
+  mysql:

@@ -14,7 +14,7 @@ public class RandomUtils {
      * @param length
      * @return
      */
-    private static byte[] getRandomBytes(int length) throws ApiException {
+    private static byte[] getRandomBytes(int length)  {
         try {
             // Uses a secure Random not a simple Random
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -46,7 +46,7 @@ public class RandomUtils {
      * @param length
      * @return
      */
-    public static String getRandomString(int length) throws ApiException {
+    public static String getRandomString(int length)  {
         byte[] bytes = getRandomBytes(length);
         return bytesToHex(bytes);
     }

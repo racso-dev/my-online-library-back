@@ -1,15 +1,10 @@
 package com.steamulo.services.user;
 
-import com.steamulo.api.user.request.CreateUserRequest;
-import com.steamulo.api.user.response.UserResponse;
+import com.steamulo.enums.UserRole;
 import com.steamulo.exception.ApiException;
-import com.steamulo.exception.EntityNotFoundException;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
-import com.steamulo.references.USER_ROLE;
 import com.steamulo.utils.PasswordUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -20,78 +15,56 @@ import java.util.Optional;
 @Component
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    /**
-     * Service de création d'un user
-     * @param request
-     * @return
-     * @throws ApiException
-     */
-    public void createUser(CreateUserRequest request) throws ApiException {
-        Optional<User> uLogin = userRepository.findByLogin(request.getLogin());
-        if(uLogin.isPresent()) {
-            throw new ApiException(HttpStatus.IM_USED, "Login déjà utilisé", "login");
-        }
-        User user = new User();
-        user.setLogin(request.getLogin());
-        user.setPassword(PasswordUtils.PASSWORD_ENCODER.encode(request.getPassword()));
-        user.setRole(request.getRole());
-
-        userRepository.save(user);
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     /**
-     * Service de récupération d'un user
-     * @param idUser
-     * @return
-     * @throws EntityNotFoundException
+     * Creation d'un utilisateur
+     * @param login
+     * @param password
+     * @param userRole
      */
-    public UserResponse getUserResponse(long idUser) throws EntityNotFoundException {
-        //On récupère le user
-        return new UserResponse(getUserById(idUser));
+    public Optional<User> createUser(String login, String password, UserRole userRole) {
+        Optional<User> uLogin = userRepository.findByLogin(login);
+        if(uLogin.isPresent()) {
+            return Optional.empty();
+        }
+
+        User user = User.builder()
+            .login(login)
+            .password(PasswordUtils.PASSWORD_ENCODER.encode(password))
+            .role(userRole)
+            .build();
+
+        return Optional.of(userRepository.save(user));
     }
 
     /**
      * Method de récupération user donné
      * @param idUser
      * @return
-     * @throws EntityNotFoundException
      */
-    private User getUserById(long idUser) throws EntityNotFoundException {
-        return userRepository.findById(idUser).orElseThrow(() ->
-            new EntityNotFoundException(idUser, "user")
-        );
+    public Optional<User> getUserById(long idUser) {
+        return userRepository.findById(idUser);
     }
 
     /**
      * Method de récupération user donné
      * @param login
      * @return
-     * @throws EntityNotFoundException
      */
-    private User getUserByLogin(String login) throws ApiException {
-        return userRepository.findByLogin(login).orElseThrow(() ->
-            new ApiException(HttpStatus.NOT_FOUND, "Aucun utilisateur avec le login " + login, "login")
-        );
+    public Optional<User> getUserByLogin(String login) {
+        return userRepository.findByLogin(login);
     }
 
     /**
      * Service de suppression d'un user
-     * @param idUserToDelete
-     * @param idUserRequester
+     * @param idUser
      */
-    public void deleteUser(long idUserToDelete, long idUserRequester) throws ApiException {
-        //On ne peut pas supprimer son propre user
-        if(idUserRequester == idUserToDelete){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Impossible de supprimer son propre user");
-        }
-
-        //On récupère le user
-        User user = getUserById(idUserToDelete);
-
-        //On supprime le user
-        userRepository.delete(user);
+    public void deleteUser(long idUser)  {
+        getUserById(idUser).ifPresent(user -> userRepository.delete(user));
     }
 }

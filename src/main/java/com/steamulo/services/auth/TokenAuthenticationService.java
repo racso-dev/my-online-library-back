@@ -1,20 +1,14 @@
 package com.steamulo.services.auth;
 
 import com.steamulo.conf.properties.JwtProperties;
-import com.steamulo.exception.ApiException;
-import com.steamulo.utils.DateUtils;
+import com.steamulo.services.user.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.Date;
-
-import static java.util.Collections.emptyList;
+import java.util.Optional;
 
 /**
  * Service de gestion du JWT Token
@@ -22,43 +16,49 @@ import static java.util.Collections.emptyList;
 @Component
 public class TokenAuthenticationService {
 
-    @Autowired
-    private JwtProperties jwtProperties;
+    private final JwtProperties jwtProperties;
+    private final UserService userService;
 
-    private final String TOKEN_PREFIX = "Bearer";
-    private final String HEADER_STRING = "Authorization";
+    public TokenAuthenticationService(JwtProperties jwtProperties, UserService userService) {
+        this.jwtProperties = jwtProperties;
+        this.userService = userService;
+    }
 
     /**
      * Service de récupération de l'authentification à partir d'une request
      * @param request
      * @return
      */
-    public Authentication getAuthentication(HttpServletRequest request) throws ApiException {
+    public Optional<UserAuthentication> getAuthentication(HttpServletRequest request) {
+        String HEADER_STRING = "Authorization";
         String token = request.getHeader(HEADER_STRING);
-        if (token != null) {
-            // parse the token.
-            String user = Jwts.parser()
-                .setSigningKey(jwtProperties.getSecret())
-                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                .getBody()
-                .getSubject();
-
-            return user != null ?
-                new UsernamePasswordAuthenticationToken(user, null, emptyList()) :
-                null;
+        if (token == null) {
+            return Optional.empty();
         }
-        return null;
+
+        String TOKEN_PREFIX = "Bearer";
+        String userId = Jwts.parser()
+            .setSigningKey(jwtProperties.getSecret())
+            .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+            .getBody()
+            .getSubject();
+
+        if (userId == null) {
+            return Optional.empty();
+        }
+
+        return userService.getUserById(Long.valueOf(userId)).map(UserAuthentication::new);
     }
 
     /**
      * Méthod qui créé un nouveau token
-     * @param login
+     * @param idUser
      * @return
      */
-    public String createNewToken(String login) {
+    String createNewToken(Long idUser) {
         return Jwts.builder()
-            .setSubject(login)
-            .setIssuedAt(DateUtils.toDateFromLocalDateTime(LocalDateTime.now()))
+            .setSubject(idUser.toString())
+            .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
             .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
             .compact();

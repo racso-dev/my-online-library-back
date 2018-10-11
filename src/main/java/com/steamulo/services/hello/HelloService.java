@@ -1,8 +1,8 @@
 package com.steamulo.services.hello;
 
-import com.steamulo.references.LANGUAGE;
+import com.steamulo.enums.Language;
+import com.steamulo.persistence.entity.User;
 import com.steamulo.utils.I18nUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,10 +11,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class HelloService {
 
-    @Autowired
-    private I18nUtils i18nUtils;
+    private final I18nUtils i18nUtils;
+
+    public HelloService(I18nUtils i18nUtils) {
+        this.i18nUtils = i18nUtils;
+    }
 
     public String getHelloMessage() {
-        return i18nUtils.getMessage("hello", null, LANGUAGE.FR.getLocale());
+        return i18nUtils.getMessage("hello", null, Language.FR.getLocale());
+    }
+
+    public boolean hasRightToSayHello(User u) {
+        return u.getId().equals(1L);
     }
 }

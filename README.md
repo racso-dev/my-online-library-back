@@ -1,88 +1,70 @@
 # STEAMULO API STARTER
 Ce projet spring boot utilisant java 8 est un starter pour la création d'une api. Il contient la logique applicative de 
-base d'une api rest, une gestion simplifié des users, des exceptions ainsi que des exemples d'utilisations de certaines 
-fonctionalités. Il utilise également une base de donnée MySql versionnée par Flyway avec JPA comme couche DAO.
+base d'une api rest, une gestion simplifié de l'authentification, des utilisateurs et des exceptions...
 
-## Run configuration projet
+## Run
+### Pré requis
+* Java 8 
+* Maven 3.3.3 ou plus (voir https://maven.apache.org/install.html ou utiliser le gestionnaire de package de votre distribution)
+* Mysql 5.7 + Serveur SMTP :
+    * [installer docker](https://docs.docker.com/install/)
+    * [installer docker-compose](https://docs.docker.com/compose/install/)
+    * ```sudo docker-compose up```
+
+### Configuration
 Le fichier application.yml représente la configuration par défaut.
-Dans le sous dossier dev, on retrouve les fichiers de config application-dev.yml qui rajoute des éléments de conf pour developper.
-Puis on trouve les autres fichiers yml qui correspondent au conf individuel.
+Le fichier application-test.yml représente la configuration par défaut.
+Le fichier application-dev.yml représente la configuration par défaut.
 
-### Utilisation des fichiers de configuration
-Pour utiliser un fichier de conf en particulier, il faut créer / éditer une configuration de Run projet et rajouter en VM Options :
+Il est recommandé d'utiliser les services installés via docker. Pour développer il est seulement nécéssaire d'activer le profile "dev"
+dans la configuration de lancement d'Intellij. Pour ce faire éditer dans l'onglet "Configuration" puis dans la section Spring boot le champ "Active profiles" et y ajouter "dev".
 
-```
--Dspring.config.additional-location=classpath:dev/
-```
+Dans la liste déroulante "On 'Update' action" choisir "Update classes and ressources" pour tirer parti des spring-boot-devtools. Le reload est lancé via le raccourci CTRL+F9.
 
-Il faut également rajouter les profiles actifs dans l'onglet Spring boot puis "Active profiles".
-Par exemple "Active profiles: dev,atran"
+### Liens
+* [API](http://localhost:8000)
+* [Swagger](http://localhost:8000/swagger-ui.html)
+* [MailDev](http://localhost:8081)
+* [phpMyAdmin](http://localhost:8082)
 
-## BDD
-Il faut créer la BDD avec le nom que vous avez enregistré dans votre fichier yml avant de lancer le server
 
-## TIPS
-Si le port que vous souhaitez utiliser n'est pas disponible et que vous voulez le libérer :
- - lsof -i :'port' (par exemple lsof -i :3000)
- - kill -9 'PID'
+## Développement
 
-## Swagger
-Swagger est sur l'url: http://localhost:8000/swagger-ui.html
+### Bibliothèques principales du projet
+* Migration de base de données: [Flyway](https://flywaydb.org/)
+* Génération de Setter/Getter: [Lombock](https://projectlombok.org/)
 
-## Gestion des droits en fonction du role
+### Gestion des droits en fonction du role
+La gestion des droits et des accès est réalisée via Spring Security. L'annotation @PreAuthorize permet de vérifier
+l'accès a un endpoint. Les vérifications métier peuvent également être faite via l'appel de service dans l'annotation.
+Voir la documentation : https://docs.spring.io/spring-security/site/docs/3.0.x/reference/el-access.html
 
-La gestion des droits par role se fait via l'intercepteur. Pour ce faire sur chaque method de controller (WS) il faut
-ajouter l'annotation @Permission qui prend en paramètre une PERMISSION. Ensuite chaque USER_ROLE contient une liste de 
-PERMISSION autorisant l'accés aux différents WS.
-
-## Annotations particulières
-
-L'annotation @Dev permet de dire que le WS, sur lequel est mise @Dev, est accessible uniquement en mode dev.
-C'est à dire que la conf dev est utilisée.
-
-L'annotation @NotAuthenticated permet de dire que le au WS, sur lequel est mise @NotAuthenticated, est accessible sans être authentifié.
-Bien sûr cela ne suffit pas à rendre accessible le WS sans authentification, il faut également autoriser la route dans WebSecurityConfig.
-
-## Réponse HTTP des WS et gestion des Exception (ApiException)
-
+### Réponse HTTP des WS et gestion des Exception (ApiException)
 Pour renvoyer comme réponse à un WS un code HTTP autre que 200 (dans le cas d'une erreur fonctionnelle ou technique),
 il suffit de throw une ApiException qui prend en paramètre un code HTTP et un message. Celle ci sera attrapée par
 un ExceptionHandler et renvoyée en réponse au WS avec le code HTTP spécifié. Cette exception peut être appelée partout
 à tout moment et elle stop le traitement en cours pour renvoyer l'erreur souhaitée.
 
-## Authentification
+### Authentification
 JWT est utilisé au niveau de l'authentification, ce qui veut dire que pour les appels nécessitant une authentification, 
 il faut avoir le token récupéré par l'appel /auth/login et l'envoyer en header de la requete sous la forme :
 key: Authorization
 value: Bearer ${your-token}
-Bien sur il faut remplacer ${your-token} par le token reçu.
 
-## Controller
-
+### Controller
 Les requêtes HTTP sont traitées par les controllers. Ils sont identifiés par l'annotation **@RestController** et se trouve 
 dans le package api/. Créer un package requête (Exemple: /user), dans lequel se trouve un package **request**
 qui contient les inputs des requêtes, un package **response** qui contients les outputs des requêtes et le **controller**.
 Attention à ne pas implémenter la logique métier dans les controllers, cette logique se trouve dans la couche **service**.
 Utiliser l'annotation **@Autowired** pour liée les différents services au controller.
 
-## Service
-
+### Service
 L'annotation **@Component** est utilisée pour chaque service.
 Créer un package par objet métier dans lequel contient un package **ressource** qui contient les différents objets et 
 le **service**.
 
-## Persistence des données
-
+### Persistence des données
 Chaque entité est annoté par **@Entity** (/persistence/entity/), ce qui indique que c'est une entité JPA et qu'elle est 
 mappé directement avec la table correspondante avec ces différents attributs. Si le nom d'un attribut ne correspond pas
 exactemenent à celui en BDD utilisé l'annotation **@Column(name="nom")**.
 Pour utiliser de simples queries, nous pouvons utiliser les interfaces CrudRepository.
-
-## Tâches planifiées
-
-Pour créer des tâches planifiées, ajouter des méthodes dans le package src/main/java/com/steamulo/scheduledtask/* 
-précédés par l'annotation **@Scheduled(...)** avec l'expression souhaité.
-Attention à ne pas oublier d'ajouter l'annotation **@EnableScheduling** à Application.java pour activer ces tâches.
-
-
-## TODOux Thomas C. et Antony T.
