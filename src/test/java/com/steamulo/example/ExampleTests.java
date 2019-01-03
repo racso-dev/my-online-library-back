@@ -9,8 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ import static org.junit.Assert.assertFalse;
 /**
  * Exemple de test unitaire avec des mocks
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ExampleTests extends ApiTests {
 
     @Mock
@@ -30,7 +29,6 @@ public class ExampleTests extends ApiTests {
     @Spy
     private List<String> spiedList = new ArrayList<String>();
 
-    @Autowired
     @InjectMocks
     private UserService userService; // @InjectMock permet d'injecter des instances de @Spy et de @Mock
 
