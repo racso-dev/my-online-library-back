@@ -2,6 +2,15 @@ server:
   port: 8000
 
 management:
+  endpoint:
+    health:
+      show-details: always
+      cache:
+        time-to-live: 5s
+  endpoints:
+    web:
+      exposure:
+        include: "*"
   server:
     port: 9000
 
