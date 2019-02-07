@@ -82,7 +82,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER_GET_SELF')")
     @GetMapping(value = "/self")
     public @ResponseBody UserResponse getCurentUser()  {
-        User loggedInUser = authService.getLoggedInUser();
+        User loggedInUser = authService.getAuthUser();
         LOGGER.info("Récupération du user connecté " + loggedInUser.getId());
         return UserResponse.builder().login(loggedInUser.getLogin()).role(loggedInUser.getRole().name()).build();
     }

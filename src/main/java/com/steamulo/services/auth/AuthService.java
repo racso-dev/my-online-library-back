@@ -3,6 +3,8 @@ package com.steamulo.services.auth;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.services.user.UserService;
 import com.steamulo.utils.PasswordUtils;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +34,14 @@ public class AuthService {
         });
     }
 
-    public User getLoggedInUser() {
+    public User getAuthUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+    }
+
+    public Optional<User> getUser() {
+        if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
+            return Optional.empty();
+        }
+        return Optional.of((User) SecurityContextHolder.getContext().getAuthentication().getDetails());
     }
 }

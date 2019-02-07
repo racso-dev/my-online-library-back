@@ -1,4 +1,4 @@
-package com.steamulo.controller;
+package com.steamulo.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.steamulo.exception.ErrorResponse;

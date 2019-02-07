@@ -32,7 +32,5 @@ spring:
     locations: classpath:db/migration
 
 logging:
-  level:
-    ROOT: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg %n"
+    level: "[REQ:%X{req_id:-none}] [USR:%X{user_id:-none}] %5p"

@@ -1,9 +1,8 @@
 package com.steamulo.conf.technical;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.steamulo.controller.JWTAuthenticationFilter;
+import com.steamulo.filters.JWTAuthenticationFilter;
 import com.steamulo.services.auth.TokenAuthenticationService;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
