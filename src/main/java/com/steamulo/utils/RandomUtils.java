@@ -22,7 +22,7 @@ public class RandomUtils {
             random.nextBytes(bSalt);
             return bSalt;
         } catch(Exception e) {
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur est survenue lors de la génération du random");
+            throw new IllegalArgumentException("Une erreur est survenue lors de la génération du random");
         }
     }
 
