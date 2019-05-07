@@ -17,6 +17,8 @@ def slackChannel = '#todo'
 def slackToken = 'todo'
 def slackTeam = 'steamulo'
 
+def checksum = 'xxx'
+
 node ('web') {
     try {
         checkout scm
@@ -36,6 +38,10 @@ node ('web') {
                         mavenLocalRepo: '.repository'
                     ) {
                         sh "mvn clean install"
+                    }
+                    dir('target') {
+                        checksum = sh(script: 'sha1sum api-starter-' + pom.version + '.jar | cut -d " " -f 1', returnStdout: true).trim()
+                        echo "sha1sum: ${checksum}"
                     }
                 }
             }
@@ -93,20 +99,24 @@ node ('web') {
                             envCode = "rec"
                         }
 
-                        git branch: 'stable', credentialsId: 'gitlab-key', url: 'git@git.steamulo.com:steamulo/steamulo-ansible-starter.git'
-                        sshagent (credentials: ['gitlab-key']) {
-                            sh "ansible-galaxy install -p ./roles -r ./roles/requirements.yml"
-                        }
-                        withCredentials([[$class: 'StringBinding', credentialsId: 'vault-api-starter', variable: 'TOKEN']]) {
-                            sh 'echo $TOKEN > .starter_vault_pass.txt'
-                        }
-                        try {
-                            sshagent(['ssh-key']) {
-                                sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -l api -i hosts/hosts-${envCode} --skip-tags nginx,logrotate -t configuration,deploy -u starter -e \"{'ansible_become': false, 'forceDownloadBuild': true, 'version_to_deploy':'${pom.version}-${env.BRANCH_NAME}'}\" starter_install.yml"
+                        withPythonEnv('/usr/bin/python2.7') {
+                            git branch: 'stable', credentialsId: 'gitlab-key', url: 'git@git.steamulo.com:steamulo/steamulo-ansible-starter.git'
+                            sh "pip install -r requirements.txt"
+                            sshagent (credentials: ['gitlab-key']) {
+                                sh "ansible-galaxy install -p ./roles -r ./roles/requirements.yml"
                             }
-                            slackSend channel: slackChannel, color: 'good', message: "${envName} déployée avec succès : ${url}", teamDomain: slackTeam, token: slackToken
-                        } catch (e) {
-                            slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du déploiment de l'env ${envName} voir : http://ci.steamulo.com/blue/organizations/jenkins/<PROJECT>/detail/${env.BRANCH_NAME}/${BUILD_NUMBER}/pipeline", teamDomain: slackTeam, token: slackToken
+                            withCredentials([[$class: 'StringBinding', credentialsId: 'vault-api-starter', variable: 'TOKEN']]) {
+                                sh 'echo $TOKEN > .starter_vault_pass.txt'
+                            }
+                            try {
+                                sshagent(['ssh-key']) {
+                                    sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts/hosts_${envCode} -t deploy -u starter -e \"{'ansible_become': false, 'steamengine_build_url':'https://delivery.steamulo.org/steamulo/api-starter-${pom.version}-${env.BRANCH_NAME}', 'steamengine_build_checksum':'sha1:${checksum}'}\" starter_install.yml"
+                                }
+                                slackSend channel: slackChannel, color: 'good', message: "${envName} déployée avec succès : ${url}", teamDomain: slackTeam, token: slackToken
+                            } catch (e) {
+                                slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du déploiment de l'env ${envName} voir : http://ci.steamulo.com/blue/organizations/jenkins/<PROJECT>/detail/${env.BRANCH_NAME}/${BUILD_NUMBER}/pipeline", teamDomain: slackTeam, token: slackToken
+                                throw e
+                            }
                         }
                     }
                 }
@@ -119,6 +129,6 @@ node ('web') {
         slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du build de l'API, voir : http://ci.steamulo.com/blue/organizations/jenkins/<PROJECT>/detail/${env.BRANCH_NAME}/${BUILD_NUMBER}/pipeline", teamDomain: slackTeam, token: slackToken
         throw e
     } finally {
-        cleanWs notFailBuild: true
+        cleanWs()
     }
 }

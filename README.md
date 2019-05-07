@@ -31,7 +31,8 @@ Dans la liste déroulante "On frame deactivation" choisir "Update classes and re
 
 ## Développement
 
-### Bibliothèques principales du projet
+### Référence et documentation externes (RTFM)
+* Framework : [Spring Boot 2.1.2](https://docs.spring.io/spring-boot/docs/2.1.2.RELEASE/reference/htmlsingle/)
 * Migration de base de données: [Flyway](https://flywaydb.org/)
 * Génération de Setter/Getter: [Lombock](https://projectlombok.org/)
 
