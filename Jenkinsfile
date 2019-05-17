@@ -110,7 +110,7 @@ node ('web') {
                             }
                             try {
                                 sshagent(['ssh-key']) {
-                                    sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts/hosts_${envCode} -t deploy -u starter -e \"{'ansible_become': false, 'steamengine_build_url':'https://delivery.steamulo.org/steamulo/api-starter-${pom.version}-${env.BRANCH_NAME}', 'steamengine_build_checksum':'sha1:${checksum}'}\" starter_install.yml"
+                                    sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts/hosts_${envCode} -t steamengine_deploy -u starter -e \"{'ansible_become': false, 'steamengine_build_url':'https://delivery.steamulo.org/steamulo/api-starter-${pom.version}-${env.BRANCH_NAME}', 'steamengine_build_checksum':'sha1:${checksum}'}\" starter_install.yml"
                                 }
                                 slackSend channel: slackChannel, color: 'good', message: "${envName} déployée avec succès : ${url}", teamDomain: slackTeam, token: slackToken
                             } catch (e) {
