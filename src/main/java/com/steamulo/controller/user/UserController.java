@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @RequestMapping(value = "/user")
 public class UserController {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final AuthService authService;
@@ -35,22 +35,24 @@ public class UserController {
 
     /**
      * WS de récupération d'un user
-     * @param idUser
-     * @return
+     *
+     * @param idUser l'identifiant du user
+     * @return le user s'il existe, une erreur 400 sinon
      */
     @PreAuthorize("hasAuthority('USER_GET')")
     @GetMapping(value = "/{idUser}")
-    public @ResponseBody UserResponse getUser(@PathVariable(value = "idUser") long idUser) {
-        LOGGER.info("Récupération du user " + idUser);
+    public @ResponseBody
+    UserResponse getUser(@PathVariable(value = "idUser") long idUser) {
+        LOGGER.info("Récupération du user {}", idUser);
         return userService.getUserById(idUser)
             .map(user -> UserResponse.builder().login(user.getLogin()).role(user.getRole().name()).build())
-            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Impossible de supprimer son propre user"));
+            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, String.format("Impossible de récupérer le user %d. User inconnu.", idUser)));
     }
 
     /**
      * WS de création d'un user
-     * @param request
-     * @return
+     *
+     * @param request la demande de création du user
      */
     @PreAuthorize("hasAuthority('USER_CREATE')")
     @PostMapping(value = "/create")
@@ -66,24 +68,31 @@ public class UserController {
 
     /**
      * WS de suppression d'un user
-     * @param idUser
+     *
+     * @param idUser l'identifiant du user
      */
     @PreAuthorize("hasAuthority('USER_DELETE')")
     @DeleteMapping(value = "/{idUser}")
-    public void deleteUser(@PathVariable(value = "idUser") long idUser)  {
-        LOGGER.info("Suppression du user " + idUser);
+    public void deleteUser(@PathVariable(value = "idUser") long idUser) {
+        LOGGER.info("Suppression du user {}", idUser);
+        User loggedInUser = authService.getAuthUser();
+        if (loggedInUser.getId() != idUser) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Impossible de supprimer son propre user.");
+        }
         userService.deleteUser(idUser);
     }
 
     /**
      * WS de récupération du user connecté
-     * @return
+     *
+     * @return le user connecté
      */
     @PreAuthorize("hasAuthority('USER_GET_SELF')")
     @GetMapping(value = "/self")
-    public @ResponseBody UserResponse getCurentUser()  {
+    public @ResponseBody
+    UserResponse getCurentUser() {
         User loggedInUser = authService.getAuthUser();
-        LOGGER.info("Récupération du user connecté " + loggedInUser.getId());
+        LOGGER.info("Récupération du user connecté {}", loggedInUser.getId());
         return UserResponse.builder().login(loggedInUser.getLogin()).role(loggedInUser.getRole().name()).build();
     }
 
