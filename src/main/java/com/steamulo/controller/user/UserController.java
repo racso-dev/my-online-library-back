@@ -71,14 +71,10 @@ public class UserController {
      *
      * @param idUser l'identifiant du user
      */
-    @PreAuthorize("hasAuthority('USER_DELETE')")
+    @PreAuthorize("hasAuthority('USER_DELETE') && @userService.hasRightToDeleteUser(principal, #idUser)")
     @DeleteMapping(value = "/{idUser}")
     public void deleteUser(@PathVariable(value = "idUser") long idUser) {
         LOGGER.info("Suppression du user {}", idUser);
-        User loggedInUser = authService.getAuthUser();
-        if (loggedInUser.getId() != idUser) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Impossible de supprimer son propre user.");
-        }
         userService.deleteUser(idUser);
     }
 
