@@ -4,6 +4,8 @@ import com.steamulo.enums.UserRole;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
 import com.steamulo.utils.PasswordUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -13,6 +15,8 @@ import java.util.Optional;
  */
 @Component
 public class UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
 
@@ -79,7 +83,12 @@ public class UserService {
      * @return true si c'est le cas, false sinon
      */
     public boolean hasRightToDeleteUser(User user, long idUserToDelete) {
-        return !user.getId().equals(idUserToDelete);
+        boolean isSameUser = !user.getId().equals(idUserToDelete);
+        if (isSameUser) {
+            LOGGER.error("L'utilisateur {} a demandé la suppression de son user : opération impossible.", user.getId());
+        }
+
+        return !isSameUser;
     }
 
 }
