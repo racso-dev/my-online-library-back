@@ -1,10 +1,11 @@
 package com.steamulo.services.user;
 
 import com.steamulo.enums.UserRole;
-import com.steamulo.exception.ApiException;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
 import com.steamulo.utils.PasswordUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -15,6 +16,8 @@ import java.util.Optional;
 @Component
 public class UserService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -23,13 +26,14 @@ public class UserService {
 
     /**
      * Creation d'un utilisateur
-     * @param login
-     * @param password
-     * @param userRole
+     *
+     * @param login    le login de l'utilisateur
+     * @param password le mot de passe de l'utilisateur
+     * @param userRole le role de l'utilisateur
      */
     public Optional<User> createUser(String login, String password, UserRole userRole) {
         Optional<User> uLogin = userRepository.findByLogin(login);
-        if(uLogin.isPresent()) {
+        if (uLogin.isPresent()) {
             return Optional.empty();
         }
 
@@ -44,8 +48,9 @@ public class UserService {
 
     /**
      * Method de récupération user donné
-     * @param idUser
-     * @return
+     *
+     * @param idUser l'identifiant de l'utilisateur
+     * @return le user correspondant s'il existe, empty sinon
      */
     public Optional<User> getUserById(long idUser) {
         return userRepository.findById(idUser);
@@ -53,8 +58,9 @@ public class UserService {
 
     /**
      * Method de récupération user donné
-     * @param login
-     * @return
+     *
+     * @param login le login de l'utilisateur
+     * @return l'utilisateur s'il existe, empty sinon
      */
     public Optional<User> getUserByLogin(String login) {
         return userRepository.findByLogin(login);
@@ -62,9 +68,27 @@ public class UserService {
 
     /**
      * Service de suppression d'un user
-     * @param idUser
+     *
+     * @param idUser l'identifiant de l'utilisateur à supprimer
      */
-    public void deleteUser(long idUser)  {
-        getUserById(idUser).ifPresent(user -> userRepository.delete(user));
+    public void deleteUser(long idUser) {
+        getUserById(idUser).ifPresent(userRepository::delete);
     }
+
+    /**
+     * Détermine si on a l'utilisateur passé en paramètre possède le droit de supprimer le user associé à l'identifiant
+     *
+     * @param user           l'utilisateur demandant la suppression
+     * @param idUserToDelete l'identifiant de l'utilisateur que l'on souhaite supprimer
+     * @return true si c'est le cas, false sinon
+     */
+    public boolean hasRightToDeleteUser(User user, long idUserToDelete) {
+        boolean isSameUser = !user.getId().equals(idUserToDelete);
+        if (isSameUser) {
+            LOGGER.error("L'utilisateur {} a demandé la suppression de son user : opération impossible.", user.getId());
+        }
+
+        return !isSameUser;
+    }
+
 }
