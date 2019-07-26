@@ -19,6 +19,9 @@ public class TokenAuthenticationService {
     private final JwtProperties jwtProperties;
     private final UserService userService;
 
+    private static final String HEADER_STRING = "Authorization";
+    private static final String TOKEN_PREFIX = "Bearer";
+
     public TokenAuthenticationService(JwtProperties jwtProperties, UserService userService) {
         this.jwtProperties = jwtProperties;
         this.userService = userService;
@@ -30,13 +33,12 @@ public class TokenAuthenticationService {
      * @return
      */
     public Optional<UserAuthentication> getAuthentication(HttpServletRequest request) {
-        String HEADER_STRING = "Authorization";
+
         String token = request.getHeader(HEADER_STRING);
-        if (token == null) {
+        if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             return Optional.empty();
         }
 
-        String TOKEN_PREFIX = "Bearer";
         String userId = Jwts.parser()
             .setSigningKey(jwtProperties.getSecret())
             .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
