@@ -9,7 +9,7 @@ def shouldDoSonarAnalysis = { pom, env ->
     "${env.BRANCH_NAME}" == "master"
 }
 
-def shouldUploadBuildAndDeploy = { env ->
+def shouldDeploy = { env ->
     "${env.BRANCH_NAME}" == "integration" || "${env.BRANCH_NAME}" == "recette"
 }
 
@@ -85,7 +85,7 @@ node ('web') {
             }
             stage ('Uploading build to S3') {
                 gitlabCommitStatus('Uploading build to S3') {
-                    if (shouldUploadBuildAndDeploy(env)) {
+                    if (shouldDeploy(env) || shouldTag(pom, env)) {
                         withAWS (
                             credentials: "s3-delivery",
                             region: "eu-west-1"
@@ -99,7 +99,7 @@ node ('web') {
             }
             stage ('Deploying') {
                 gitlabCommitStatus('Deploying') {
-                    if (shouldUploadBuildAndDeploy(env)) {
+                    if (shouldDeploy(env)) {
                         if ("${env.BRANCH_NAME}" == "integration") {
                             url = "https://starter-int.steamulo.org"
                             envName = "intégration"
