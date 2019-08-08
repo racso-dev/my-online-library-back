@@ -91,7 +91,7 @@ node ('web') {
                             region: "eu-west-1"
                         ) {
                             dir('target') {
-                                s3Upload(file: "api-starter-${pom.version}.jar", bucket: "delivery.steamulo.org", path: "steamulo/api-starter-${pom.version}-${env.BRANCH_NAME}.jar")
+                                s3Upload(file: "steamulo-api-starter-${pom.version}.jar", bucket: "delivery.steamulo.org", path: "steamulo/steamulo-api-starter-${pom.version}-${env.BRANCH_NAME}.jar")
                             }
                         }
                     }
