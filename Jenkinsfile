@@ -2,7 +2,7 @@ import com.steamulo.CommonHelper
 properties([gitLabConnection('jenkins'), buildDiscarder(logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '10', daysToKeepStr: '10', numToKeepStr: '5'))])
 
 def shouldTag = { pom, env ->
-    !pom.version.contains("SNAPSHOT") && "${env.BRANCH_NAME}" == "master"
+    !pom.version.contains("SNAPSHOT") && ("${env.BRANCH_NAME}" == "master" || "${env.BRANCH_NAME}" == "hotfix")
 }
 
 def shouldDoSonarAnalysis = { pom, env ->
@@ -53,6 +53,17 @@ node ('web') {
                             sh 'git config --global user.name "Jenkins Steamulo"'
                             sh "git tag -a ${pom.version} -m \"Jenkins build #$BUILD_NUMBER\""
                             sh "git push --tags"
+                            withMaven(
+                                maven: 'mvn 3.3.3',
+                                mavenSettingsConfig: 'steamulo-maven-settings',
+                                mavenLocalRepo: '.repository'
+                            ) {
+                              sh "mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true"
+                              newPom = readMavenPom file: 'pom.xml'
+                              sh "git add pom.xml"
+                              sh "git commit -m \"[RELEASE] bump version to ${newPom.version}\""
+                              sh "git push origin HEAD:master"
+                            }
                         }
                     }
                 }
