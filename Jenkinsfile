@@ -1,5 +1,5 @@
 import com.steamulo.CommonHelper
-properties([gitLabConnection('jenkins'), buildDiscarder(logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '10', daysToKeepStr: '10', numToKeepStr: '5'))])
+properties([gitLabConnection('jenkins'), disableConcurrentBuilds(), buildDiscarder(logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '10', daysToKeepStr: '10', numToKeepStr: '5'))])
 
 def shouldTag = { pom, env ->
     !pom.version.contains("SNAPSHOT") && ("${env.BRANCH_NAME}" == "master" || "${env.BRANCH_NAME}" == "hotfix")
