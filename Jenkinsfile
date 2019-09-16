@@ -125,7 +125,7 @@ node ('web') {
                                 }
                                 slackSend channel: slackChannel, color: 'good', message: "${envName} déployée avec succès : ${url}", teamDomain: slackTeam, token: slackToken
                             } catch (e) {
-                                slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du déploiment de l'env ${envName} voir : http://ci.steamulo.com/blue/organizations/jenkins/<PROJECT>/detail/${env.BRANCH_NAME}/${BUILD_NUMBER}/pipeline", teamDomain: slackTeam, token: slackToken
+                                slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du déploiment de l'env ${envName} voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull", teamDomain: slackTeam, token: slackToken
                                 throw e
                             }
                         }
@@ -134,10 +134,10 @@ node ('web') {
             }
         }
         if(currentBuild.previousBuild != null && currentBuild.previousBuild.result != 'SUCCESS'){
-            slackSend channel: slackChannel, color: 'good', message: "Retour à la normal du build de l'API, voir : http://ci.steamulo.com/blue/organizations/jenkins/<PROJECT>/detail/${env.BRANCH_NAME}/${BUILD_NUMBER}/pipeline", teamDomain: slackTeam, token: slackToken
+            slackSend channel: slackChannel, color: 'good', message: "Retour à la normal du build de l'API, voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull", teamDomain: slackTeam, token: slackToken
         }
     } catch (e) {
-        slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du build de l'API, voir : http://ci.steamulo.com/blue/organizations/jenkins/<PROJECT>/detail/${env.BRANCH_NAME}/${BUILD_NUMBER}/pipeline", teamDomain: slackTeam, token: slackToken
+        slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du build de l'API, voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull", teamDomain: slackTeam, token: slackToken
         throw e
     } finally {
         cleanWs()
