@@ -5,7 +5,7 @@ base d'une api rest, une gestion de l'authentification, des utilisateurs et des 
 ## Run
 ### Pré requis
 * [Java 11](https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10_openj9-0.17.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.5_10_openj9-0.17.0.tar.gz)
-* Maven 3.3.3 ou plus (voir https://maven.apache.org/install.html ou utiliser le gestionnaire de package de votre distribution)
+* Maven 3.6.2 ou plus (voir https://maven.apache.org/install.html ou utiliser le gestionnaire de package de votre distribution)
 * Mysql 5.7 + Serveur SMTP :
     * [installer docker](https://docs.docker.com/install/)
     * [installer docker-compose](https://docs.docker.com/compose/install/)

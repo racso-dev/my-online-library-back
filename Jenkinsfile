@@ -55,7 +55,7 @@ node ('web') {
                             newPom = readMavenPom file: 'pom.xml'
                             sh "git add pom.xml"
                             sh "git commit -m \"[RELEASE] bump version to ${newPom.version}\""
-                            sh "git push origin HEAD:master"
+                            sh "git push origin HEAD:${env.BRANCH_NAME}"
                         }
                     }
                 }
