@@ -32,11 +32,7 @@ node ('web') {
                     dir('src/main/resources') {
                         sh "printf \"Infos maven :\n Version : ${pom.version}\n\nInfos Git :\n Commit : ${gitCommit}\n Url : ${gitUrl}\n Branch : ${env.BRANCH_NAME}\n\nInfos sur le build :\n Build number : $BUILD_NUMBER\" > project_version.txt"
                     }
-                    withMaven(
-                        maven: 'mvn 3.3.3',
-                        mavenSettingsConfig: 'steamulo-maven-settings',
-                        mavenLocalRepo: '.repository'
-                    ) {
+                    withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
                         sh "mvn clean install"
                     }
                     dir('target') {
@@ -53,17 +49,13 @@ node ('web') {
                             sh 'git config --global user.name "Jenkins Steamulo"'
                             sh "git tag -a ${pom.version} -m \"Jenkins build #$BUILD_NUMBER\""
                             sh "git push --tags"
-                            withMaven(
-                                maven: 'mvn 3.3.3',
-                                mavenSettingsConfig: 'steamulo-maven-settings',
-                                mavenLocalRepo: '.repository'
-                            ) {
-                              sh "mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true"
-                              newPom = readMavenPom file: 'pom.xml'
-                              sh "git add pom.xml"
-                              sh "git commit -m \"[RELEASE] bump version to ${newPom.version}\""
-                              sh "git push origin HEAD:${env.BRANCH_NAME}"
+                            withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                sh "mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true"
                             }
+                            newPom = readMavenPom file: 'pom.xml'
+                            sh "git add pom.xml"
+                            sh "git commit -m \"[RELEASE] bump version to ${newPom.version}\""
+                            sh "git push origin HEAD:${env.BRANCH_NAME}"
                         }
                     }
                 }
@@ -71,14 +63,8 @@ node ('web') {
             stage ('SonarQube analysis') {
                 gitlabCommitStatus('SonarQube analysis') {
                     if (shouldDoSonarAnalysis(pom, env)) {
-                        withMaven(
-                            maven: 'mvn 3.3.3',
-                            mavenSettingsConfig: 'steamulo-maven-settings',
-                            mavenLocalRepo: '.repository'
-                        ) {
-                            withSonarQubeEnv('Sonar-CI') {
-                              sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
-                            }
+                        withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                            sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
                         }
                     }
                 }
