@@ -47,7 +47,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             authentication.ifPresent(userAuthentication -> SecurityContextHolder.getContext().setAuthentication(userAuthentication));
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | NumberFormatException e) {
-            LOGGER.info("Authentication Unauthorized", e);
+            LOGGER.info("Authentication Unauthorized: {}", e.getMessage());
 
             HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
             ErrorResponse errorResponse = ErrorResponse.builder()
