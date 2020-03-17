@@ -56,16 +56,17 @@ node ('web') {
             }
         }
         stage ('SonarQube analysis') {
-            gitlabCommitStatus('SonarQube analysis') {
-                if (shouldDoSonarAnalysis(pom, env)) {
-                    def scannerHome = tool 'SonarQube Scanner 4.2';
-                    withEnv(["JAVA_HOME=${ tool 'Java 8' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
-                        withSonarQubeEnv('Sonar-CI') {
-                            sh "${scannerHome}/bin/sonar-scanner"
-                        }
-                    }
-                }
-            }
+        // Sonar must be updated to read java 11 code
+//             gitlabCommitStatus('SonarQube analysis') {
+//                 if (shouldDoSonarAnalysis(pom, env)) {
+//                     def scannerHome = tool 'SonarQube Scanner 4.3';
+//                     withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
+//                         withSonarQubeEnv('Sonar-CI') {
+//                             sh "${scannerHome}/bin/sonar-scanner"
+//                         }
+//                     }
+//                 }
+//             }
         }
         stage ('Uploading build to S3') {
             if (shouldDeploy(env) || shouldTag(pom, env)) {
