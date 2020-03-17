@@ -59,7 +59,9 @@ node ('web') {
             gitlabCommitStatus('SonarQube analysis') {
                 if (shouldDoSonarAnalysis(pom, env)) {
                     withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
-                        sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
+                        withSonarQubeEnv('Sonar-CI') {
+                            sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
+                        }
                     }
                 }
             }
