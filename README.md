@@ -58,3 +58,7 @@ Le projet est livré avec un jenkinsfile de base, quelques variables sont a comp
 Seule un entrée multibranch pipeline pointant vers le repo git du projet est necessaire dans jenkins.
 Il est également conseillé de mettre en place un webhook sur gitlab afin de declancher le scan des branches a chaque push sur le projet.
 L'url à utiliser est la suivante : https://gitlab:111168cf050f3a6848774fb59e4c321fdb@ci.steamulo.com/job/<Chemin vers le job>/build?delay=0sec
+
+### Changelog
+Tous les changements notables seront listés dans le fichier CHANGELOG.md
+Le format du fichier CHANGELOG.md provient de [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
