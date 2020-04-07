@@ -43,7 +43,7 @@ node ('web') {
                 sshagent (credentials: ['gitlab-key']) {
                     sh 'git config --global user.email "jenkins@steamulo.com"'
                     sh 'git config --global user.name "Jenkins Steamulo"'
-                    sh "git tag -a ${pom.version} -m \"Jenkins build #$BUILD_NUMBER\""
+                    sh "git tag -a ${pom.version} -m \"Jenkins build #$BUILD_NUMBER sha1-cheksum : ${checksum}\""
                     sh "git push --tags"
                     withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
                         sh "mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnextSnapshot=true"
