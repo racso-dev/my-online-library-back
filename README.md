@@ -26,7 +26,6 @@ Dans la liste déroulante "On frame deactivation" choisir "Update classes and re
 * [API](http://localhost:8000)
 * [Swagger](http://localhost:8000/swagger-ui.html)
 * [MailDev](http://localhost:8081)
-* [phpMyAdmin](http://localhost:8082)
 
 
 ## Développement
