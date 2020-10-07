@@ -2,6 +2,13 @@ debug: true
 logging.level.com.steamulo: DEBUG
 logging.level.org.hibernate.SQL: DEBUG
 
+server:
+  port: 8001
+
+management:
+  server:
+    port: 9001
+
 environment: dev
 
 spring:

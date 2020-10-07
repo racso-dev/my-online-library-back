@@ -7,6 +7,7 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServe
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
     basePackageClasses = {Application.class, Jsr310JpaConverters.class}
 )
 @SpringBootApplication
+@EnableCaching
 public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);

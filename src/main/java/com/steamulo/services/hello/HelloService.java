@@ -3,6 +3,7 @@ package com.steamulo.services.hello;
 import com.steamulo.enums.Language;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.utils.I18nUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,6 +18,7 @@ public class HelloService {
         this.i18nUtils = i18nUtils;
     }
 
+    @Cacheable(value = "hello")
     public String getHelloMessage() {
         return i18nUtils.getMessage("hello", null, Language.FR.getLocale());
     }

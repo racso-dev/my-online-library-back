@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * Regroupe les configurations se trouvant dans le fichier yml
  */
 @Configuration
-@ConfigurationProperties()
+@ConfigurationProperties
 public class EnvProperties {
     private String environment;
 

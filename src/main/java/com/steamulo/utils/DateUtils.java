@@ -1,5 +1,7 @@
 package com.steamulo.utils;
 
+import org.springframework.stereotype.Component;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -7,6 +9,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+@Component
 public class DateUtils {
 
     /**

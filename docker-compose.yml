@@ -19,6 +19,11 @@ services:
     ports:
       - "4306:3306"
     command: "mysqld --character-set-server=utf8mb4 --max_allowed_packet=32M"
+  hazelcast:
+    image: hazelcast/management-center:3.12.6
+    restart: unless-stopped
+    ports:
+      - "8083:8080"
 
 volumes:
   mysql_data:

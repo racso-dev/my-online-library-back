@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.7.xsd"
+           xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <instance-name>local-instance</instance-name>
+    <management-center enabled="true" update-interval="3">
+        http://localhost:8083/hazelcast-mancenter
+    </management-center>
+</hazelcast>
