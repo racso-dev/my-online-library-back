@@ -61,3 +61,7 @@ L'url à utiliser est la suivante : https://gitlab:111168cf050f3a6848774fb59e4c3
 ### Changelog
 Tous les changements notables seront listés dans le fichier CHANGELOG.md
 Le format du fichier CHANGELOG.md provient de [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+
+# TODO
+remplacer l'instance bcrypt par un BEAN
+Regarder si les annotations @valid marche bien avec les erreurs en réponse, sinon reprendre le truc du basejump de julien

@@ -3,9 +3,9 @@ package com.steamulo.services.user;
 import com.steamulo.enums.UserRole;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
-import com.steamulo.utils.PasswordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -20,8 +20,11 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     /**
@@ -39,7 +42,7 @@ public class UserService {
 
         User user = User.builder()
             .login(login)
-            .password(PasswordUtils.PASSWORD_ENCODER.encode(password))
+            .password(bCryptPasswordEncoder.encode(password))
             .role(userRole)
             .build();
 

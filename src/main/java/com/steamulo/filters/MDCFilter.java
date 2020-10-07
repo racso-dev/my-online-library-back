@@ -1,6 +1,5 @@
 package com.steamulo.filters;
 
-import com.steamulo.persistence.entity.User;
 import com.steamulo.services.auth.AuthService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;

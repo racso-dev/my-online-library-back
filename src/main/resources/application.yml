@@ -25,8 +25,36 @@ springfox:
         path: /swagger/api-docs
 
 spring:
+  hazelcast:
+    config: classpath:hazelcast.xml
+  cache:
+    type: hazelcast
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: true
+        javax:
+          cache:
+            provider: com.hazelcast.cache.HazelcastCachingProvider
+            missing_cache_strategy: create
+        cache:
+          factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+          use_second_level_cache: true
+          use_query_cache: true
+          use_minimal_puts: true
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
+    hikari:
+      cachePrepStmts: true
+      prepStmtCacheSize: 250
+      prepStmtCacheSqlLimit: 2048
+      useServerPrepStmts: true
+      useLocalSessionState: true
+      rewriteBatchedStatements: true
+      cacheResultSetMetadata: true
+      cacheServerConfiguration: true
+      elideSetAutoCommits: true
+      maintainTimeStats: false
   flyway:
     enabled: true
     locations: classpath:db/migration
