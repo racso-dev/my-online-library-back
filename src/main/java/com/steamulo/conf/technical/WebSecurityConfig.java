@@ -35,9 +35,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
             .antMatchers("/actuator/**").permitAll()
             .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
-            .antMatchers("/swagger-ui.html").permitAll()
-            .antMatchers("/swagger/**").permitAll()
+            .antMatchers("/swagger-ui/**").permitAll()
             .antMatchers("/swagger-resources/**").permitAll()
+            .antMatchers("/swagger/**").permitAll()
             .antMatchers("/webjars/**").permitAll()
             .anyRequest().authenticated()
         // And filter other requests to check the presence of JWT in header

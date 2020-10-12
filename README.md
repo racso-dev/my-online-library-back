@@ -24,14 +24,14 @@ Dans la liste déroulante "On frame deactivation" choisir "Update classes and re
 
 ### Liens
 * [API](http://localhost:8000)
-* [Swagger](http://localhost:8000/swagger-ui.html)
+* [Swagger](http://localhost:8000/swagger-ui/)
 * [MailDev](http://localhost:8081)
 
 
 ## Développement
 
 ### Référence et documentation externes (RTFM)
-* Framework : [Spring Boot 2.2.1](https://docs.spring.io/spring-boot/docs/2.2.1.RELEASE/reference/htmlsingle/)
+* Framework : [Spring Boot 2.3.4](https://docs.spring.io/spring-boot/docs/2.3.4.RELEASE/reference/htmlsingle/)
 * Migration de base de données: [Flyway](https://flywaydb.org/)
 * Génération de Setter/Getter: [Lombock](https://projectlombok.org/)
 
