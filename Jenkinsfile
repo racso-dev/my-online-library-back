@@ -56,13 +56,11 @@ node ('web') {
             }
         }
         stage ('SonarQube analysis') {
-            gitlabCommitStatus('SonarQube analysis') {
-                if (shouldDoSonarAnalysis(pom, env)) {
-                    def scannerHome = tool 'SonarQube Scanner 4.4';
-                    withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
-                        withSonarQubeEnv('Sonar-CI') {
-                            sh "${scannerHome}/bin/sonar-scanner"
-                        }
+            if (shouldDoSonarAnalysis(pom, env)) {
+                def scannerHome = tool 'SonarQube Scanner 4.4';
+                withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                    withSonarQubeEnv('Sonar-CI') {
+                        sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
             }
