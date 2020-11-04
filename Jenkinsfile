@@ -13,9 +13,7 @@ def shouldDeploy = { env ->
     "${env.BRANCH_NAME}" == "integration" || "${env.BRANCH_NAME}" == "recette"
 }
 
-def slackChannel = '#todo'
-def slackToken = 'todo'
-def slackTeam = 'steamulo'
+def mattermostChannel = '#todo'
 
 def checksum = 'xxx'
 
@@ -102,19 +100,19 @@ node ('web') {
                         sshagent(['ssh-key']) {
                             sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts/hosts_${envCode} -t steamengine_deploy -u starter -e \"{'ansible_become': false, 'steamengine_build_url':'https://delivery.steamulo.org/steamulo/java-starter/java-starter-${pom.version}-${env.BRANCH_NAME}', 'steamengine_build_checksum':'sha1:${checksum}'}\" starter_install.yml"
                         }
-                        slackSend channel: slackChannel, color: 'good', message: "${envName} déployée avec succès : ${url}", teamDomain: slackTeam, token: slackToken
+                        mattermostSend channel: mattermostChannel, color: 'good', message: "${envName} déployée avec succès : ${url}"
                     } catch (e) {
-                        slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du déploiment de l'env ${envName} voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull", teamDomain: slackTeam, token: slackToken
+                        mattermostSend channel: mattermostChannel, color: 'danger', message: "Erreur lors du déploiment de l'env ${envName} voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull"
                         throw e
                     }
                 }
             }
         }
         if(currentBuild.previousBuild != null && currentBuild.previousBuild.result != 'SUCCESS'){
-            slackSend channel: slackChannel, color: 'good', message: "Retour à la normal du build de l'API, voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull", teamDomain: slackTeam, token: slackToken
+            mattermostSend channel: mattermostChannel, color: 'good', message: "Retour à la normal du build de l'API, voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull"
         }
     } catch (e) {
-        slackSend channel: slackChannel, color: 'danger', message: "Erreur lors du build de l'API, voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull", teamDomain: slackTeam, token: slackToken
+        mattermostSend channel: mattermostChannel, color: 'danger', message: "Erreur lors du build de l'API, voir : https://ci.steamulo.com/<PROJECT JOB PATH>/job/${env.BRANCH_NAME}/${BUILD_NUMBER}/consoleFull"
         throw e
     } finally {
         cleanWs()
