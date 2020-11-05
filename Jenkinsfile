@@ -13,7 +13,7 @@ def shouldDeploy = { env ->
     "${env.BRANCH_NAME}" == "integration" || "${env.BRANCH_NAME}" == "recette"
 }
 
-def mattermostChannel = '#todo'
+def mattermostChannel = 'todo'
 
 def checksum = 'xxx'
 
