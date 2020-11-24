@@ -87,7 +87,7 @@ node ('web') {
                     envCode = "rec"
                 }
 
-                withPythonEnv('/usr/bin/python2.7') {
+                withPythonEnv('/usr/bin/python3') {
                     git branch: 'stable', credentialsId: 'gitlab-key', url: 'git@git.steamulo.com:steamulo/steamulo-ansible-starter.git'
                     sh "pip install -r requirements.txt"
                     sshagent (credentials: ['gitlab-key']) {
