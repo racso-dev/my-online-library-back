@@ -2,12 +2,13 @@
 - [ ] I have self-reviewed this MR
 - [ ] The **naming convention for MR and commits** is respected : 
   - *[JIRA-999]  My MR description in correct english*
-  - *[JIRA-999] [FEAT|IMPR|FIX|ADD[UPDATE|DOC] My commit description in correct english*
+  - *[JIRA-999] [FEAT|IMPR|FIX|ADD|UPDATE|DOC] My commit description in correct english*
 - [ ] **Changelog** entry added [if required](https://docs.gitlab.com/ee/development/changelog.html#what-warrants-a-changelog-entry). Format is based on [Keep a Changelog](http://keepachangelog.com/)
 - [ ] **No dead code** and debug related code (variables, logs ...)
 - [ ] I have **commented the code** when required (business related code)
-- [ ] **Variables are correctly named** and payed attention to the **folder structure**
+- [ ] **Variables are correctly named** and I paid attention to the **folder structure**
 - [ ] **Code compiles** and **CI pipeline is OK**
+- [ ] **Potential conflicts** with the target branch have been resolved
 - [ ] The **feature/fix has been tested**
 - [ ] There are **unit tests** if applicable
 - [ ] **No unused imports** (Ctrl + Alt + O in Intellij)
