@@ -1,0 +1,17 @@
+### Requirements for a valid merge request at Steamulo
+- [ ] I have self-reviewed this MR
+- [ ] The **naming convention for MR and commits** is respected : 
+  - *[JIRA-999]  My MR description in correct english*
+  - *[JIRA-999] [FEAT|IMPR|FIX|ADD[UPDATE|DOC] My commit description in correct english*
+- [ ] I added a **changelog** entry [if required](https://docs.gitlab.com/ee/development/changelog.html#what-warrants-a-changelog-entry). The format is based on [Keep a Changelog](http://keepachangelog.com/)
+- [ ] There is **no dead code** and debug related code (variables, logs ...)
+- [ ] I have **commented the code** when required (business related code)
+- [ ] The **variables are correctly named** and payed attention to the **folder structure**
+- [ ] The **code compiles** and **CI pipeline is OK**
+- [ ] The **feature/fix has been tested**
+- [ ] There are **unit tests** if applicable
+- [ ] There is **no unused imports** (Ctrl + Alt + O in Intellij)
+- [ ] The **code indentation** is correct (Ctrl + Alt + L in Intellij)
+- [ ] The code has been **optimized and factorized**
+- [ ] There is **i18n** for all labels
+- [ ] I updated the related **Jira Ticket status** 
