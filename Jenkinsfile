@@ -5,7 +5,7 @@ def shouldTag = { pom, env ->
     !pom.version.contains("SNAPSHOT") && ("${env.BRANCH_NAME}" == "master" || "${env.BRANCH_NAME}" == "hotfix")
 }
 
-def shouldDoSonarAnalysis = { pom, env ->
+def shouldAnalysis = { pom, env ->
     "${env.BRANCH_NAME}" == "master"
 }
 
@@ -54,8 +54,16 @@ node ('web') {
                     }
                 }
             }
+            stage ('Trivy analysis') {
+                if (shouldAnalysis(pom, env)) {
+                    docker.image('harbor.steamulo.com/docker_hub_cache/aquasec/trivy:latest').inside('--entrypoint= -e HOME=.') {
+                        sh "trivy fs -f json -o results.json ."
+                    }
+                    recordIssues(tool: trivy(pattern: 'results.json'))
+                }
+            }
             stage ('SonarQube analysis') {
-                if (shouldDoSonarAnalysis(pom, env)) {
+                if (shouldAnalysis(pom, env)) {
                     def scannerHome = tool 'SonarQube Scanner 4.4';
                     withEnv(["JAVA_HOME=${ tool 'Java 11' }", "PATH+MAVEN=${tool 'mvn 3.6.2'}/bin:${env.JAVA_HOME}/bin"]) {
                         withSonarQubeEnv('Sonar-CI') {
