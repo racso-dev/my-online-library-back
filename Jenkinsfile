@@ -79,7 +79,7 @@ node ('web') {
                         region: "eu-west-1"
                     ) {
                         dir('target') {
-                            s3Upload(file: "steamulo-api-starter-${pom.version}.jar", bucket: "delivery.steamulo.org", path: "steamulo/java-starter/java-starter-starter-${pom.version}-${env.BRANCH_NAME}.jar", metadatas:["sha1-checksum:${checksum}"])
+                            s3Upload(file: "basejump-${pom.version}.jar", bucket: "delivery.steamulo.org", path: "steamulo/java-starter/java-starter-starter-${pom.version}-${env.BRANCH_NAME}.jar", metadatas:["sha1-checksum:${checksum}"])
                         }
                     }
                 }

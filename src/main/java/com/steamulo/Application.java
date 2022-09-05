@@ -30,7 +30,7 @@ public class Application {
         ManagementServerProperties managementConf = applicationContext.getBean(ManagementServerProperties.class);
 
         LOGGER.info("***************************************************");
-        LOGGER.info("* Application Steamulo-Api-Starter démarrée       *");
+        LOGGER.info("* Application Basejump démarrée       *");
         LOGGER.info("* - Port public : " + serverConf.getPort() + "                            *");
         LOGGER.info("* - Port admin : " + managementConf.getPort() + "                             *");
         LOGGER.info("***************************************************");
