@@ -13,9 +13,9 @@ services:
       - mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: apistarter
-      MYSQL_USER: apistarter
-      MYSQL_PASSWORD: apistarter
+      MYSQL_DATABASE: basejump
+      MYSQL_USER: basejump
+      MYSQL_PASSWORD: basejump
     ports:
       - "4306:3306"
     command: "mysqld --character-set-server=utf8mb4 --max_allowed_packet=32M"
