@@ -4,6 +4,9 @@ CREATE TABLE  user
   role VARCHAR(45) NOT NULL,
   login VARCHAR(45) NOT NULL,
   password VARCHAR(256) NOT NULL,
+  first_name VARCHAR(45) NOT NULL,
+  last_name VARCHAR(245) NOT NULL,
+  activated BIT(1) DEFAULT 0,
   PRIMARY KEY (id)
 )
 
