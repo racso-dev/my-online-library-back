@@ -29,6 +29,7 @@ public class TokenAuthenticationService {
 
     /**
      * Service de récupération de l'authentification à partir d'une request
+     * 
      * @param request
      * @return
      */
@@ -40,10 +41,10 @@ public class TokenAuthenticationService {
         }
 
         String userId = Jwts.parser()
-            .setSigningKey(jwtProperties.getSecret())
-            .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-            .getBody()
-            .getSubject();
+                .setSigningKey(jwtProperties.getSecret())
+                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                .getBody()
+                .getSubject();
 
         if (userId == null) {
             return Optional.empty();
@@ -54,15 +55,16 @@ public class TokenAuthenticationService {
 
     /**
      * Méthod qui créé un nouveau token
+     * 
      * @param idUser
      * @return
      */
     String createNewToken(Long idUser) {
         return Jwts.builder()
-            .setSubject(idUser.toString())
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
-            .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
-            .compact();
+                .setSubject(idUser.toString())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
+                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
+                .compact();
     }
 }
