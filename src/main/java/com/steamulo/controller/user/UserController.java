@@ -1,6 +1,7 @@
 package com.steamulo.controller.user;
 
 import com.steamulo.controller.user.request.CreateUserRequest;
+import com.steamulo.controller.user.request.UpdateUserRequest;
 import com.steamulo.controller.user.response.UserResponse;
 import com.steamulo.enums.UserRole;
 import com.steamulo.exception.ApiException;
@@ -11,8 +12,11 @@ import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -41,12 +45,12 @@ public class UserController {
      */
     @PreAuthorize("hasAuthority('USER_GET')")
     @GetMapping(value = "/{idUser}")
-    public @ResponseBody
-    UserResponse getUser(@PathVariable(value = "idUser") long idUser) {
+    public @ResponseBody UserResponse getUser(@PathVariable(value = "idUser") long idUser) {
         LOGGER.info("Récupération du user {}", idUser);
         return userService.getUserById(idUser)
-            .map(user -> UserResponse.builder().login(user.getLogin()).role(user.getRole().name()).build())
-            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, String.format("Impossible de récupérer le user %d. User inconnu.", idUser)));
+                .map(user -> UserResponse.builder().login(user.getLogin()).role(user.getRole().name()).build())
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST,
+                        String.format("Impossible de récupérer le user %d. User inconnu.", idUser)));
     }
 
     /**
@@ -61,8 +65,10 @@ public class UserController {
         if (!EnumUtils.isValidEnum(UserRole.class, role)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Role inexistant");
         }
-        userService.createUser(request.getLogin(), request.getPassword(), UserRole.valueOf(role), request.getFirstName(), request.getLastName())
-            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Login déjà utilisé"));
+        userService
+                .createUser(request.getLogin(), request.getPassword(), UserRole.valueOf(role), request.getFirstName(),
+                        request.getLastName())
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Login déjà utilisé"));
         LOGGER.info("Creation du nouveau user");
     }
 
@@ -85,11 +91,29 @@ public class UserController {
      */
     @PreAuthorize("hasAuthority('USER_GET_SELF')")
     @GetMapping(value = "/self")
-    public @ResponseBody
-    UserResponse getCurentUser() {
+    public ResponseEntity<UserResponse> getCurentUser() {
         User loggedInUser = authService.getAuthUser();
         LOGGER.info("Récupération du user connecté {}", loggedInUser.getId());
-        return UserResponse.builder().login(loggedInUser.getLogin()).role(loggedInUser.getRole().name()).build();
+        return ResponseEntity.ok()
+                .body(UserResponse.builder().login(loggedInUser.getLogin()).role(loggedInUser.getRole().name())
+                        .firstName(loggedInUser.getFirstName())
+                        .lastName(loggedInUser.getLastName()).build());
+    }
+
+    /**
+     * WS de modification du user connecté
+     *
+     * @param request la demande de modification du user
+     */
+    @PreAuthorize("hasAuthority('USER_UPDATE_SELF')")
+    @PutMapping(value = "/self")
+    public ResponseEntity<Void> updateCurentUser(@RequestBody @Valid UpdateUserRequest request) {
+        User loggedInUser = authService.getAuthUser();
+        LOGGER.info("Modification du user connecté {}", loggedInUser.getId());
+        Optional<String> password = Optional.ofNullable(request.getPassword());
+        userService.updateUser(loggedInUser, request.getLogin(), password, request.getFirstName(),
+                request.getLastName());
+        return ResponseEntity.noContent().build();
     }
 
 }

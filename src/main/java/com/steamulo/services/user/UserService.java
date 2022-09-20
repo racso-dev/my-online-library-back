@@ -34,19 +34,20 @@ public class UserService {
      * @param password le mot de passe de l'utilisateur
      * @param userRole le role de l'utilisateur
      */
-    public Optional<User> createUser(String login, String password, UserRole userRole, String firstName, String lastName) {
+    public Optional<User> createUser(String login, String password, UserRole userRole, String firstName,
+            String lastName) {
         Optional<User> uLogin = userRepository.findByLogin(login);
         if (uLogin.isPresent()) {
             return Optional.empty();
         }
 
         User user = User.builder()
-            .login(login)
-            .password(bCryptPasswordEncoder.encode(password))
-            .role(userRole)
-            .firstName(firstName)
-            .lastName(lastName)
-            .build();
+                .login(login)
+                .password(bCryptPasswordEncoder.encode(password))
+                .role(userRole)
+                .firstName(firstName)
+                .lastName(lastName)
+                .build();
 
         return Optional.of(userRepository.save(user));
     }
@@ -81,10 +82,12 @@ public class UserService {
     }
 
     /**
-     * Détermine si on a l'utilisateur passé en paramètre possède le droit de supprimer le user associé à l'identifiant
+     * Détermine si on a l'utilisateur passé en paramètre possède le droit de
+     * supprimer le user associé à l'identifiant
      *
      * @param user           l'utilisateur demandant la suppression
-     * @param idUserToDelete l'identifiant de l'utilisateur que l'on souhaite supprimer
+     * @param idUserToDelete l'identifiant de l'utilisateur que l'on souhaite
+     *                       supprimer
      * @return true si c'est le cas, false sinon
      */
     public boolean hasRightToDeleteUser(User user, long idUserToDelete) {
@@ -94,6 +97,15 @@ public class UserService {
         }
 
         return !isSameUser;
+    }
+
+    public void updateUser(User user, String login, Optional<String> password, String firstName, String lastName) {
+        if (password.isPresent()) {
+            user.setPassword(bCryptPasswordEncoder.encode(password.get()));
+        }
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        userRepository.save(user);
     }
 
 }
