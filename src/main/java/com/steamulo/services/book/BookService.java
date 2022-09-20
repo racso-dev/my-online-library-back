@@ -36,7 +36,7 @@ public class BookService {
                     "utility", "Utilitaire",
                     "children", "Livre pour enfant"));
 
-    public Optional getBooks(String category) {
+    public Optional<ArrayList<HashMap<String,String>>> getBooks(String category) {
         // Fetching Prismic API
         Response response = Api.get("https://my-bouquins.prismic.io/api/v1",
                 "MC5ZeDlGX1JFQUFDSUFRcEN5.Be-_vRcaP1Yp77-977-9R--_ve-_ve-_ve-_vQZbfO-_vQRufEHvv71BGwnvv70fdkd777-9")
@@ -63,6 +63,15 @@ public class BookService {
             book.put("category", categoryText);
             book.put("id", document.getId());
             books.add(book);
+        }
+        Iterable<Borrow> borrowedBooks = borrowRepository.findAll();
+        for (Borrow borrowedBook : borrowedBooks) {
+            for (HashMap<String, String> book : books) {
+                if (book.get("id").equals(borrowedBook.getBookId())) {
+                    books.remove(book);
+                    break;
+                }
+            }
         }
         return Optional.of(books);
     }
