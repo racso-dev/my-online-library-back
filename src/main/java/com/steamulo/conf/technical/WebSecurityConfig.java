@@ -28,8 +28,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                // CORS configuration
-                .cors().and()
                 // REST API, no session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 // REST API, no csrf protection needed

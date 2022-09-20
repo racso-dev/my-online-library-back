@@ -13,14 +13,10 @@ public class MvcConfig implements WebMvcConfigurer {
     @Bean(name = "messageSource")
     public MessageSource messageSource() {
         ResourceBundleMessageSource reloadableResourceBundleMessageSource = new ResourceBundleMessageSource();
-        reloadableResourceBundleMessageSource.setBasenames(new String[]{"i18n/messages"});
+        reloadableResourceBundleMessageSource.setBasenames(new String[] { "i18n/messages" });
         reloadableResourceBundleMessageSource.setDefaultEncoding("UTF-8");
         reloadableResourceBundleMessageSource.setCacheSeconds(-1);
         return reloadableResourceBundleMessageSource;
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
-    }
 }
