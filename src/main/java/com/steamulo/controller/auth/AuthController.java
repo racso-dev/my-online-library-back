@@ -47,7 +47,7 @@ public class AuthController {
     @PostMapping(value = "/register")
     public @ResponseBody RegisterResponse register(@RequestBody RegisterRequest request) {
         if (request.getLogin() == null || request.getPassword() == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Authentication Failed: Bad credentials");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Bad request, login and password are required");
         }
 
         userService
@@ -57,7 +57,8 @@ public class AuthController {
 
         return authService.getToken(request.getLogin(), request.getPassword())
                 .map(token -> RegisterResponse.builder().token(token).build())
-                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Authentication Failed: Bad credentials"));
+                .orElseThrow(
+                        () -> new ApiException(HttpStatus.BAD_REQUEST, "Bad request, login and password are required"));
 
     }
 }
