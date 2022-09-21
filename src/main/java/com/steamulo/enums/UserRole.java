@@ -9,7 +9,8 @@ public enum UserRole {
             Permission.USER_CREATE,
             Permission.USER_DELETE,
             Permission.USER_GET,
-            Permission.USER_GET_SELF)),
+            Permission.USER_GET_SELF,
+            Permission.BOOK_GET)),
     USER(Arrays.asList(
             Permission.USER_GET_SELF,
             Permission.USER_UPDATE_SELF,
