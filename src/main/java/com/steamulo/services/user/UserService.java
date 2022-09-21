@@ -47,6 +47,7 @@ public class UserService {
                 .role(userRole)
                 .firstName(firstName)
                 .lastName(lastName)
+                .activated(false)
                 .build();
 
         return Optional.of(userRepository.save(user));
