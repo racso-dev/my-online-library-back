@@ -9,10 +9,12 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.steamulo.dto.BookDto;
 import com.steamulo.exception.ApiException;
 import com.steamulo.persistence.entity.Borrow;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.BorrowRepository;
+import com.steamulo.services.book.BookService;
 
 import io.prismic.*;
 import io.prismic.Fragment.Image;
@@ -21,9 +23,11 @@ import io.prismic.Fragment.Image;
 public class BorrowService {
 
     private final BorrowRepository borrowRepository;
+    private final BookService bookService;
 
-    public BorrowService(BorrowRepository borrowRepository) {
+    public BorrowService(BorrowRepository borrowRepository, BookService bookService) {
         this.borrowRepository = borrowRepository;
+        this.bookService = bookService;
     }
 
     public Optional<Borrow> createBorrow(User user, String bookId) {
@@ -43,29 +47,9 @@ public class BorrowService {
         return Optional.of(borrowRepository.save(borrow));
     }
 
-    public Optional<ArrayList<HashMap<String, String>>> getBorrowedBooksByUserId(Long userId) {
+    public List<BookDto> getBorrowedBooksByUserId(Long userId) {
         List<Borrow> borrowed = borrowRepository.findByUserId(userId).orElse(new ArrayList<>());
         List<String> bookIds = borrowed.stream().map(Borrow::getBookId).collect(Collectors.toList());
-        Response response = Api.get("https://my-bouquins.prismic.io/api/v1",
-                "MC5ZeDlGX1JFQUFDSUFRcEN5.Be-_vRcaP1Yp77-977-9R--_ve-_ve-_ve-_vQZbfO-_vQRufEHvv71BGwnvv70fdkd777-9")
-                .getByIDs(bookIds).submit();
-        List<Document> documents = response.getResults();
-        ArrayList<HashMap<String, String>> books = new ArrayList<>();
-        for (Document document : documents) {
-            HashMap<String, String> book = new HashMap<>();
-            String title = document.getText("books.title");
-            String sumup = document.getText("books.sumup");
-            String publicationDate = document.getDate("books.publication_date").getValue().toString();
-            Image cover = document.getImage("books.cover");
-            String categoryText = document.getText("books.category");
-            book.put("title", title);
-            book.put("sumup", sumup);
-            book.put("publicationYear", publicationDate.split("-")[0]);
-            book.put("cover", cover.getUrl());
-            book.put("category", categoryText);
-            book.put("id", document.getId());
-            books.add(book);
-        }
-        return Optional.of(books);
+        return bookService.fetchBooksByIds(bookIds);
     }
 }

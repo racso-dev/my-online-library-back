@@ -2,6 +2,7 @@ package com.steamulo.controller.borrow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.steamulo.dto.BookDto;
 import com.steamulo.services.auth.AuthService;
 import com.steamulo.services.borrow.BorrowService;
 
@@ -27,13 +29,9 @@ public class BorrowController {
     }
 
     @GetMapping(value = "/self")
-    public @ResponseBody Optional getUserBorrowedBooks() {
-        Optional<ArrayList<HashMap<String, String>>> books = borrowService
+    public @ResponseBody List<BookDto> getUserBorrowedBooks() {
+        return borrowService
                 .getBorrowedBooksByUserId(authService.getAuthUser().getId());
-        if (books.isPresent()) {
-            return Optional.of(books.get());
-        }
-        return Optional.empty();
     }
 
     @PostMapping()

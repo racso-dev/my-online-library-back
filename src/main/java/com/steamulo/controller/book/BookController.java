@@ -1,6 +1,7 @@
 package com.steamulo.controller.book;
 
 import com.steamulo.controller.user.UserController;
+import com.steamulo.dto.BookDto;
 import com.steamulo.services.book.BookService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,7 +25,7 @@ public class BookController {
 
     @PreAuthorize("hasAuthority('BOOK_GET')")
     @GetMapping()
-    public @ResponseBody Optional getBooks(@RequestParam("category") String category) {
+    public @ResponseBody List<BookDto> getBooks(@RequestParam("category") String category) {
         log.info("Getting books for category {}", category);
         return bookService.getBooks(category);
     }
