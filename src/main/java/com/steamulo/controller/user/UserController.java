@@ -8,9 +8,10 @@ import com.steamulo.exception.ApiException;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.services.auth.AuthService;
 import com.steamulo.services.user.UserService;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.EnumUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,11 +24,10 @@ import javax.validation.Valid;
 /**
  * WS concernant la gestion des users
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final AuthService authService;
@@ -46,7 +46,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER_GET')")
     @GetMapping(value = "/{idUser}")
     public @ResponseBody UserResponse getUser(@PathVariable(value = "idUser") long idUser) {
-        LOGGER.info("Récupération du user {}", idUser);
+        log.info("Récupération du user {}", idUser);
         return userService.getUserById(idUser)
                 .map(user -> UserResponse.builder().login(user.getLogin()).role(user.getRole().name()).build())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST,
@@ -69,7 +69,7 @@ public class UserController {
                 .createUser(request.getLogin(), request.getPassword(), UserRole.valueOf(role), request.getFirstName(),
                         request.getLastName())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Login déjà utilisé"));
-        LOGGER.info("Creation du nouveau user");
+        log.info("Creation du nouveau user");
     }
 
     /**
@@ -80,7 +80,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER_DELETE') && @userService.hasRightToDeleteUser(principal, #idUser)")
     @DeleteMapping(value = "/{idUser}")
     public void deleteUser(@PathVariable(value = "idUser") long idUser) {
-        LOGGER.info("Suppression du user {}", idUser);
+        log.info("Suppression du user {}", idUser);
         userService.deleteUser(idUser);
     }
 
@@ -93,7 +93,7 @@ public class UserController {
     @GetMapping(value = "/self")
     public ResponseEntity<UserResponse> getCurentUser() {
         User loggedInUser = authService.getAuthUser();
-        LOGGER.info("Récupération du user connecté {}", loggedInUser.getId());
+        log.info("Récupération du user connecté {}", loggedInUser.getId());
         return ResponseEntity.ok()
                 .body(UserResponse.builder().login(loggedInUser.getLogin()).role(loggedInUser.getRole().name())
                         .firstName(loggedInUser.getFirstName())
@@ -109,7 +109,7 @@ public class UserController {
     @PutMapping(value = "/self")
     public ResponseEntity<Void> updateCurentUser(@RequestBody @Valid UpdateUserRequest request) {
         User loggedInUser = authService.getAuthUser();
-        LOGGER.info("Modification du user connecté {}", loggedInUser.getId());
+        log.info("Modification du user connecté {}", loggedInUser.getId());
         Optional<String> password = Optional.ofNullable(request.getPassword());
         userService.updateUser(loggedInUser, request.getLogin(), password, request.getFirstName(),
                 request.getLastName());
