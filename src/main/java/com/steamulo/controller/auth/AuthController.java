@@ -36,8 +36,8 @@ public class AuthController {
         }
 
         return authService.getToken(user.getLogin(), user.getPassword())
-            .map(token -> LoginResponse.builder().token(token).build())
-            .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials"));
+                .map(token -> LoginResponse.builder().token(token).build())
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials"));
 
     }
 
@@ -50,12 +50,14 @@ public class AuthController {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials");
         }
 
-        userService.createUser(request.getLogin(), request.getPassword(), UserRole.valueOf("USER"), request.getFirstName(), request.getLastName())
-            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Login déjà utilisé"));
+        userService
+                .createUser(request.getLogin(), request.getPassword(), UserRole.valueOf("USER"), request.getFirstName(),
+                        request.getLastName())
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Email déjà utilisé"));
 
         return authService.getToken(request.getLogin(), request.getPassword())
-            .map(token -> RegisterResponse.builder().token(token).build())
-            .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials"));
+                .map(token -> RegisterResponse.builder().token(token).build())
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials"));
 
     }
 }
