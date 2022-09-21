@@ -27,6 +27,10 @@ public class CreateUserRequest {
     @NotNull(message = "Role mandatory")
     private final String role;
 
+    private final String firstName;
+
+    private final String lastName;
+
     @JsonPOJOBuilder(withPrefix = StringUtils.EMPTY)
     static class CreateUserRequestBuilder {}
 }

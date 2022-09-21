@@ -18,10 +18,12 @@ import javax.persistence.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)
     private UserRole role;
     private String login;
     private String password;
+    private String firstName;
+    private String lastName;
 }

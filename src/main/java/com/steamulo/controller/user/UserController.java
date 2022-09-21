@@ -61,7 +61,7 @@ public class UserController {
         if (!EnumUtils.isValidEnum(UserRole.class, role)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Role inexistant");
         }
-        userService.createUser(request.getLogin(), request.getPassword(), UserRole.valueOf(role))
+        userService.createUser(request.getLogin(), request.getPassword(), UserRole.valueOf(role), request.getFirstName(), request.getLastName())
             .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Login déjà utilisé"));
         LOGGER.info("Creation du nouveau user");
     }

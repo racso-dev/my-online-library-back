@@ -34,7 +34,7 @@ public class UserService {
      * @param password le mot de passe de l'utilisateur
      * @param userRole le role de l'utilisateur
      */
-    public Optional<User> createUser(String login, String password, UserRole userRole) {
+    public Optional<User> createUser(String login, String password, UserRole userRole, String firstName, String lastName) {
         Optional<User> uLogin = userRepository.findByLogin(login);
         if (uLogin.isPresent()) {
             return Optional.empty();
@@ -44,6 +44,8 @@ public class UserService {
             .login(login)
             .password(bCryptPasswordEncoder.encode(password))
             .role(userRole)
+            .firstName(firstName)
+            .lastName(lastName)
             .build();
 
         return Optional.of(userRepository.save(user));
