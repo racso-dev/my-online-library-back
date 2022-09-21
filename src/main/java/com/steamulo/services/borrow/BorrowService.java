@@ -28,13 +28,15 @@ public class BorrowService {
 
     public Optional<Borrow> createBorrow(User user, String bookId) {
         Optional<Borrow> match = borrowRepository.findByBookId(bookId);
-        if (match.isPresent())
+        if (match.isPresent()) {
             return Optional.empty();
+        }
 
         System.out.println(
                 "Borrowing book " + bookId + " for user " + user.getId() + " user activation " + user.getActivated());
-        if (Boolean.FALSE.equals(user.getActivated()))
+        if (Boolean.FALSE.equals(user.getActivated())) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "User not authorized to borrow books");
+        }
 
         Borrow borrow = Borrow.builder().bookId(bookId).userId(user.getId()).build();
 
@@ -42,9 +44,8 @@ public class BorrowService {
     }
 
     public Optional<ArrayList<HashMap<String, String>>> getBorrowedBooksByUserId(Long userId) {
-        Optional<List<Borrow>> borrowed = borrowRepository.findByUserId(userId);
-        List<Borrow> borrowedBooks = borrowed.orElse(new ArrayList<>());
-        List<String> bookIds = borrowedBooks.stream().map(Borrow::getBookId).collect(Collectors.toList());
+        List<Borrow> borrowed = borrowRepository.findByUserId(userId).orElse(new ArrayList<>());
+        List<String> bookIds = borrowed.stream().map(Borrow::getBookId).collect(Collectors.toList());
         Response response = Api.get("https://my-bouquins.prismic.io/api/v1",
                 "MC5ZeDlGX1JFQUFDSUFRcEN5.Be-_vRcaP1Yp77-977-9R--_ve-_ve-_ve-_vQZbfO-_vQRufEHvv71BGwnvv70fdkd777-9")
                 .getByIDs(bookIds).submit();
