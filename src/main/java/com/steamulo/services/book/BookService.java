@@ -2,8 +2,6 @@ package com.steamulo.services.book;
 
 import io.prismic.*;
 import io.prismic.Fragment.Image;
-import io.prismic.Fragment.StructuredText;
-import io.prismic.Fragment.Text;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,6 @@ import com.steamulo.persistence.entity.Borrow;
 import com.steamulo.persistence.repository.BorrowRepository;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +33,7 @@ public class BookService {
                     "utility", "Utilitaire",
                     "children", "Livre pour enfant"));
 
-    public Optional<ArrayList<HashMap<String,String>>> getBooks(String category) {
+    public Optional<ArrayList<HashMap<String, String>>> getBooks(String category) {
         // Fetching Prismic API
         Response response = Api.get("https://my-bouquins.prismic.io/api/v1",
                 "MC5ZeDlGX1JFQUFDSUFRcEN5.Be-_vRcaP1Yp77-977-9R--_ve-_ve-_ve-_vQZbfO-_vQRufEHvv71BGwnvv70fdkd777-9")
@@ -64,7 +61,7 @@ public class BookService {
             book.put("id", document.getId());
             books.add(book);
         }
-        Iterable<Borrow> borrowedBooks = borrowRepository.findAll();
+        List<Borrow> borrowedBooks = borrowRepository.findAll();
         for (Borrow borrowedBook : borrowedBooks) {
             for (HashMap<String, String> book : books) {
                 if (book.get("id").equals(borrowedBook.getBookId())) {
