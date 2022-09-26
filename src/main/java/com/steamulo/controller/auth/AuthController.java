@@ -53,12 +53,11 @@ public class AuthController {
         userService
                 .createUser(request.getLogin(), request.getPassword(), UserRole.valueOf("USER"), request.getFirstName(),
                         request.getLastName())
-                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Login arleady exists"));
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Email déjà utilisé"));
 
         return authService.getToken(request.getLogin(), request.getPassword())
                 .map(token -> RegisterResponse.builder().token(token).build())
-                .orElseThrow(
-                        () -> new ApiException(HttpStatus.BAD_REQUEST, "Bad request, login and password are required"));
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials"));
 
     }
 }

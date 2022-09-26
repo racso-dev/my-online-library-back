@@ -15,3 +15,7 @@ spring:
   mail:
     host: localhost
     port: 2500
+
+server:
+  servlet:
+    context-path: /api

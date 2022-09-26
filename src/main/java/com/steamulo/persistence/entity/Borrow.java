@@ -1,6 +1,5 @@
 package com.steamulo.persistence.entity;
 
-import com.steamulo.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,15 +15,8 @@ import javax.persistence.*;
 @Entity
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class User {
+public class Borrow {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
-    private String login;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private Boolean activated;
+    private String bookId;
+    private Long userId;
 }

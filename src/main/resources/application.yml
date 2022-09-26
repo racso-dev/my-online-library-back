@@ -16,7 +16,7 @@ management:
 
 jwt:
   secret: sfpQq=a9HZy@2d_4@Tqf+B5Z#sk?u+cW?ju!-Qs8z!f&sH?Dvu
-  expiration: 300000
+  expiration: 300000000
 
 springfox:
   documentation:
@@ -62,3 +62,7 @@ spring:
 logging:
   pattern:
     level: "[REQ:%X{req_id:-none}] [USR:%X{user_id:-none}] %5p"
+
+prismic:
+  url: https://my-bouquins.prismic.io/api/v1
+  access-token: MC5ZeDlGX1JFQUFDSUFRcEN5.Be-_vRcaP1Yp77-977-9R--_ve-_ve-_ve-_vQZbfO-_vQRufEHvv71BGwnvv70fdkd777-9

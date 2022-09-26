@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
 
@@ -120,6 +120,12 @@
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-spring</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.prismic</groupId>
+            <artifactId>java-kit</artifactId>
+            <version>1.5.0</version>
         </dependency>
 
     </dependencies>
