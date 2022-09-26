@@ -47,7 +47,7 @@ public class AuthController {
     @PostMapping(value = "/register")
     public @ResponseBody RegisterResponse register(@RequestBody RegisterRequest request) {
         if (request.getLogin() == null || request.getPassword() == null) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Authentication Failed: Bad credentials");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Bad request, login and password are required");
         }
 
         userService
