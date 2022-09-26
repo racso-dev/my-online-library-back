@@ -1,22 +1,23 @@
 package com.steamulo.services.book;
 
 import io.prismic.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import com.steamulo.conf.properties.PrismicProperties;
 import com.steamulo.dto.BookDto;
+import com.steamulo.enums.Category;
+import com.steamulo.exception.ApiException;
 import com.steamulo.persistence.entity.Borrow;
 import com.steamulo.persistence.repository.BorrowRepository;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
+@Slf4j
 @Component
 public class BookService {
 
@@ -27,13 +28,6 @@ public class BookService {
         this.borrowRepository = borrowRepository;
         this.prismicProperties = prismicProperties;
     }
-
-    private HashMap<String, String> matches = new HashMap<>(
-            Map.of(
-                    "literature", "Littérature",
-                    "comics", "Bande dessinée",
-                    "utility", "Utilitaire",
-                    "children", "Livre pour enfant"));
 
     private List<BookDto> formatBooks(List<Document> documents) {
         ArrayList<BookDto> books = new ArrayList<>();
@@ -59,10 +53,16 @@ public class BookService {
     }
 
     public List<BookDto> fetchBooksByCategory(String category) {
+        log.info("Fetching books by category: " + category);
         Response response = Api.get(prismicProperties.getUrl(), prismicProperties.getAccessToken())
                 .query(
                         Predicates.at("document.type", "books"),
-                        Predicates.fulltext("my.books.category", matches.get(category)))
+                        Predicates.fulltext("my.books.category",
+                                Arrays.asList(Category.values()).stream()
+                                        .filter(cat -> cat.getEndpoint().equals(category)).findFirst()
+                                        .orElseThrow(
+                                                () -> new ApiException(HttpStatus.BAD_REQUEST, "Category not found"))
+                                        .getCategoryName()))
                 .fetch("books.title", "books.sumup", "books.publication_date", "books.cover", "books.category")
                 .submit();
         List<Document> documents = response.getResults();
