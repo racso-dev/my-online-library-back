@@ -3,7 +3,6 @@ package com.steamulo.services.auth;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.services.user.UserService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,8 @@ public class AuthService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AuthService(UserService userService, TokenAuthenticationService tokenAuthenticationService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public AuthService(UserService userService, TokenAuthenticationService tokenAuthenticationService,
+            BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
         this.tokenAuthenticationService = tokenAuthenticationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;

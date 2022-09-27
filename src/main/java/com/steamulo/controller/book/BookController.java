@@ -1,6 +1,5 @@
 package com.steamulo.controller.book;
 
-import com.steamulo.controller.user.UserController;
 import com.steamulo.dto.BookDto;
 import com.steamulo.services.book.BookService;
 
@@ -10,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/book")
@@ -23,6 +21,12 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    /**
+     * WS de récupération des livres disponibles d'une catégorie
+     *
+     * @param category la catégorie de livre à récupérer
+     * @return une liste de livre
+     */
     @PreAuthorize("hasAuthority('BOOK_GET')")
     @GetMapping()
     public @ResponseBody List<BookDto> getBooks(@RequestParam("category") String category) {

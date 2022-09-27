@@ -1,7 +1,7 @@
 package com.steamulo.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.steamulo.enums.UserRole;
+import com.steamulo.enums.Page;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,16 +17,11 @@ import javax.persistence.*;
 @Entity
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class User {
+public class TextPage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)
-    private UserRole role;
-    private String login;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
-    private String firstName;
-    private String lastName;
-    private Boolean activated;
+    private Page page;
+    private String content;
 }
