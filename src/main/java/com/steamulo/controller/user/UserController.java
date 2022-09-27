@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -35,6 +36,20 @@ public class UserController {
     public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
         this.authService = authService;
+    }
+
+    /**
+     * WS de récupération des users
+     *
+     * @return les users
+     */
+    @PreAuthorize("hasAuthority('USER_GET')")
+    @GetMapping()
+    public List<User> getUsers(@RequestParam(value = "firstName", required = false) String firstName,
+            @RequestParam(value = "lastName", required = false) String lastName,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "activated", required = false) Boolean activated) {
+        return userService.getUsersByCriteria(email, firstName, lastName, activated);
     }
 
     /**
@@ -113,6 +128,25 @@ public class UserController {
         Optional<String> password = Optional.ofNullable(request.getPassword());
         userService.updateUser(loggedInUser, request.getLogin(), password, request.getFirstName(),
                 request.getLastName());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * WS d'activation ou de désactivation d'un user
+     *
+     * @param idUser l'identifiant du user
+     */
+    @PreAuthorize("hasAuthority('USER_UPDATE')")
+    @PostMapping(value = "/activate/{idUser}")
+    public ResponseEntity<Void> updateUser(@PathVariable(value = "idUser") long idUser) {
+        User user = userService.getUserById(idUser)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "User inconnu"));
+        log.info("Modification du user {} par admin", user.getId());
+        if (user.getActivated().booleanValue()) {
+            userService.deactivateUser(user);
+        } else {
+            userService.activateUser(user);
+        }
         return ResponseEntity.noContent().build();
     }
 

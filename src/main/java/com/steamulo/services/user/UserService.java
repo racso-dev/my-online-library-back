@@ -3,12 +3,16 @@ package com.steamulo.services.user;
 import com.steamulo.enums.UserRole;
 import com.steamulo.persistence.entity.User;
 import com.steamulo.persistence.repository.UserRepository;
+import com.steamulo.helpers.UserSpecifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Service pour gérer les appels /user
@@ -109,4 +113,27 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void activateUser(User user) {
+        user.setActivated(true);
+        userRepository.save(user);
+    }
+
+    public void deactivateUser(User user) {
+        user.setActivated(false);
+        userRepository.save(user);
+    }
+
+    public List<User> getUsersByCriteria(String login, String firstName, String lastName, Boolean activated) {
+        Specification<User> spec = Specification.where(null);
+        if (login != null) {
+            spec = spec.or(UserSpecifications.containsLogin(login));
+        }
+        if (firstName != null) {
+            spec = spec.or(UserSpecifications.containsFirstName(firstName));
+        }
+        if (lastName != null) {
+            spec = spec.or(UserSpecifications.containsLastName(lastName));
+        }
+        return userRepository.findAll(UserSpecifications.isActivated(activated).and(spec));
+    }
 }

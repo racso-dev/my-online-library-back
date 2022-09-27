@@ -1,5 +1,6 @@
 package com.steamulo.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.steamulo.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
     private String login;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String firstName;
     private String lastName;
