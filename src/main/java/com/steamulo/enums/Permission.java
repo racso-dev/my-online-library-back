@@ -7,5 +7,6 @@ public enum Permission {
     USER_GET_SELF,
     USER_UPDATE,
     USER_UPDATE_SELF,
-    BOOK_GET
+    BOOK_GET,
+    TEXT_UPDATE
 }

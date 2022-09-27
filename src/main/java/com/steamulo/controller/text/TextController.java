@@ -11,6 +11,7 @@ import com.steamulo.services.text.TextService;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,6 +54,7 @@ public class TextController {
      * @param page la page pour laquelle on veut modifier le texte
      * @return 204 no content si le texte a été modifié, une erreur 400 sinon
      */
+    @PreAuthorize("hasAuthority('TEXT_UPDATE')")
     @PutMapping()
     public ResponseEntity<Void> putTextOfPage(@RequestBody @Valid UpdateTextRequest request) {
         log.info("Putting text of page {}", request);
