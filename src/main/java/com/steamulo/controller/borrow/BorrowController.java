@@ -28,12 +28,23 @@ public class BorrowController {
         this.authService = authService;
     }
 
+    /**
+     * WS de récupération des livres empruntés par l'utilisateur connecté
+     * 
+     * @return une liste de livres
+     */
     @GetMapping(value = "/self")
     public @ResponseBody List<BookDto> getUserBorrowedBooks() {
         return borrowService
                 .getBorrowedBooksByUserId(authService.getAuthUser().getId());
     }
 
+    /**
+     * WS de création d'un emprunt de livre
+     *
+     * @param bookId l'identifiant du livre
+     * @return une 204 no content si l'emprunt a été créé, une erreur 400 sinon
+     */
     @PostMapping()
     public @ResponseBody Optional borrowBook(@RequestParam("bookId") String bookId) {
         return borrowService.createBorrow(authService.getAuthUser(), bookId);
