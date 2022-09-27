@@ -24,7 +24,7 @@ Dans la liste déroulante "On frame deactivation" choisir "Update classes and re
 
 ### Liens
 * [API](http://localhost:8000)
-* [Swagger](http://localhost:8000/swagger-ui/)
+* [Swagger](http://localhost:8000/api/swagger-ui/)
 * [MailDev](http://localhost:8081)
 
 
