@@ -108,6 +108,7 @@ public class UserService {
         if (password.isPresent()) {
             user.setPassword(bCryptPasswordEncoder.encode(password.get()));
         }
+        user.setLogin(login);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         userRepository.save(user);
