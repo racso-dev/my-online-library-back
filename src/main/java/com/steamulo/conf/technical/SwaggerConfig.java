@@ -20,12 +20,12 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-            .select()
-            .apis(RequestHandlerSelectors.any())
-            .paths(PathSelectors.any())
-            .build()
-            .securitySchemes(Collections.singletonList(apiKey()))
-            .securityContexts(Collections.singletonList(securityContext()));
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.steamulo"))
+                .paths(PathSelectors.any())
+                .build()
+                .securitySchemes(Collections.singletonList(apiKey()))
+                .securityContexts(Collections.singletonList(securityContext()));
 
     }
 
@@ -39,7 +39,7 @@ public class SwaggerConfig {
 
     private List<SecurityReference> defaultAuth() {
         final AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        final AuthorizationScope[] authorizationScopes = new AuthorizationScope[]{authorizationScope};
+        final AuthorizationScope[] authorizationScopes = new AuthorizationScope[] { authorizationScope };
         return Collections.singletonList(new SecurityReference("Authorization", authorizationScopes));
     }
 
